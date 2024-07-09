@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.buildConfig)
     alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.google.services)
 }
 
 kotlin {
@@ -59,6 +60,11 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.multiplatformSettings)
             implementation(libs.koin.core)
+
+            // Firebase KMP
+            api(libs.gitlive.firebase.auth)
+            api(libs.gitlive.firebase.firestore)
+            api(libs.gitlive.firebase.messaging)
         }
 
         commonTest.dependencies {
@@ -72,6 +78,13 @@ kotlin {
             implementation(compose.uiTooling)
             implementation(libs.androidx.activityCompose)
             implementation(libs.kotlinx.coroutines.android)
+
+            // Firebase Android
+            implementation(libs.firebase.bom)
+            implementation(libs.firebase.auth.android)
+            implementation(libs.firebase.firestore.android)
+            implementation(libs.firebase.messaging.android)
+
         }
 
         iosMain.dependencies {

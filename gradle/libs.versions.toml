@@ -14,6 +14,14 @@ kotlinx-datetime = "0.6.0"
 multiplatformSettings = "1.1.1"
 koin = "3.6.0-wasm-alpha2"
 
+# Firebase
+#Gradle
+gradlePlugins-google-services = "4.4.2"
+#Firebase Android
+firebase-android-bom = "33.1.1"
+#Gitlive
+firebase-gitlive-sdk = "1.13.0"
+
 [libraries]
 
 androidx-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
@@ -30,6 +38,18 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 multiplatformSettings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatformSettings" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 
+# Firebase
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-android-bom" }
+firebase-auth-android = { module = "com.google.firebase:firebase-auth" }
+firebase-firestore-android = { module = "com.google.firebase:firebase-firestore" }
+firebase-messaging-android = { module = "com.google.firebase:firebase-messaging" }
+
+#Gitlive (KMP Firebase)
+gitlive-firebase-auth = { module = "dev.gitlive:firebase-auth", version.ref = "firebase-gitlive-sdk" }
+gitlive-firebase-firestore = { module = "dev.gitlive:firebase-firestore", version.ref = "firebase-gitlive-sdk" }
+gitlive-firebase-messaging = { module = "dev.gitlive:firebase-messaging", version.ref = "firebase-gitlive-sdk" }
+
+
 [plugins]
 
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
@@ -38,3 +58,5 @@ compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 buildConfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildConfig" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+# Firebase
+google-services = { id = "com.google.gms.google-services", version.ref = "gradlePlugins-google-services" }
