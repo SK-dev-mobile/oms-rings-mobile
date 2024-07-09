@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.buildConfig)
     alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.google.services)
 }
 
 kotlin {
@@ -71,6 +72,11 @@ kotlin {
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
+
+            // Firebase KMP
+            api(libs.gitlive.firebase.auth)
+            api(libs.gitlive.firebase.firestore)
+            api(libs.gitlive.firebase.messaging)
         }
 
         androidMain.dependencies {
@@ -86,6 +92,13 @@ kotlin {
             // Settings
             implementation(libs.multiplatformSettings.datastore)
             implementation(libs.androidx.datastorePreferences)
+
+            // Firebase Android
+            implementation(libs.firebase.bom)
+            implementation(libs.firebase.auth.android)
+            implementation(libs.firebase.firestore.android)
+            implementation(libs.firebase.messaging.android)
+
         }
 
         iosMain.dependencies {
