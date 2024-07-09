@@ -23,15 +23,6 @@ kotlin {
                 }
             }
         }
-        //https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-test.html
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        instrumentedTestVariant {
-            sourceSetTree.set(KotlinSourceSetTree.test)
-            dependencies {
-                debugImplementation(libs.androidx.testManifest)
-                implementation(libs.androidx.junit4)
-            }
-        }
     }
 
     listOf(
@@ -47,35 +38,58 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            // Compose
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+
+            // AndroidX lifecycle
+            implementation(libs.andoridx.lifecycle.viewmodel)
+
+            // Navigation
             implementation(libs.voyager.navigator)
+            implementation(libs.voyager.koin)
+            implementation(libs.voyager.transitions)
+            implementation(libs.voyager.lifecycleKMP)
+
+            // Logging
             implementation(libs.napier)
-            implementation(libs.kotlinx.coroutines.core)
-            implementation(libs.kotlinx.serialization.json)
+
+            // Kotlinx features
             implementation(libs.kotlinx.datetime)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.kotlinx.coroutines.core)
+
+            // Settings
             implementation(libs.multiplatformSettings)
+            implementation(libs.multiplatformSettings.coroutines)
+            implementation(libs.multiplatformSettings.serialization)
+
+            // Dependency injection
+            implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
         }
 
-        commonTest.dependencies {
-            implementation(kotlin("test"))
-            @OptIn(ExperimentalComposeLibrary::class)
-            implementation(compose.uiTest)
-            implementation(libs.kotlinx.coroutines.test)
-        }
-
         androidMain.dependencies {
-            implementation(compose.uiTooling)
+            // Activity compose
             implementation(libs.androidx.activityCompose)
+
+            // Coroutines
             implementation(libs.kotlinx.coroutines.android)
+
+            // Dependency injection
+            implementation(libs.koin.android)
+
+            // Settings
+            implementation(libs.multiplatformSettings.datastore)
+            implementation(libs.androidx.datastorePreferences)
         }
 
         iosMain.dependencies {
+
         }
     }
 }
@@ -97,17 +111,6 @@ android {
     sourceSets["main"].apply {
         manifest.srcFile("src/androidMain/AndroidManifest.xml")
         res.srcDirs("src/androidMain/res")
-    }
-    //https://developer.android.com/studio/test/gradle-managed-devices
-    @Suppress("UnstableApiUsage")
-    testOptions {
-        managedDevices.devices {
-            maybeCreate<ManagedVirtualDevice>("pixel5").apply {
-                device = "Pixel 5"
-                apiLevel = 34
-                systemImageSource = "aosp"
-            }
-        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
