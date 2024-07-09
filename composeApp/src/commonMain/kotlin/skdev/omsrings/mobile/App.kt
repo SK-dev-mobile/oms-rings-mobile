@@ -12,8 +12,8 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import omsringsmobile.composeapp.generated.resources.*
-import skdev.omsrings.mobile.theme.AppTheme
-import skdev.omsrings.mobile.theme.LocalThemeIsDark
+import skdev.omsrings.mobile.ui.theme.AppTheme
+import skdev.omsrings.mobile.ui.theme.LocalThemeIsDark
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource

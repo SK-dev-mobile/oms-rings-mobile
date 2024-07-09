@@ -59,6 +59,7 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.multiplatformSettings)
             implementation(libs.koin.core)
+            implementation(libs.koin.compose)
         }
 
         commonTest.dependencies {
@@ -76,7 +77,6 @@ kotlin {
 
         iosMain.dependencies {
         }
-
     }
 }
 
