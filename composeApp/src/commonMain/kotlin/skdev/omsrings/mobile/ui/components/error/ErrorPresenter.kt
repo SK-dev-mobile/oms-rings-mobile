@@ -9,8 +9,8 @@ import skdev.omsrings.mobile.utils.error.ErrorObserver
 
 @Stable
 abstract class ErrorPresenter : ErrorObserver {
-    private val _eror = Channel<ErrorMessage?>(Channel.BUFFERED)
-    protected val error = _eror.receiveAsFlow()
+    private val _error = Channel<ErrorMessage?>(Channel.BUFFERED)
+    protected val error = _error.receiveAsFlow()
 
     @Composable
     open operator fun invoke() {
@@ -19,6 +19,6 @@ abstract class ErrorPresenter : ErrorObserver {
 
     override fun onError(error: ErrorMessage) {
 //        Log.d("ErrorPresenter", "onError: $error") TODO: impl logging
-        _eror.trySend(error)
+        _error.trySend(error)
     }
 }
