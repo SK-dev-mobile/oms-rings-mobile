@@ -54,14 +54,13 @@ koin-core = { group = "io.insert-koin", name = "koin-core" }
 koin-android = { group = "io.insert-koin", name = "koin-android" }
 koin-compose = { group = "io.insert-koin", name = "koin-compose" }
 
-
 # Firebase
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-android-bom" }
 firebase-auth-android = { module = "com.google.firebase:firebase-auth" }
 firebase-firestore-android = { module = "com.google.firebase:firebase-firestore" }
 firebase-messaging-android = { module = "com.google.firebase:firebase-messaging" }
 
-#Gitlive (KMP Firebase)
+# Gitlive (KMP Firebase)
 gitlive-firebase-auth = { module = "dev.gitlive:firebase-auth", version.ref = "firebase-gitlive-sdk" }
 gitlive-firebase-firestore = { module = "dev.gitlive:firebase-firestore", version.ref = "firebase-gitlive-sdk" }
 gitlive-firebase-messaging = { module = "dev.gitlive:firebase-messaging", version.ref = "firebase-gitlive-sdk" }
