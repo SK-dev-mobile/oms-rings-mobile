@@ -47,7 +47,8 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
 
             // AndroidX lifecycle
-            implementation(libs.andoridx.lifecycle.viewmodel)
+            implementation(libs.androidx.lifecycle.runtime.compose)
+            implementation(libs.androidx.lifecycle.viewmodel.compose)
 
             // Navigation
             implementation(libs.voyager.navigator)

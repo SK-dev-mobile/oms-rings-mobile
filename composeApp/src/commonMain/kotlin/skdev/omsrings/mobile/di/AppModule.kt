@@ -6,8 +6,8 @@ import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 import skdev.omsrings.mobile.ui.components.error.ErrorPresenter
 import skdev.omsrings.mobile.ui.components.error.ToastErrorPresenter
-import skdev.omsrings.mobile.utils.error.ErrorCollector
-import skdev.omsrings.mobile.utils.error.ErrorObserver
+import skdev.omsrings.mobile.utils.message.MessageCollector
+import skdev.omsrings.mobile.utils.message.ErrorObserver
 
 private val data = module {
     // Add there data DI defenitions
@@ -16,8 +16,8 @@ private val data = module {
         ToastErrorPresenter()
     }
 
-    single<ErrorCollector> {
-        object : ErrorCollector {
+    single<MessageCollector> {
+        object : MessageCollector {
             override val observers: List<ErrorObserver>
                 get() = listOf(get<ErrorPresenter>())
         }
