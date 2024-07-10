@@ -12,6 +12,20 @@
 
 # Использовние утилит
 
+## Строковые ресурсы
+
+Для добавления указать значение в `composeApp/src/commonMain/composeResources/values/strings.xml`
+Строковые ресурсы можно использовать в коде Kotlin следующим образом:
+```kotlin
+import omsringsmobile.composeapp.generated.resources.Res.
+import omsringsmobile.composeapp.generated.resources.Res.new_string
+
+val myStringRes: StringResource = Res.string.new_string
+```
+
+В `Composable` можно получить `String` из `StringResource` с помощью функции `stringResource()`
+
+
 ## FormFiled – Поле ввода
 
 Каждый экземпляр `FormField` включает в себя следующие ключевые элементы:
