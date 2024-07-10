@@ -8,6 +8,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.rounded.ArrowDropUp
+import androidx.compose.material.icons.rounded.ArrowUpward
+import androidx.compose.material.icons.rounded.LocalShipping
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,8 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import omsringsmobile.composeapp.generated.resources.Res
+import omsringsmobile.composeapp.generated.resources.theme
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import skdev.omsrings.mobile.presentation.base.BaseScreen
+import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
+import skdev.omsrings.mobile.ui.components.helpers.Spacer
+import skdev.omsrings.mobile.ui.theme.values.Dimens
 
 
 object FAQScreen : BaseScreen("faq_screen") {
@@ -24,48 +33,24 @@ object FAQScreen : BaseScreen("faq_screen") {
     override fun MainContent() {
         FAQScreenContent()
     }
-}
 
-@Composable
-fun FAQScreenContent() {
+    @Composable
+    private fun FAQScreenContent() {
 
-    Scaffold(
-        topBar = {
-            FAQTopAppBar()
-        }
-    ) { innerPadding ->
-        FAQList(
-            faqItems = faqItemsData,
-            modifier = Modifier.padding(innerPadding)
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun FAQTopAppBar() {
-    TopAppBar(
-        title = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("FAQ: ЖБИ Кольца")
-                Icon(
-                    Icons.Filled.Menu,
-                    contentDescription = "FAQ Help",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(24.dp)
+        Scaffold(
+            topBar = {
+                RingsTopAppBar(
+                    title = stringResource(Res.string.theme),
+                    onNavigationClicked = { /* TODO: impl back navigation */ }
                 )
             }
-        },
-        navigationIcon = {
-            IconButton(onClick = { /* Implement back navigation if needed */ }) {
-                Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
-            }
+        ) { innerPadding ->
+            FAQList(
+                faqItems = faqItemsData,
+                modifier = Modifier.padding(innerPadding)
+            )
         }
-    )
+    }
 }
 
 @Composable
@@ -99,6 +84,7 @@ private fun ExpandableFAQCard(faqItem: FAQItem) {
                     stiffness = Spring.StiffnessLow
                 )
             ),
+        shape = MaterialTheme.shapes.large,
         onClick = { expanded = !expanded }
     ) {
         Column(
@@ -108,7 +94,7 @@ private fun ExpandableFAQCard(faqItem: FAQItem) {
         ) {
             FAQCardHeader(faqItem, expanded)
             if (expanded) {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(Dimens.spaceSmall)
                 Text(
                     text = faqItem.description,
                     style = MaterialTheme.typography.bodyMedium
@@ -121,27 +107,27 @@ private fun ExpandableFAQCard(faqItem: FAQItem) {
 @Composable
 private fun FAQCardHeader(faqItem: FAQItem, expanded: Boolean) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(
-            text = faqItem.emoji,
-            style = MaterialTheme.typography.headlineSmall
+        Icon(
+            imageVector = Icons.Rounded.LocalShipping,
+            contentDescription = null,
+            tint = faqItem.color,
         )
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(Dimens.spaceSmall)
         Text(
             text = faqItem.title,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = faqItem.color
         )
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(Dimens.spaceSmall)
         Icon(
-            imageVector = if (expanded) Icons.Filled.List else Icons.Filled.MoreVert,
+            imageVector = if (expanded) Icons.Rounded.ArrowDropUp else Icons.Filled.ArrowDropDown,
             contentDescription = if (expanded) "Collapse" else "Expand"
         )
     }
 }
 
 data class FAQItem(
-    val emoji: String,
     val title: String,
     val description: String,
     val color: Color
@@ -149,33 +135,23 @@ data class FAQItem(
 
 private val faqItemsData = listOf(
     FAQItem(
-        emoji = "🆕",
         title = "НОВЫЙ ЗАКАЗ",
         description = "• Можно редактировать\n• Учитывается в расчете итогов дня\n• Статус по умолчанию для всех новых заказов",
         color = Color(0xFF2196F3) // Blue
     ),
     FAQItem(
-        emoji = "✅",
         title = "ВЫПОЛНЕННЫЙ ЗАКАЗ",
         description = "• Можно редактировать\n• Не учитывается в расчете итогов дня\n• Используйте для отметки завершенных заказов",
         color = Color(0xFF4CAF50) // Green
     ),
     FAQItem(
-        emoji = "❌",
         title = "СПИСАННЫЙ ЗАКАЗ",
         description = "• Нельзя редактировать\n• Не учитывается в расчете итогов дня\n• Можно скрыть через настройку \"Показывать списанные заказы\"\n• Используйте для отмененных или ошибочных заказов",
         color = Color(0xFFF44336) // Red
     ),
     FAQItem(
-        emoji = "📅",
         title = "ПЕРЕНОС НА ДРУГУЮ ДАТУ",
         description = "• Выберите заказ и удерживайте для вызова меню\n• Доступно для статусов \"НОВЫЙ\" и \"ВЫПОЛНЕННЫЙ\"\n• При переносе исходный заказ получает статус \"СПИСАННЫЙ\"\n• В описание добавляется пометка о переносе и новая дата",
         color = Color(0xFF9C27B0) // Purple
     )
 )
-
-@Preview
-@Composable
-fun FAQScreenPreview() {
-    FAQScreenContent()
-}
