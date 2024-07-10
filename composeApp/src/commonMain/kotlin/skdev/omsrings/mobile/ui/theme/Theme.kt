@@ -6,68 +6,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.*
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
-import skdev.omsrings.mobile.ui.theme.values.md_theme_dark_background
-import skdev.omsrings.mobile.ui.theme.values.md_theme_dark_error
-import skdev.omsrings.mobile.ui.theme.values.md_theme_dark_errorContainer
-import skdev.omsrings.mobile.ui.theme.values.md_theme_dark_inverseOnSurface
-import skdev.omsrings.mobile.ui.theme.values.md_theme_dark_inversePrimary
-import skdev.omsrings.mobile.ui.theme.values.md_theme_dark_inverseSurface
-import skdev.omsrings.mobile.ui.theme.values.md_theme_dark_onBackground
-import skdev.omsrings.mobile.ui.theme.values.md_theme_dark_onError
-import skdev.omsrings.mobile.ui.theme.values.md_theme_dark_onErrorContainer
-import skdev.omsrings.mobile.ui.theme.values.md_theme_dark_onPrimary
-import skdev.omsrings.mobile.ui.theme.values.md_theme_dark_onPrimaryContainer
-import skdev.omsrings.mobile.ui.theme.values.md_theme_dark_onSecondary
-import skdev.omsrings.mobile.ui.theme.values.md_theme_dark_onSecondaryContainer
-import skdev.omsrings.mobile.ui.theme.values.md_theme_dark_onSurface
-import skdev.omsrings.mobile.ui.theme.values.md_theme_dark_onSurfaceVariant
-import skdev.omsrings.mobile.ui.theme.values.md_theme_dark_onTertiary
-import skdev.omsrings.mobile.ui.theme.values.md_theme_dark_onTertiaryContainer
-import skdev.omsrings.mobile.ui.theme.values.md_theme_dark_outline
-import skdev.omsrings.mobile.ui.theme.values.md_theme_dark_outlineVariant
-import skdev.omsrings.mobile.ui.theme.values.md_theme_dark_primary
-import skdev.omsrings.mobile.ui.theme.values.md_theme_dark_primaryContainer
-import skdev.omsrings.mobile.ui.theme.values.md_theme_dark_scrim
-import skdev.omsrings.mobile.ui.theme.values.md_theme_dark_secondary
-import skdev.omsrings.mobile.ui.theme.values.md_theme_dark_secondaryContainer
-import skdev.omsrings.mobile.ui.theme.values.md_theme_dark_surface
-import skdev.omsrings.mobile.ui.theme.values.md_theme_dark_surfaceTint
-import skdev.omsrings.mobile.ui.theme.values.md_theme_dark_surfaceVariant
-import skdev.omsrings.mobile.ui.theme.values.md_theme_dark_tertiary
-import skdev.omsrings.mobile.ui.theme.values.md_theme_dark_tertiaryContainer
-import skdev.omsrings.mobile.ui.theme.values.md_theme_light_background
-import skdev.omsrings.mobile.ui.theme.values.md_theme_light_error
-import skdev.omsrings.mobile.ui.theme.values.md_theme_light_errorContainer
-import skdev.omsrings.mobile.ui.theme.values.md_theme_light_inverseOnSurface
-import skdev.omsrings.mobile.ui.theme.values.md_theme_light_inversePrimary
-import skdev.omsrings.mobile.ui.theme.values.md_theme_light_inverseSurface
-import skdev.omsrings.mobile.ui.theme.values.md_theme_light_onBackground
-import skdev.omsrings.mobile.ui.theme.values.md_theme_light_onError
-import skdev.omsrings.mobile.ui.theme.values.md_theme_light_onErrorContainer
-import skdev.omsrings.mobile.ui.theme.values.md_theme_light_onPrimary
-import skdev.omsrings.mobile.ui.theme.values.md_theme_light_onPrimaryContainer
-import skdev.omsrings.mobile.ui.theme.values.md_theme_light_onSecondary
-import skdev.omsrings.mobile.ui.theme.values.md_theme_light_onSecondaryContainer
-import skdev.omsrings.mobile.ui.theme.values.md_theme_light_onSurface
-import skdev.omsrings.mobile.ui.theme.values.md_theme_light_onSurfaceVariant
-import skdev.omsrings.mobile.ui.theme.values.md_theme_light_onTertiary
-import skdev.omsrings.mobile.ui.theme.values.md_theme_light_onTertiaryContainer
-import skdev.omsrings.mobile.ui.theme.values.md_theme_light_outline
-import skdev.omsrings.mobile.ui.theme.values.md_theme_light_outlineVariant
-import skdev.omsrings.mobile.ui.theme.values.md_theme_light_primary
-import skdev.omsrings.mobile.ui.theme.values.md_theme_light_primaryContainer
-import skdev.omsrings.mobile.ui.theme.values.md_theme_light_scrim
-import skdev.omsrings.mobile.ui.theme.values.md_theme_light_secondary
-import skdev.omsrings.mobile.ui.theme.values.md_theme_light_secondaryContainer
-import skdev.omsrings.mobile.ui.theme.values.md_theme_light_surface
-import skdev.omsrings.mobile.ui.theme.values.md_theme_light_surfaceTint
-import skdev.omsrings.mobile.ui.theme.values.md_theme_light_surfaceVariant
-import skdev.omsrings.mobile.ui.theme.values.md_theme_light_tertiary
-import skdev.omsrings.mobile.ui.theme.values.md_theme_light_tertiaryContainer
+import skdev.omsrings.mobile.ui.theme.values.shapes
 
-private val LightColorScheme = lightColorScheme(
+private val LightColors = lightColorScheme(
     primary = md_theme_light_primary,
     onPrimary = md_theme_light_onPrimary,
     primaryContainer = md_theme_light_primaryContainer,
@@ -99,7 +40,8 @@ private val LightColorScheme = lightColorScheme(
     scrim = md_theme_light_scrim,
 )
 
-private val DarkColorScheme = darkColorScheme(
+
+private val DarkColors = darkColorScheme(
     primary = md_theme_dark_primary,
     onPrimary = md_theme_dark_onPrimary,
     primaryContainer = md_theme_dark_primaryContainer,
@@ -131,26 +73,18 @@ private val DarkColorScheme = darkColorScheme(
     scrim = md_theme_dark_scrim,
 )
 
-internal val LocalThemeIsDark = compositionLocalOf { mutableStateOf(true) }
-
 @Composable
 internal fun AppTheme(
+    isDark: Boolean,
     content: @Composable() () -> Unit
 ) {
-    val systemIsDark = isSystemInDarkTheme()
-    val isDarkState = remember { mutableStateOf(systemIsDark) }
+    SystemAppearance(isDark)
 
-    CompositionLocalProvider(
-        LocalThemeIsDark provides isDarkState
-    ) {
-        val isDark by isDarkState
-        SystemAppearance(isDark)
-
-        MaterialTheme(
-            colorScheme = if (isDark) DarkColorScheme else LightColorScheme,
-            content = { Surface(content = content) }
-        )
-    }
+    MaterialTheme(
+        shapes = shapes,
+        colorScheme = if (isDark) DarkColors else LightColors,
+        content = { Surface(content = content) }
+    )
 }
 
 @Composable

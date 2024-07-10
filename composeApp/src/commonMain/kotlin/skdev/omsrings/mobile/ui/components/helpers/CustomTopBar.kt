@@ -24,7 +24,7 @@ import skdev.omsrings.mobile.ui.theme.values.Dimens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomTopBar(
+fun TopAppBar(
     modifier: Modifier = Modifier,
     onBackClicked: () -> Unit,
     backTitle: String? = null,

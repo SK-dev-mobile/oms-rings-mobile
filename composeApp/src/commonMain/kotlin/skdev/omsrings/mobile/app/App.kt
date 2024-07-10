@@ -1,6 +1,7 @@
 package skdev.omsrings.mobile.app
 
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.safeDrawing
@@ -20,19 +21,19 @@ import skdev.omsrings.mobile.utils.notification.NotificationManager
 
 @OptIn(ExperimentalVoyagerApi::class)
 @Composable
-internal fun App() = AppTheme {
+internal fun App() = AppTheme(
+    isDark = isSystemInDarkTheme()
+) {
     val notificationManager: NotificationManager = koinInject()
 
     Box {
-        Scaffold {
-            Navigator(
-                MainScreen
-            ) { navigator ->
-                SlideTransition(
-                    navigator = navigator,
-                    animationSpec = tween(250)
-                )
-            }
+        Navigator(
+            MainScreen
+        ) { navigator ->
+            SlideTransition(
+                navigator = navigator,
+                animationSpec = tween(250)
+            )
         }
         NotificationDisplay(
             notificationManager = notificationManager,

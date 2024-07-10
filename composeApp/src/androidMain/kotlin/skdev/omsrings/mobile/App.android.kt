@@ -13,6 +13,9 @@ import skdev.omsrings.mobile.di.initKoin
 class AndroidApp : Application() {
     override fun onCreate() {
         super.onCreate()
+        initKoin {
+            androidContext(this@AndroidApp)
+        }
     }
 }
 
@@ -20,9 +23,6 @@ class AppActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        initKoin {
-            androidContext(this@AppActivity)
-        }
         setContent {
             KoinContext {
                 App()

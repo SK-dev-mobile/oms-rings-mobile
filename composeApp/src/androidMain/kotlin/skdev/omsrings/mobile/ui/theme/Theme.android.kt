@@ -2,6 +2,8 @@ package skdev.omsrings.mobile.ui.theme
 
 import android.app.Activity
 import android.os.Build
+import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
@@ -14,13 +16,15 @@ internal actual fun SystemAppearance(isDark: Boolean) {
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
-            val window = (view.context as Activity).window
+            val window = (view.context as ComponentActivity).window
             window.navigationBarColor = Color.Transparent.toArgb()
             window.statusBarColor = Color.Transparent.toArgb()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 window.isNavigationBarContrastEnforced = false
+                window.isStatusBarContrastEnforced = false
             }
             WindowCompat.setDecorFitsSystemWindows(window, false)
+
             WindowCompat.getInsetsController(window, window.decorView).apply {
                 isAppearanceLightStatusBars = !isDark
                 isAppearanceLightNavigationBars = !isDark
