@@ -1,13 +1,22 @@
 package skdev.omsrings.mobile.presentation.base
 
-import androidx.lifecycle.ViewModel
+import androidx.compose.ui.graphics.vector.ImageVector
+import cafe.adriel.voyager.core.model.ScreenModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import org.jetbrains.compose.resources.StringResource
+import skdev.omsrings.mobile.utils.error.Error
+import skdev.omsrings.mobile.utils.error.toNotificationModel
+import skdev.omsrings.mobile.utils.notification.NotificationManager
+import skdev.omsrings.mobile.utils.notification.NotificationModel
+import skdev.omsrings.mobile.utils.notification.ToastType
 
-abstract class BaseViewModel<Effect, Event> : ViewModel() {
+abstract class BaseScreenModel<Effect, Event>(
+    private val notificationManager: NotificationManager
+) : ScreenModel {
     // A state flow that represents the updating state of the ViewModel.
     private val _updating = MutableStateFlow(false)
 
@@ -53,4 +62,32 @@ abstract class BaseViewModel<Effect, Event> : ViewModel() {
      * @param event The event to be handled.
      */
     abstract fun onEvent(event: Event)
+
+    /**
+     * Show toast notification.
+     *
+     * @param titleRes The title of the toast.
+     * @param messageRes The message of the toast.
+     * @param icon The icon of the toast.
+     * @param type The type of the toast, see [ToastType].
+     */
+    fun showToast(
+        titleRes: StringResource,
+        messageRes: StringResource,
+        icon: ImageVector,
+        type: ToastType = ToastType.Info
+    ) {
+        notificationManager.show(NotificationModel.Toast(titleRes, messageRes, icon, type))
+    }
+
+    /**
+     * Show error notification.
+     *
+     * @param error The error to be shown, see [toNotificationModel].
+     */
+    fun showErrorToast(
+        error: Error
+    ) {
+        notificationManager.show(error.toNotificationModel())
+    }
 }

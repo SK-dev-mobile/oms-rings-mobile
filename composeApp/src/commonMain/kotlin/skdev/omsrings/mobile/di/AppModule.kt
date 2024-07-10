@@ -4,29 +4,30 @@ import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
-import skdev.omsrings.mobile.ui.components.error.ErrorPresenter
-import skdev.omsrings.mobile.ui.components.error.ToastErrorPresenter
-import skdev.omsrings.mobile.utils.message.MessageCollector
-import skdev.omsrings.mobile.utils.message.ErrorObserver
+import skdev.omsrings.mobile.presentation.feature_main.MainScreenModel
+import skdev.omsrings.mobile.utils.notification.NotificationManager
 
 private val data = module {
     // Add there data DI defenitions
 
-    single<ErrorPresenter> {
-        ToastErrorPresenter()
-    }
+}
 
-    single<MessageCollector> {
-        object : MessageCollector {
-            override val observers: List<ErrorObserver>
-                get() = listOf(get<ErrorPresenter>())
-        }
+private val utils = module {
+    // Add there utils defenitions
+
+    single<NotificationManager> {
+        NotificationManager()
     }
 }
 
 private val viewModels = module {
     // Add there ViewModels DI defenitions
 
+    factory<MainScreenModel> {
+        MainScreenModel(
+            notificationManager = get()
+        )
+    }
 }
 
 private val useCases = module {
@@ -34,7 +35,7 @@ private val useCases = module {
 
 }
 
-private fun commonModule() = listOf(data, viewModels, useCases)
+private fun commonModule() = listOf(data, utils, viewModels, useCases)
 
 fun initKoin(
     appDeclaration: KoinAppDeclaration = {},

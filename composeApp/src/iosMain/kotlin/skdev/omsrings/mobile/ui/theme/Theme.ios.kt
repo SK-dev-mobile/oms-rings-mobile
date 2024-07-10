@@ -1,4 +1,4 @@
-package skdev.omsrings.mobile.theme
+package skdev.omsrings.mobile.ui.theme
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect

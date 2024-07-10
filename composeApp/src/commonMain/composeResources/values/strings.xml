@@ -4,4 +4,22 @@
     <string name="run">Run</string>
     <string name="stop">Stop</string>
     <string name="theme">Theme</string>
+    <string  name="back">Назад</string>
+
+    <!-- in-app notifications -->
+    <string name="error">Ошибка</string>
+    <string name="unknown_error">Неизвестная ошибка</string>
+    <string name="retry_later">Попробуйте позже</string>
+
+    <string name="request_timeout">Время запроса истекло</string>
+    <string name="no_internet">Нет доступа к Интернету</string>
+    <string name="unauthorized">Не авторизован</string>
+    <string name="server_error">Ошибка сервера</string>
+    <string name="serialization">Ошибка обработки ответа</string>
+    <string name="read_error">Ошибка чтения данных</string>
+    <string name="no_data">Данных не найдено</string>
+    <string name="write_error">Ошибка записи данных</string>
+    <string name="user_not_found">Пользователь не найден</string>
+    <string name="user_not_loggined_in">Не выполнен вход в систему</string>
+
 </resources>

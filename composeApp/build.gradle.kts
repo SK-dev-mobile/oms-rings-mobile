@@ -46,15 +46,11 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
-            // AndroidX lifecycle
-            implementation(libs.androidx.lifecycle.runtime.compose)
-            implementation(libs.androidx.lifecycle.viewmodel.compose)
-
             // Navigation
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.koin)
             implementation(libs.voyager.transitions)
-            implementation(libs.voyager.lifecycleKMP)
+            implementation(libs.voyager.screenmodel)
 
             // Logging
             implementation(libs.napier)
