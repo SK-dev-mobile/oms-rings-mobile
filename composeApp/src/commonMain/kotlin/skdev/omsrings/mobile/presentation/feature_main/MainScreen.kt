@@ -1,8 +1,6 @@
 package skdev.omsrings.mobile.presentation.feature_main
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -17,10 +15,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.koin.koinScreenModel
+import io.github.aakira.napier.Napier
 import skdev.omsrings.mobile.presentation.base.BaseScreen
+import skdev.omsrings.mobile.ui.components.fields.PhoneField
 
 object MainScreen : BaseScreen("main_screen") {
 
@@ -77,7 +80,6 @@ object MainScreen : BaseScreen("main_screen") {
     private fun MainScreenContent(
         modifier: Modifier = Modifier
     ) {
-
         Column(
             modifier = modifier
         ) {

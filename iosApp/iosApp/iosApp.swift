@@ -5,6 +5,10 @@ import ComposeApp
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
+    init() {
+        KoinDIKt.doInitKoin(appDeclaration: {_ in })
+    }
+
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?

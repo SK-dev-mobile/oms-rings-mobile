@@ -5,6 +5,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import io.github.aakira.napier.DebugAntilog
+import io.github.aakira.napier.Napier
 import org.koin.android.ext.koin.androidContext
 import org.koin.compose.KoinContext
 import skdev.omsrings.mobile.app.App
@@ -16,6 +18,7 @@ class AndroidApp : Application() {
         initKoin {
             androidContext(this@AndroidApp)
         }
+        Napier.base(DebugAntilog())
     }
 }
 
