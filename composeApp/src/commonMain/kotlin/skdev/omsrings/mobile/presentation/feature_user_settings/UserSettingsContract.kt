@@ -15,9 +15,5 @@ class UserSettingsContract {
     }
 
     sealed interface Effect {
-        data class ShowClearOrdersConfirmation(val clearedCount: Int) : Effect
-        data object ShowClearOrdersSuccess : Effect
-        data object ShowClearOrdersError : Effect
-        data class ShowError(val message: String) : Effect
     }
 }

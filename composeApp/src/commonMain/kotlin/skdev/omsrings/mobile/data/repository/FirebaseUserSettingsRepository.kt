@@ -43,6 +43,7 @@ class FirebaseUserSettingsRepository(
     override suspend fun clearOldOrders(): DataResult<Int, DataError> {
         // Implement the logic to clear old orders
         // This is a placeholder implementation
+        // TODO: Implement the logic to clear old orders
         return DataResult.success(0)
     }
 
@@ -74,6 +75,8 @@ class FirebaseUserSettingsRepository(
     }
 
     private fun mapExceptionToDataError(e: Exception): DataError {
+        // TODO: Дополнить функцию mapExceptionToDataError для обработки различных типов исключений
+
         return when (e) {
 //            is java.net.SocketTimeoutException -> DataError.Network.REQUEST_TIMEOUT
 //            is java.io.IOException -> DataError.Network.NO_INTERNET
