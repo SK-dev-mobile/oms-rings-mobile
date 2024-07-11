@@ -29,7 +29,7 @@ fun RingsTopAppBar(
     actions: @Composable RowScope.() -> Unit = {},
     enabledNavigation: Boolean = true,
     navigationIcon: ImageVector = Icons.Default.ChevronLeft,
-    onNavigationClicked: () -> Unit,
+    onNavigationClicked: () -> Unit = {},
     bottomContent: @Composable () -> Unit = {}
 ) {
     Column(

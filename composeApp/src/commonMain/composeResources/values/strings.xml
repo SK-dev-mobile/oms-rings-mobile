@@ -13,7 +13,7 @@
 
     <string name="request_timeout">Время запроса истекло</string>
     <string name="no_internet">Нет доступа к Интернету</string>
-    <string name="unauthorized">Не авторизован</string>
+    <string name="unauthorized">Пользователь не авторизован</string>
     <string name="server_error">Ошибка сервера</string>
     <string name="serialization">Ошибка обработки ответа</string>
     <string name="read_error">Ошибка чтения данных</string>
@@ -21,6 +21,7 @@
     <string name="write_error">Ошибка записи данных</string>
     <string name="user_not_found">Пользователь не найден</string>
     <string name="user_not_loggined_in">Не выполнен вход в систему</string>
+    <string name="user_already_exists">Пользователь уже существует</string>
 
     <!-- FAQ Screen -->
     <string name="faq_header">FAQ: ЖБИ Кольца</string>
@@ -41,5 +42,7 @@
     <string name="user_settings_show_cleared_orders">Показывать списанные заказы</string>
     <string name="user_settings_clear_orders">Очистить</string>
     <string name="user_settings_clear_orders_description">Нажмите кнопку ниже, чтобы удалить данные о составах заявок. Будут удалены все сохраненные заявки, кроме тех, что были сделаны за последние 3 месяца.</string>
+    <string name="clear_cancelled_orders_title">Списанные заказы очищены</string>
+    <string name="clear_cancelled_orders_message">Все списанные заказы старше 3 месяцев были успешно удалены из системы.</string>
 
 </resources>

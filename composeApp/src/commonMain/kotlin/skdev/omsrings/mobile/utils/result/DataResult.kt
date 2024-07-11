@@ -1,4 +1,4 @@
-package skdev.omsrings.mobile.data.utils
+package skdev.omsrings.mobile.utils.result
 
 import skdev.omsrings.mobile.utils.error.Error
 

@@ -5,6 +5,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.google.firebase.Firebase
+import com.google.firebase.initialize
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 import org.koin.android.ext.koin.androidContext
@@ -18,6 +20,7 @@ class AndroidApp : Application() {
         initKoin {
             androidContext(this@AndroidApp)
         }
+        Firebase.initialize(this@AndroidApp)
         Napier.base(DebugAntilog())
     }
 }
