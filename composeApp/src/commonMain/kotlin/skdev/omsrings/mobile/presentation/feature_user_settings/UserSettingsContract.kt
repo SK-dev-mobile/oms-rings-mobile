@@ -8,16 +8,16 @@ class UserSettingsContract {
     )
 
     sealed interface Event {
-        object ToggleNotifications : Event
-        object ToggleShowClearedOrders : Event
-        object ClearOrders : Event
-        object LoadSettings : Event
+        data object ToggleNotifications : Event
+        data object ToggleShowClearedOrders : Event
+        data object ClearOrders : Event
+        data object LoadSettings : Event
     }
 
     sealed interface Effect {
-        object ShowClearOrdersConfirmation : Effect
-        object ShowClearOrdersSuccess : Effect
-        object ShowClearOrdersError : Effect
+        data class ShowClearOrdersConfirmation(val clearedCount: Int) : Effect
+        data object ShowClearOrdersSuccess : Effect
+        data object ShowClearOrdersError : Effect
         data class ShowError(val message: String) : Effect
     }
 }

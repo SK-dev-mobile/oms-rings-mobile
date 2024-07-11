@@ -6,4 +6,11 @@ import kotlinx.serialization.Serializable
 data class UserSettings(
     val receiveNotifications: Boolean,
     val showClearedOrders: Boolean
-)
+) {
+    companion object {
+        val DEFAULT = UserSettings(
+            receiveNotifications = true,
+            showClearedOrders = false
+        )
+    }
+}

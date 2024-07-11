@@ -35,49 +35,41 @@ class UserSettingsModel(
     }
 
     private fun toggleNotifications() {
-        _state.update { it.copy(receiveNotifications = !it.receiveNotifications) }
-        updateSettings()
+        screenModelScope.launch {
+            val newValue = !state.value.receiveNotifications
+            userSettingsRepository.updateNotificationSettings(newValue)
+            _state.update { it.copy(receiveNotifications = newValue) }
+        }
     }
 
     private fun toggleShowClearedOrders() {
-        _state.update { it.copy(showClearedOrders = !it.showClearedOrders) }
-        updateSettings()
+        screenModelScope.launch {
+            val newValue = !state.value.showClearedOrders
+            userSettingsRepository.updateShowClearedOrdersSettings(newValue)
+            _state.update { it.copy(showClearedOrders = newValue) }
+        }
     }
 
     private fun clearOrders() {
-        // Implement order clearing logic here
-        // This is where you'd call a repository method to clear orders
-        // For now, we'll just show a confirmation effect
         screenModelScope.launch {
-            launchEffect(Effect.ShowClearOrdersConfirmation)
+            val clearedCount = userSettingsRepository.clearOldOrders()
+            launchEffect(Effect.ShowClearOrdersConfirmation(clearedCount))
         }
     }
 
     private fun loadSettings() {
-        // In a real app, you'd load settings from a repository
-        // For now, we'll just simulate loading
         _state.update { it.copy(isLoading = true) }
         screenModelScope.launch {
-            val userSettings = userSettingsRepository.getUserSettings()
-
+            val settings = userSettingsRepository.getUserSettings()
             _state.update {
                 it.copy(
                     isLoading = false,
-                    receiveNotifications = userSettings.receiveNotifications,
-                    showClearedOrders = userSettings.showClearedOrders
+                    receiveNotifications = settings.receiveNotifications,
+                    showClearedOrders = settings.showClearedOrders
                 )
             }
         }
-
-
     }
-
-    private fun updateSettings() {
-        // In a real app, you'd update settings in a repository
-        // For now, we'll just simulate updating
-        // You could also update the NotificationManager here if needed
-    }
-
 }
 
 
