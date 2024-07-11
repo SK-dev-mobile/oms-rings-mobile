@@ -14,7 +14,7 @@ import skdev.omsrings.mobile.utils.notification.NotificationManager
 import skdev.omsrings.mobile.utils.notification.NotificationModel
 import skdev.omsrings.mobile.utils.notification.ToastType
 
-abstract class BaseScreenModel<Effect, Event>(
+abstract class BaseScreenModel<Event, Effect>(
     private val notificationManager: NotificationManager
 ) : ScreenModel {
     // A state flow that represents the updating state of the ViewModel.

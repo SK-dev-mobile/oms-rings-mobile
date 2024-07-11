@@ -92,7 +92,7 @@ kotlin {
             implementation(libs.androidx.datastorePreferences)
 
             // Firebase Android
-            implementation(libs.firebase.bom)
+            implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.firebase.auth.android)
             implementation(libs.firebase.firestore.android)
             implementation(libs.firebase.messaging.android)
