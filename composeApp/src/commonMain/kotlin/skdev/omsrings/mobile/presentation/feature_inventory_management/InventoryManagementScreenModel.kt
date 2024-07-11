@@ -4,6 +4,7 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.cant_be_blank
 import org.koin.core.component.getScopeId
@@ -14,6 +15,7 @@ import skdev.omsrings.mobile.presentation.feature_inventory_management.Inventory
 import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenContract.InventoryState
 import skdev.omsrings.mobile.utils.fields.FormField
 import skdev.omsrings.mobile.utils.fields.flowBlock
+import skdev.omsrings.mobile.utils.fields.validateAll
 import skdev.omsrings.mobile.utils.fields.validators.ValidationResult
 import skdev.omsrings.mobile.utils.fields.validators.notBlank
 import skdev.omsrings.mobile.utils.notification.NotificationManager
@@ -47,7 +49,19 @@ class InventoryManagementScreenModel(
     }
 
     private fun addItem() {
-        TODO("DRY")
+        screenModelScope.launch {
+            val currentState = _state.value
+            if (validateAll(currentState.newItemField)) {
+                val newItem = InventoryItem(currentState.newItemField.data.value)
+                _state.update {
+                    it.copy(
+                        items = it.items + newItem,
+                        isAddingItem = false,
+                        newItemField = createNewItemField()
+                    )
+                }
+            }
+        }
     }
 
     private fun deleteItem(item: InventoryItem) {

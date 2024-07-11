@@ -11,7 +11,6 @@ import androidx.compose.runtime.getValue
 import omsringsmobile.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenContract
 import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenContract.Event
 import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenModel
 import skdev.omsrings.mobile.ui.components.fields.SupportingText
@@ -38,7 +37,7 @@ fun AddItemDialog(newItemField: FormField<String, StringResource>, screenModel: 
             )
         },
         confirmButton = {
-            Button(onClick = { /* screenModel.onEvent(Event.ConfirmAddItem) */ }) {
+            Button(onClick = { screenModel.onEvent(Event.AddItem) }) {
                 Text(stringResource(Res.string.add_item_dialog_add_button))
             }
         },
