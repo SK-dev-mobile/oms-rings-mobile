@@ -4,13 +4,13 @@ import skdev.omsrings.mobile.domain.model.InventoryItem
 
 object InventoryManagementContract {
 
-    data class State(
+    data class InventoryState(
         val items: List<InventoryItem> = emptyList()
     )
 
     sealed interface Event {
         data object AddItem : Event
-        data class DeleteItem(val item: InventoryItem)
+        data class DeleteItem(val item: InventoryItem) : Event
 
     }
 
