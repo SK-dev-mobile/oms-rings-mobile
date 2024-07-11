@@ -2,7 +2,7 @@ package skdev.omsrings.mobile.presentation.feature_inventory_management
 
 import org.jetbrains.compose.resources.StringResource
 import skdev.omsrings.mobile.domain.model.InventoryItem
-import skdev.thairestaurant.utils.fields.FormField
+import skdev.omsrings.mobile.utils.fields.FormField
 
 object InventoryManagementScreenContract {
 

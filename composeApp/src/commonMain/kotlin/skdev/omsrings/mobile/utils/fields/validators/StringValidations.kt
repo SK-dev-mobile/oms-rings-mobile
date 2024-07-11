@@ -9,7 +9,7 @@
  * Personal Email: stakancheck@gmail.com
  */
 
-package skdev.thairestaurant.utils.fields.validators
+package skdev.omsrings.mobile.utils.fields.validators
 
 import org.jetbrains.compose.resources.StringResource
 

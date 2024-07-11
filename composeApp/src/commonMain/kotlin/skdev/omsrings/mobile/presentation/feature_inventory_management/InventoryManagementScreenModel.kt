@@ -11,11 +11,11 @@ import skdev.omsrings.mobile.presentation.base.BaseScreenModel
 import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenContract.Effect
 import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenContract.Event
 import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenContract.InventoryState
+import skdev.omsrings.mobile.utils.fields.FormField
+import skdev.omsrings.mobile.utils.fields.flowBlock
+import skdev.omsrings.mobile.utils.fields.validators.ValidationResult
+import skdev.omsrings.mobile.utils.fields.validators.notBlank
 import skdev.omsrings.mobile.utils.notification.NotificationManager
-import skdev.thairestaurant.utils.fields.FormField
-import skdev.thairestaurant.utils.fields.flowBlock
-import skdev.thairestaurant.utils.fields.validators.ValidationResult
-import skdev.thairestaurant.utils.fields.validators.notBlank
 
 
 class InventoryManagementScreenModel(

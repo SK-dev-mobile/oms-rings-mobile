@@ -23,4 +23,6 @@ sealed interface DataError : Error {
         USER_NOT_FOUND,
         USER_NOT_LOGGINED_IN
     }
+
+
 }

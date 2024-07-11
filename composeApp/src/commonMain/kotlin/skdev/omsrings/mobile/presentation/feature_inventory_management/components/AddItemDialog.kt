@@ -14,8 +14,8 @@ import org.jetbrains.compose.resources.stringResource
 import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenModel
 import skdev.omsrings.mobile.ui.components.fields.SupportingText
 import skdev.omsrings.mobile.ui.components.fields.TextField
-import skdev.thairestaurant.utils.fields.FormField
-import skdev.thairestaurant.utils.fields.collectAsMutableState
+import skdev.omsrings.mobile.utils.fields.FormField
+import skdev.omsrings.mobile.utils.fields.collectAsMutableState
 
 
 @Composable
