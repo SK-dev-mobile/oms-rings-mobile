@@ -3,25 +3,21 @@ package skdev.omsrings.mobile.di
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.FirebaseAuth
 import dev.gitlive.firebase.auth.auth
+import dev.gitlive.firebase.firestore.firestore
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 import skdev.omsrings.mobile.data.repository.AuthRepositoryImpl
+import skdev.omsrings.mobile.data.repository.FirebaseUserSettingsRepository
 import skdev.omsrings.mobile.domain.repository.AuthRepository
+import skdev.omsrings.mobile.domain.repository.UserSettingsRepository
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignInWithLogin
 import skdev.omsrings.mobile.presentation.feature_auth.AuthScreenModel
 import skdev.omsrings.mobile.presentation.feature_main.MainScreenModel
 import skdev.omsrings.mobile.presentation.feature_user_settings.UserSettingsModel
 import skdev.omsrings.mobile.utils.notification.NotificationManager
 
-interface UserSettingsRepository {
-
-}
-
-class UserSettingsRepositoryImpl : UserSettingsRepository {
-
-}
 
 private val data = module {
     // Add there data DI defenitions
@@ -37,7 +33,10 @@ private val data = module {
     }
 
     single<UserSettingsRepository> {
-        UserSettingsRepositoryImpl()
+        FirebaseUserSettingsRepository(
+            userId = "1",
+            firestore = Firebase.firestore
+        )
     }
 
 }
