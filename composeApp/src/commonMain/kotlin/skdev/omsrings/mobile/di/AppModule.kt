@@ -3,15 +3,13 @@ package skdev.omsrings.mobile.di
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.FirebaseAuth
 import dev.gitlive.firebase.auth.auth
-import dev.gitlive.firebase.initialize
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 import skdev.omsrings.mobile.data.repository.AuthRepositoryImpl
 import skdev.omsrings.mobile.domain.repository.AuthRepository
-import skdev.omsrings.mobile.domain.usecase.feature_auth.SignInWithLogin
-import skdev.omsrings.mobile.presentation.feature_auth.AuthScreen
+import skdev.omsrings.mobile.domain.usecase.feature_auth.SignInWithLoginUseCase
 import skdev.omsrings.mobile.presentation.feature_auth.AuthScreenModel
 import skdev.omsrings.mobile.presentation.feature_main.MainScreenModel
 import skdev.omsrings.mobile.utils.notification.NotificationManager
@@ -57,8 +55,8 @@ private val viewModels = module {
 private val useCases = module {
     // Add there UseCases DI defenitions
 
-    factory<SignInWithLogin> {
-        SignInWithLogin(
+    factory<SignInWithLoginUseCase> {
+        SignInWithLoginUseCase(
             authRepository = get(),
             notificationManager = get()
         )

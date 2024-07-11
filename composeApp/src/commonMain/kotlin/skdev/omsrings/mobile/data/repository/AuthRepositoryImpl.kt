@@ -1,8 +1,7 @@
 package skdev.omsrings.mobile.data.repository
 
 import dev.gitlive.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.Dispatchers
-import skdev.omsrings.mobile.data.utils.DataResult
+import skdev.omsrings.mobile.utils.result.DataResult
 import skdev.omsrings.mobile.domain.repository.AuthRepository
 import skdev.omsrings.mobile.utils.error.DataError
 
