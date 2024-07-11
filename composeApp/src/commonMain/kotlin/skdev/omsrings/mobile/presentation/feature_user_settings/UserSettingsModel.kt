@@ -1,11 +1,14 @@
 package skdev.omsrings.mobile.presentation.feature_user_settings
 
 
+import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import skdev.omsrings.mobile.di.UserSettingsRepository
 import skdev.omsrings.mobile.presentation.base.BaseScreenModel
+import skdev.omsrings.mobile.presentation.feature_user_settings.UserSettingsContract.Effect
 import skdev.omsrings.mobile.presentation.feature_user_settings.UserSettingsContract.Event
 import skdev.omsrings.mobile.utils.notification.NotificationManager
 
@@ -13,7 +16,7 @@ import skdev.omsrings.mobile.utils.notification.NotificationManager
 class UserSettingsModel(
     notificationManager: NotificationManager,
     userSettingsRepository: UserSettingsRepository
-) : BaseScreenModel<Event, UserSettingsContract.Effect>(notificationManager) {
+) : BaseScreenModel<Event, Effect>(notificationManager) {
 
     private val _state = MutableStateFlow<UserSettingsContract.State>(UserSettingsContract.State())
     val state = _state.asStateFlow()
@@ -32,22 +35,30 @@ class UserSettingsModel(
     }
 
     private fun toggleNotifications() {
-        TODO("Not yet implemented")
+        _state.update { it.copy(receiveNotifications = !it.receiveNotifications) }
+        updateSettings()
     }
 
     private fun toggleShowClearedOrders() {
-        TODO("Not yet implemented")
+        _state.update { it.copy(showClearedOrders = !it.showClearedOrders) }
+        updateSettings()
     }
 
     private fun clearOrders() {
-        TODO("Not yet implemented")
+        // Implement order clearing logic here
+        // This is where you'd call a repository method to clear orders
+        // For now, we'll just show a confirmation effect
+        screenModelScope.launch{
+            launchEffect(Effect.ShowClearOrdersConfirmation)
+        }
     }
 
     private fun loadSettings() {
+        // In a real app, you'd load settings from a repository
+        // For now, we'll just simulate loading
         _state.update { it.copy(isLoading = true) }
-
-        // TODO: Load settings from repository
-
+        // Simulating an API call
+        // In a real app, you'd use a coroutine and call a suspend function
         _state.update {
             it.copy(
                 isLoading = false,
@@ -59,7 +70,9 @@ class UserSettingsModel(
     }
 
     private fun updateSettings() {
-        TODO("Not yet implemented")
+        // In a real app, you'd update settings in a repository
+        // For now, we'll just simulate updating
+        // You could also update the NotificationManager here if needed
     }
 
 }

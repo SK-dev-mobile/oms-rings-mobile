@@ -10,7 +10,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.koin.koinScreenModel
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.user_settings_clear_orders
@@ -22,6 +21,7 @@ import org.jetbrains.compose.resources.stringResource
 import skdev.omsrings.mobile.presentation.base.BaseScreen
 import skdev.omsrings.mobile.presentation.feature_user_settings.UserSettingsContract.Event
 import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
+import skdev.omsrings.mobile.ui.theme.values.Dimens
 
 object UserSettingsScreen : BaseScreen("user_settings_screen") {
 
@@ -39,7 +39,7 @@ object UserSettingsScreen : BaseScreen("user_settings_screen") {
                     actions = {
                         Icon(
                             imageVector = Icons.Rounded.Settings,
-                            modifier = Modifier.padding(end = 16.dp),
+                            modifier = Modifier.padding(end = Dimens.spaceMedium),
                             contentDescription = stringResource(Res.string.user_settings_title)
                         )
                     }
@@ -50,23 +50,23 @@ object UserSettingsScreen : BaseScreen("user_settings_screen") {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .padding(16.dp)
+                    .padding(Dimens.spaceMedium)
             ) {
                 SettingItem(
                     title = stringResource(Res.string.user_settings_receive_notifications),
                     checked = state.receiveNotifications,
                     onCheckedChange = { screenModel.onEvent(Event.ToggleNotifications) },
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+                    modifier = Modifier.fillMaxWidth().padding(vertical = Dimens.spaceSmall)
                 )
 
                 SettingItem(
                     title = stringResource(Res.string.user_settings_show_cleared_orders),
                     checked = state.showClearedOrders,
                     onCheckedChange = { screenModel.onEvent(Event.ToggleShowClearedOrders) },
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+                    modifier = Modifier.fillMaxWidth().padding(vertical = Dimens.spaceSmall)
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(Dimens.spaceLarge))
 
                 ClearOrdersCard(
                     modifier = Modifier.fillMaxWidth(),
@@ -112,7 +112,7 @@ object UserSettingsScreen : BaseScreen("user_settings_screen") {
             )
         ) {
             Column(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(Dimens.spaceMedium),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Icon(
@@ -120,14 +120,14 @@ object UserSettingsScreen : BaseScreen("user_settings_screen") {
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(Dimens.spaceSmall))
                 Text(
                     text = stringResource(Res.string.user_settings_clear_orders_description),
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(Dimens.spaceMedium))
                 Button(
                     onClick = onClearClicked,
                     colors = ButtonDefaults.buttonColors(
@@ -137,9 +137,9 @@ object UserSettingsScreen : BaseScreen("user_settings_screen") {
                     Icon(
                         imageVector = Icons.Rounded.Delete,
                         contentDescription = null,
-                        modifier = Modifier.size(18.dp)
+                        modifier = Modifier.size(Dimens.spaceMedium)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(Dimens.spaceSmall))
                     Text(stringResource(Res.string.user_settings_clear_orders))
                 }
             }
