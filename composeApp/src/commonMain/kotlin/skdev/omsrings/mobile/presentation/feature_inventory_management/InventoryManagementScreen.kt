@@ -21,6 +21,8 @@ import omsringsmobile.composeapp.generated.resources.inventory_management_header
 import org.jetbrains.compose.resources.stringResource
 import skdev.omsrings.mobile.domain.model.InventoryItem
 import skdev.omsrings.mobile.presentation.base.BaseScreen
+import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenContract.Event
+import skdev.omsrings.mobile.presentation.feature_inventory_management.components.AddItemDialog
 import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
 import skdev.omsrings.mobile.ui.theme.values.Dimens
 
@@ -38,7 +40,7 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
                 )
             },
             floatingActionButton = {
-                FloatingActionButton(onClick = {/* handle screen model */ }) {
+                FloatingActionButton(onClick = { screenModel.onEvent(Event.ShowAddItemDialog) }) {
                     Icon(
                         Icons.Rounded.Add,
                         contentDescription = stringResource(Res.string.inventory_management_add_item)
@@ -61,8 +63,10 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
                     }
                 }
             }
+        }
 
-
+        if (state.isAddingItem) {
+            AddItemDialog(state.newItemField, screenModel)
         }
 
 
