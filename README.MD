@@ -90,7 +90,7 @@ TextField(
 
 ---
 
-# Best precties
+# Best practies
 
 ## Передача intents
 
