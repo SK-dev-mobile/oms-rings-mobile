@@ -5,6 +5,7 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.rounded.ArrowDropUp
@@ -100,7 +101,7 @@ private fun FAQList(
             .fillMaxSize()
             .padding(Dimens.spaceMedium)
     ) {
-        items(faqItems) { item ->
+        items(items = faqItems) { item ->
             ExpandableFAQCard(item)
             Spacer(modifier = Modifier.height(Dimens.spaceSmall))
         }

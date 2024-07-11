@@ -3,6 +3,7 @@ package skdev.omsrings.mobile.presentation.feature_user_settings
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import skdev.omsrings.mobile.di.UserSettingsRepository
 import skdev.omsrings.mobile.presentation.base.BaseScreenModel
 import skdev.omsrings.mobile.presentation.feature_user_settings.UserSettingsContract.Event
@@ -18,7 +19,7 @@ class UserSettingsModel(
     val state = _state.asStateFlow()
 
     init {
-//        onEvent(Event.LoadSettings)
+        onEvent(Event.LoadSettings)
     }
 
     override fun onEvent(event: Event) {
@@ -43,7 +44,18 @@ class UserSettingsModel(
     }
 
     private fun loadSettings() {
-        TODO("Not yet implemented")
+        _state.update { it.copy(isLoading = true) }
+
+        // TODO: Load settings from repository
+
+        _state.update {
+            it.copy(
+                isLoading = false,
+                receiveNotifications = true,
+                showClearedOrders = false
+            )
+        }
+
     }
 
     private fun updateSettings() {
