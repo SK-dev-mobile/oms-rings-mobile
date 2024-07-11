@@ -11,6 +11,7 @@ import omsringsmobile.composeapp.generated.resources.serialization
 import omsringsmobile.composeapp.generated.resources.server_error
 import omsringsmobile.composeapp.generated.resources.unauthorized
 import omsringsmobile.composeapp.generated.resources.unknown_error
+import omsringsmobile.composeapp.generated.resources.user_already_exists
 import omsringsmobile.composeapp.generated.resources.user_not_found
 import omsringsmobile.composeapp.generated.resources.user_not_loggined_in
 import omsringsmobile.composeapp.generated.resources.write_error
@@ -57,6 +58,10 @@ fun Error.toNotificationModel(): NotificationModel {
         DataError.Local.USER_NOT_LOGGINED_IN -> NotificationModel.Error(
             titleRes = Res.string.error,
             messageRes = Res.string.user_not_loggined_in
+        )
+        DataError.Auth.USER_ALREADY_EXISTS -> NotificationModel.Error(
+            titleRes = Res.string.error,
+            messageRes = Res.string.user_already_exists
         )
         else -> NotificationModel.Error(
             titleRes = Res.string.unknown_error,

@@ -1,10 +1,13 @@
 package skdev.omsrings.mobile.presentation.feature_auth
 
-class AuthScreenContract {
+object AuthScreenContract {
     sealed interface Event {
-
+        object OnStart : Event
+        object OnDispose : Event
+        object OnSignUpClicked : Event
     }
-    sealed interface Effect {
 
+    sealed interface Effect {
+        object NavigateToDetail : Effect
     }
 }

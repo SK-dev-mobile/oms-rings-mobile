@@ -1,5 +1,6 @@
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import com.android.build.api.dsl.ManagedVirtualDevice
+import org.gradle.kotlin.dsl.support.kotlinCompilerOptions
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
@@ -134,6 +135,4 @@ android {
 }
 
 buildConfig {
-    // BuildConfig configuration here.
-    // https://github.com/gmazzo/gradle-buildconfig-plugin#usage-in-kts
 }

@@ -10,6 +10,12 @@ sealed interface DataError : Error {
         UNKNOWN,
     }
 
+    enum class Auth : DataError {
+        USER_ALREADY_EXISTS,
+        WRONG_CREDITIALS,
+        UNKNOWN,
+    }
+
     enum class Local : DataError {
         READ_ERROR,
         NO_DATA,

@@ -1,7 +1,6 @@
 package skdev.omsrings.mobile.di
 
 import dev.gitlive.firebase.Firebase
-import dev.gitlive.firebase.auth.FirebaseAuth
 import dev.gitlive.firebase.auth.auth
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -9,7 +8,8 @@ import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 import skdev.omsrings.mobile.data.repository.AuthRepositoryImpl
 import skdev.omsrings.mobile.domain.repository.AuthRepository
-import skdev.omsrings.mobile.domain.usecase.feature_auth.SignInWithLoginUseCase
+import skdev.omsrings.mobile.domain.usecase.feature_auth.SignInUserUseCase
+import skdev.omsrings.mobile.domain.usecase.feature_auth.SignUpUserUseCase
 import skdev.omsrings.mobile.presentation.feature_auth.AuthScreenModel
 import skdev.omsrings.mobile.presentation.feature_main.MainScreenModel
 import skdev.omsrings.mobile.utils.notification.NotificationManager
@@ -17,13 +17,10 @@ import skdev.omsrings.mobile.utils.notification.NotificationManager
 private val data = module {
     // Add there data DI defenitions
 
-    single<FirebaseAuth> {
-        Firebase.auth
-    }
 
     single<AuthRepository> {
         AuthRepositoryImpl(
-            firebaseAuth = get()
+            firebaseAuth = Firebase.auth
         )
     }
 }
@@ -47,7 +44,8 @@ private val viewModels = module {
 
     factory<AuthScreenModel> {
         AuthScreenModel(
-            notificationManager = get()
+            notificationManager = get(),
+            signUpUserUseCase = get()
         )
     }
 }
@@ -55,8 +53,15 @@ private val viewModels = module {
 private val useCases = module {
     // Add there UseCases DI defenitions
 
-    factory<SignInWithLoginUseCase> {
-        SignInWithLoginUseCase(
+    factory<SignInUserUseCase> {
+        SignInUserUseCase(
+            authRepository = get(),
+            notificationManager = get()
+        )
+    }
+
+    factory<SignUpUserUseCase> {
+        SignUpUserUseCase(
             authRepository = get(),
             notificationManager = get()
         )
