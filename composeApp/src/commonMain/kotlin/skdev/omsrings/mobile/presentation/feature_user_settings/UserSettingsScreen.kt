@@ -6,21 +6,19 @@ import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import cafe.adriel.voyager.koin.koinScreenModel
-import omsringsmobile.composeapp.generated.resources.Res
-import omsringsmobile.composeapp.generated.resources.user_settings_clear_orders
-import omsringsmobile.composeapp.generated.resources.user_settings_clear_orders_description
-import omsringsmobile.composeapp.generated.resources.user_settings_receive_notifications
-import omsringsmobile.composeapp.generated.resources.user_settings_show_cleared_orders
-import omsringsmobile.composeapp.generated.resources.user_settings_title
+import omsringsmobile.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import skdev.omsrings.mobile.presentation.base.BaseScreen
 import skdev.omsrings.mobile.presentation.feature_user_settings.UserSettingsContract.Event
 import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
+import skdev.omsrings.mobile.ui.components.helpers.Spacer
 import skdev.omsrings.mobile.ui.theme.values.Dimens
 
 object UserSettingsScreen : BaseScreen("user_settings_screen") {
@@ -66,7 +64,7 @@ object UserSettingsScreen : BaseScreen("user_settings_screen") {
                     modifier = Modifier.fillMaxWidth().padding(vertical = Dimens.spaceSmall)
                 )
 
-                Spacer(modifier = Modifier.height(Dimens.spaceLarge))
+                Spacer(Dimens.spaceLarge)
 
                 ClearOrdersCard(
                     modifier = Modifier.fillMaxWidth(),
@@ -120,14 +118,14 @@ object UserSettingsScreen : BaseScreen("user_settings_screen") {
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary
                 )
-                Spacer(modifier = Modifier.height(Dimens.spaceSmall))
+                Spacer(Dimens.spaceSmall)
                 Text(
                     text = stringResource(Res.string.user_settings_clear_orders_description),
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
-                Spacer(modifier = Modifier.height(Dimens.spaceMedium))
+                Spacer(Dimens.spaceMedium)
                 Button(
                     onClick = onClearClicked,
                     colors = ButtonDefaults.buttonColors(
@@ -139,7 +137,7 @@ object UserSettingsScreen : BaseScreen("user_settings_screen") {
                         contentDescription = null,
                         modifier = Modifier.size(Dimens.spaceMedium)
                     )
-                    Spacer(modifier = Modifier.width(Dimens.spaceSmall))
+                    Spacer(Dimens.spaceSmall)
                     Text(stringResource(Res.string.user_settings_clear_orders))
                 }
             }

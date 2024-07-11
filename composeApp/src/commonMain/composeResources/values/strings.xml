@@ -35,7 +35,7 @@
     <string name="faq_rescheduled_order_description">• Выберите заказ и удерживайте для вызова меню\n• Доступно для статусов "НОВЫЙ" и "ВЫПОЛНЕННЫЙ"\n• При переносе исходный заказ получает статус "СПИСАННЫЙ"\n• В описание добавляется пометка о переносе и новая дата</string>
     <string name="faq_expand">Развёрнуто</string>
     <string name="faq_collapse">Свёрнуто</string>
-
+    
     <!-- UserSettingsScreen -->
     <string name="user_settings_title">Настройки</string>
     <string name="user_settings_receive_notifications">Получать уведомления</string>
