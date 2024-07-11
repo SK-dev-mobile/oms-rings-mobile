@@ -38,7 +38,13 @@ import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
 import skdev.omsrings.mobile.ui.components.helpers.Spacer
 import skdev.omsrings.mobile.ui.theme.values.Dimens
 
-@OptIn(ExperimentalResourceApi::class)
+data class FAQItem(
+    val title: String,
+    val description: String,
+    val color: Color,
+    val icon: ImageVector
+)
+
 object FAQScreen : BaseScreen("faq_screen") {
     @Composable
     override fun MainContent() {
@@ -46,7 +52,6 @@ object FAQScreen : BaseScreen("faq_screen") {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun FAQScreenContent() {
 
@@ -109,7 +114,6 @@ private fun FAQList(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ExpandableFAQCard(faqItem: FAQItem) {
     var expanded by remember { mutableStateOf(true) }
@@ -169,9 +173,4 @@ private fun FAQCardHeader(faqItem: FAQItem, expanded: Boolean) {
     }
 }
 
-data class FAQItem(
-    val title: String,
-    val description: String,
-    val color: Color,
-    val icon: ImageVector
-)
+

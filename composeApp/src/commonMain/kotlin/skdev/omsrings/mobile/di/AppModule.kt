@@ -11,6 +11,7 @@ import skdev.omsrings.mobile.domain.repository.AuthRepository
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignInUserUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignUpUserUseCase
 import skdev.omsrings.mobile.presentation.feature_auth.AuthScreenModel
+import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenModel
 import skdev.omsrings.mobile.presentation.feature_main.MainScreenModel
 import skdev.omsrings.mobile.utils.notification.NotificationManager
 
@@ -48,6 +49,9 @@ private val viewModels = module {
             signUpUserUseCase = get()
         )
     }
+
+    // Feature Inventory Management
+    factory<InventoryManagementScreenModel> { InventoryManagementScreenModel(notificationManager = get()) }
 }
 
 private val useCases = module {

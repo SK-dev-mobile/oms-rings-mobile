@@ -2,7 +2,7 @@ package skdev.omsrings.mobile.presentation.feature_inventory_management
 
 import skdev.omsrings.mobile.domain.model.InventoryItem
 
-object InventoryManagementContract {
+object InventoryManagementScreenContract {
 
     data class InventoryState(
         val items: List<InventoryItem> = emptyList()
