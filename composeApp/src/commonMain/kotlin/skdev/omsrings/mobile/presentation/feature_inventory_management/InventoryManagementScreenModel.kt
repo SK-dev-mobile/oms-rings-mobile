@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.cant_be_blank
+import org.koin.core.component.getScopeId
 import skdev.omsrings.mobile.domain.model.InventoryItem
 import skdev.omsrings.mobile.presentation.base.BaseScreenModel
 import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenContract.Effect
@@ -23,26 +24,25 @@ class InventoryManagementScreenModel(
 ) : BaseScreenModel<Event, Effect>(notificationManager) {
 
 
-    private val _state = MutableStateFlow(
-        InventoryState(
-            newItemField = FormField(
-                scope = screenModelScope,
-                initialValue = "",
-                validation = flowBlock {
-                    ValidationResult.of(it) {
-                        notBlank(Res.string.cant_be_blank)
-                    }
-                }
-            )
-        )
-    )
+    private val _state = MutableStateFlow(InventoryState(newItemField = createNewItemField()))
     val state = _state.asStateFlow()
+
+    private fun createNewItemField() = FormField(
+        scope = screenModelScope,
+        initialValue = "",
+        validation = flowBlock {
+            ValidationResult.of(it) {
+                notBlank(Res.string.cant_be_blank)
+            }
+        }
+    )
 
     override fun onEvent(event: Event) {
         when (event) {
             is Event.AddItem -> addItem()
             is Event.DeleteItem -> deleteItem(event.item)
-            Event.ShowAddItemDialog -> showAddItemDialog()
+            is Event.ShowAddItemDialog -> showAddItemDialog()
+            is Event.HideAddItemDialog -> hideAddItemDialog()
         }
     }
 
@@ -56,5 +56,14 @@ class InventoryManagementScreenModel(
 
     private fun showAddItemDialog() {
         _state.update { it.copy(isAddingItem = true) }
+    }
+
+    private fun hideAddItemDialog() {
+        _state.update {
+            it.copy(
+                isAddingItem = false,
+                newItemField = createNewItemField()
+            )
+        }
     }
 }

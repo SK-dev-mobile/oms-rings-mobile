@@ -18,6 +18,8 @@ object InventoryManagementScreenContract {
 
         data object ShowAddItemDialog : Event
 
+        data object HideAddItemDialog : Event
+
     }
 
     sealed interface Effect {

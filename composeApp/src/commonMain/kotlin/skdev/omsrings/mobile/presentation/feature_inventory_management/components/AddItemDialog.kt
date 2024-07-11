@@ -11,6 +11,8 @@ import androidx.compose.runtime.getValue
 import omsringsmobile.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
+import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenContract
+import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenContract.Event
 import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenModel
 import skdev.omsrings.mobile.ui.components.fields.SupportingText
 import skdev.omsrings.mobile.ui.components.fields.TextField
@@ -24,7 +26,7 @@ fun AddItemDialog(newItemField: FormField<String, StringResource>, screenModel: 
     val newItemError: StringResource? by newItemField.error.collectAsState()
 
     AlertDialog(
-        onDismissRequest = { /* screenModel.onEvent(Event.HideAddItemDialog) */ },
+        onDismissRequest = { screenModel.onEvent(Event.HideAddItemDialog) },
         title = { Text(stringResource(Res.string.add_item_dialog_title)) },
         text = {
             TextField(
@@ -41,7 +43,7 @@ fun AddItemDialog(newItemField: FormField<String, StringResource>, screenModel: 
             }
         },
         dismissButton = {
-            TextButton(onClick = { /*  screenModel.onEvent(Event.HideAddItemDialog) */ }) {
+            TextButton(onClick = { screenModel.onEvent(Event.HideAddItemDialog) }) {
                 Text(stringResource(Res.string.add_item_dialog_cancel_button))
             }
         }
