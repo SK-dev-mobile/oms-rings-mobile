@@ -1,8 +1,8 @@
 package skdev.omsrings.mobile.presentation.feature_inventory_management
 
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Delete
@@ -12,9 +12,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import cafe.adriel.voyager.koin.koinScreenModel
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.inventory_management_add_item
+import omsringsmobile.composeapp.generated.resources.inventory_management_emptry_items_message
 import omsringsmobile.composeapp.generated.resources.inventory_management_header
 import org.jetbrains.compose.resources.stringResource
 import skdev.omsrings.mobile.domain.model.InventoryItem
@@ -43,7 +45,23 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
                     )
                 }
             }
-        ) {
+        ) { paddingValues ->
+            if (state.items.isEmpty()) {
+                EmptyInventoryMessage(modifier = Modifier.padding(paddingValues))
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize().padding(paddingValues)
+                ) {
+                    items(state.items) { item ->
+                        InventoryItemRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            item = item,
+                            onDeleteClick = {/* handle delete */ }
+                        )
+                    }
+                }
+            }
+
 
         }
 
@@ -55,13 +73,12 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
 
 @Composable
 fun InventoryItemRow(
+    modifier: Modifier = Modifier,
     item: InventoryItem,
     onDeleteClick: () -> Unit
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(Dimens.spaceMedium),
+        modifier = modifier.padding(Dimens.spaceMedium),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -74,5 +91,20 @@ fun InventoryItemRow(
                 contentDescription = "Delete"
             )
         }
+    }
+}
+
+@Composable
+fun EmptyInventoryMessage(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = stringResource(Res.string.inventory_management_emptry_items_message),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+        )
     }
 }
