@@ -4,7 +4,7 @@
     <string name="run">Run</string>
     <string name="stop">Stop</string>
     <string name="theme">Theme</string>
-    <string  name="back">Назад</string>
+    <string name="back">Назад</string>
 
     <!-- in-app notifications -->
     <string name="error">Ошибка</string>
@@ -21,5 +21,18 @@
     <string name="write_error">Ошибка записи данных</string>
     <string name="user_not_found">Пользователь не найден</string>
     <string name="user_not_loggined_in">Не выполнен вход в систему</string>
+
+    <!-- FAQ Screen    -->
+    <string name="faq_header">FAQ: ЖБИ Кольца</string>
+    <string name="faq_new_order">НОВЫЙ ЗАКАЗ</string>
+    <string name="faq_new_order_description">• Можно редактировать\n• Учитывается в расчете итогов дня\n• Статус по умолчанию для всех новых заказов</string>
+    <string name="faq_completed_order">ВЫПОЛНЕННЫЙ ЗАКАЗ</string>
+    <string name="faq_completed_order_description">• Можно редактировать\n• Не учитывается в расчете итогов дня\n• Используйте для отметки завершенных заказов</string>
+    <string name="faq_cancelled_order">СПИСАННЫЙ ЗАКАЗ</string>
+    <string name="faq_cancelled_order_description">• Нельзя редактировать\n• Не учитывается в расчете итогов дня\n• Можно скрыть через настройку "Показывать списанные заказы"\n• Используйте для отмененных или ошибочных заказов</string>
+    <string name="faq_rescheduled_order">ПЕРЕНОС НА ДРУГУЮ ДАТУ</string>
+    <string name="faq_rescheduled_order_description">• Выберите заказ и удерживайте для вызова меню\n• Доступно для статусов "НОВЫЙ" и "ВЫПОЛНЕННЫЙ"\n• При переносе исходный заказ получает статус "СПИСАННЫЙ"\n• В описание добавляется пометка о переносе и новая дата</string>
+    <string name="faq_expand">Развёрнуто</string>
+    <string name="faq_collapse">Свёрнуто</string>
 
 </resources>
