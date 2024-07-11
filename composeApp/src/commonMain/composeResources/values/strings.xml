@@ -22,7 +22,7 @@
     <string name="user_not_found">Пользователь не найден</string>
     <string name="user_not_loggined_in">Не выполнен вход в систему</string>
 
-    <!-- FAQ Screen    -->
+    <!-- FAQ Screen -->
     <string name="faq_header">FAQ: ЖБИ Кольца</string>
     <string name="faq_new_order">НОВЫЙ ЗАКАЗ</string>
     <string name="faq_new_order_description">• Можно редактировать\n• Учитывается в расчете итогов дня\n• Статус по умолчанию для всех новых заказов</string>
@@ -34,5 +34,12 @@
     <string name="faq_rescheduled_order_description">• Выберите заказ и удерживайте для вызова меню\n• Доступно для статусов "НОВЫЙ" и "ВЫПОЛНЕННЫЙ"\n• При переносе исходный заказ получает статус "СПИСАННЫЙ"\n• В описание добавляется пометка о переносе и новая дата</string>
     <string name="faq_expand">Развёрнуто</string>
     <string name="faq_collapse">Свёрнуто</string>
+
+    <!-- UserSettingsScreen -->
+    <string name="user_settings_title">Настройки</string>
+    <string name="user_settings_receive_notifications">Получать уведомления</string>
+    <string name="user_settings_show_cleared_orders">Показывать списанные заказы</string>
+    <string name="user_settings_clear_orders">Очистить</string>
+    <string name="user_settings_clear_orders_description">Нажмите кнопку ниже, чтобы удалить данные о составах заявок. Будут удалены все сохраненные заявки, кроме тех, что были сделаны за последние 3 месяца.</string>
 
 </resources>
