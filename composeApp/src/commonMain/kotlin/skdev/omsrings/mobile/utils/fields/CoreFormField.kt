@@ -9,7 +9,7 @@
  * Personal Email: stakancheck@gmail.com
  */
 
-package skdev.thairestaurant.utils.fields
+package skdev.omsrings.mobile.utils.fields
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
