@@ -65,7 +65,7 @@ class InventoryManagementScreenModel(
     }
 
     private fun deleteItem(item: InventoryItem) {
-        TODO("GO GO!")
+        _state.update { it.copy(items = it.items - item) }
     }
 
     private fun showAddItemDialog() {

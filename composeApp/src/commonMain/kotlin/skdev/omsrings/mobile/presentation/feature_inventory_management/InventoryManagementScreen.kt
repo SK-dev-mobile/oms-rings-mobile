@@ -58,7 +58,7 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
                         InventoryItemRow(
                             modifier = Modifier.fillMaxWidth(),
                             item = item,
-                            onDeleteClick = {/* handle delete */ }
+                            onDeleteClick = { screenModel.onEvent(Event.DeleteItem(item)) }
                         )
                     }
                 }
