@@ -9,47 +9,86 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.rounded.ArrowDropUp
-import androidx.compose.material.icons.rounded.ArrowUpward
+import androidx.compose.material.icons.rounded.ArrowDropUp
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.LocalShipping
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import omsringsmobile.composeapp.generated.resources.Res
-import omsringsmobile.composeapp.generated.resources.theme
+import omsringsmobile.composeapp.generated.resources.faq_cancelled_order
+import omsringsmobile.composeapp.generated.resources.faq_cancelled_order_description
+import omsringsmobile.composeapp.generated.resources.faq_collapse
+import omsringsmobile.composeapp.generated.resources.faq_completed_order
+import omsringsmobile.composeapp.generated.resources.faq_completed_order_description
+import omsringsmobile.composeapp.generated.resources.faq_expand
+import omsringsmobile.composeapp.generated.resources.faq_header
+import omsringsmobile.composeapp.generated.resources.faq_new_order
+import omsringsmobile.composeapp.generated.resources.faq_new_order_description
+import omsringsmobile.composeapp.generated.resources.faq_rescheduled_order
+import omsringsmobile.composeapp.generated.resources.faq_rescheduled_order_description
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import skdev.omsrings.mobile.presentation.base.BaseScreen
 import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
 import skdev.omsrings.mobile.ui.components.helpers.Spacer
 import skdev.omsrings.mobile.ui.theme.values.Dimens
 
-
+@OptIn(ExperimentalResourceApi::class)
 object FAQScreen : BaseScreen("faq_screen") {
     @Composable
     override fun MainContent() {
         FAQScreenContent()
     }
+}
 
-    @Composable
-    private fun FAQScreenContent() {
+@OptIn(ExperimentalResourceApi::class)
+@Composable
+private fun FAQScreenContent() {
 
-        Scaffold(
-            topBar = {
-                RingsTopAppBar(
-                    title = stringResource(Res.string.theme),
-                    onNavigationClicked = { /* TODO: impl back navigation */ }
-                )
-            }
-        ) { innerPadding ->
-            FAQList(
-                faqItems = faqItemsData,
-                modifier = Modifier.padding(innerPadding)
+    val faqItems = listOf(
+        FAQItem(
+            title = stringResource(Res.string.faq_new_order),
+            description = stringResource(Res.string.faq_new_order_description),
+            color = MaterialTheme.colorScheme.primary,
+            icon = Icons.Rounded.LocalShipping
+        ),
+        FAQItem(
+            title = stringResource(Res.string.faq_completed_order),
+            description = stringResource(Res.string.faq_completed_order_description),
+            color = MaterialTheme.colorScheme.secondary,
+            icon = Icons.Rounded.LocalShipping
+        ),
+        FAQItem(
+            title = stringResource(Res.string.faq_cancelled_order),
+            description = stringResource(Res.string.faq_cancelled_order_description),
+            color = MaterialTheme.colorScheme.error,
+            icon = Icons.Rounded.LocalShipping
+        ),
+        FAQItem(
+            title = stringResource(Res.string.faq_rescheduled_order),
+            description = stringResource(Res.string.faq_rescheduled_order_description),
+            color = MaterialTheme.colorScheme.surface,
+            icon = Icons.Rounded.Info
+        )
+    )
+
+    Scaffold(
+        topBar = {
+            RingsTopAppBar(
+                title = stringResource(Res.string.faq_header),
+                onNavigationClicked = { /* TODO: impl back navigation */ }
             )
         }
+    ) { innerPadding ->
+        FAQList(
+            faqItems = faqItems,
+            modifier = Modifier.padding(innerPadding)
+        )
     }
 }
 
@@ -61,11 +100,11 @@ private fun FAQList(
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(Dimens.spaceMedium)
     ) {
         items(faqItems) { item ->
             ExpandableFAQCard(item)
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(Dimens.spaceSmall))
         }
     }
 }
@@ -90,7 +129,7 @@ private fun ExpandableFAQCard(faqItem: FAQItem) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(Dimens.spaceMedium)
         ) {
             FAQCardHeader(faqItem, expanded)
             if (expanded) {
@@ -108,7 +147,7 @@ private fun ExpandableFAQCard(faqItem: FAQItem) {
 private fun FAQCardHeader(faqItem: FAQItem, expanded: Boolean) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
-            imageVector = Icons.Rounded.LocalShipping,
+            imageVector = faqItem.icon,
             contentDescription = null,
             tint = faqItem.color,
         )
@@ -117,12 +156,15 @@ private fun FAQCardHeader(faqItem: FAQItem, expanded: Boolean) {
             text = faqItem.title,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = faqItem.color
+            color = faqItem.color,
+            modifier = Modifier.weight(1f)
         )
         Spacer(Dimens.spaceSmall)
         Icon(
             imageVector = if (expanded) Icons.Rounded.ArrowDropUp else Icons.Filled.ArrowDropDown,
-            contentDescription = if (expanded) "Collapse" else "Expand"
+            contentDescription = if (expanded) stringResource(Res.string.faq_expand) else stringResource(
+                Res.string.faq_collapse
+            )
         )
     }
 }
@@ -130,28 +172,6 @@ private fun FAQCardHeader(faqItem: FAQItem, expanded: Boolean) {
 data class FAQItem(
     val title: String,
     val description: String,
-    val color: Color
-)
-
-private val faqItemsData = listOf(
-    FAQItem(
-        title = "НОВЫЙ ЗАКАЗ",
-        description = "• Можно редактировать\n• Учитывается в расчете итогов дня\n• Статус по умолчанию для всех новых заказов",
-        color = Color(0xFF2196F3) // Blue
-    ),
-    FAQItem(
-        title = "ВЫПОЛНЕННЫЙ ЗАКАЗ",
-        description = "• Можно редактировать\n• Не учитывается в расчете итогов дня\n• Используйте для отметки завершенных заказов",
-        color = Color(0xFF4CAF50) // Green
-    ),
-    FAQItem(
-        title = "СПИСАННЫЙ ЗАКАЗ",
-        description = "• Нельзя редактировать\n• Не учитывается в расчете итогов дня\n• Можно скрыть через настройку \"Показывать списанные заказы\"\n• Используйте для отмененных или ошибочных заказов",
-        color = Color(0xFFF44336) // Red
-    ),
-    FAQItem(
-        title = "ПЕРЕНОС НА ДРУГУЮ ДАТУ",
-        description = "• Выберите заказ и удерживайте для вызова меню\n• Доступно для статусов \"НОВЫЙ\" и \"ВЫПОЛНЕННЫЙ\"\n• При переносе исходный заказ получает статус \"СПИСАННЫЙ\"\n• В описание добавляется пометка о переносе и новая дата",
-        color = Color(0xFF9C27B0) // Purple
-    )
+    val color: Color,
+    val icon: ImageVector
 )
