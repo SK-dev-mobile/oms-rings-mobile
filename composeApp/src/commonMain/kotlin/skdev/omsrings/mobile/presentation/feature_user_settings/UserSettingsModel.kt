@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import skdev.omsrings.mobile.di.UserSettingsRepository
+import skdev.omsrings.mobile.domain.repository.UserSettingsRepository
 import skdev.omsrings.mobile.presentation.base.BaseScreenModel
 import skdev.omsrings.mobile.presentation.feature_user_settings.UserSettingsContract.Effect
 import skdev.omsrings.mobile.presentation.feature_user_settings.UserSettingsContract.Event
@@ -15,7 +15,7 @@ import skdev.omsrings.mobile.utils.notification.NotificationManager
 
 class UserSettingsModel(
     notificationManager: NotificationManager,
-    userSettingsRepository: UserSettingsRepository
+    private val userSettingsRepository: UserSettingsRepository
 ) : BaseScreenModel<Event, Effect>(notificationManager) {
 
     private val _state = MutableStateFlow<UserSettingsContract.State>(UserSettingsContract.State())
@@ -48,7 +48,7 @@ class UserSettingsModel(
         // Implement order clearing logic here
         // This is where you'd call a repository method to clear orders
         // For now, we'll just show a confirmation effect
-        screenModelScope.launch{
+        screenModelScope.launch {
             launchEffect(Effect.ShowClearOrdersConfirmation)
         }
     }
@@ -57,15 +57,18 @@ class UserSettingsModel(
         // In a real app, you'd load settings from a repository
         // For now, we'll just simulate loading
         _state.update { it.copy(isLoading = true) }
-        // Simulating an API call
-        // In a real app, you'd use a coroutine and call a suspend function
-        _state.update {
-            it.copy(
-                isLoading = false,
-                receiveNotifications = true,
-                showClearedOrders = false
-            )
+        screenModelScope.launch {
+            val userSettings = userSettingsRepository.getUserSettings()
+
+            _state.update {
+                it.copy(
+                    isLoading = false,
+                    receiveNotifications = userSettings.receiveNotifications,
+                    showClearedOrders = userSettings.showClearedOrders
+                )
+            }
         }
+
 
     }
 
