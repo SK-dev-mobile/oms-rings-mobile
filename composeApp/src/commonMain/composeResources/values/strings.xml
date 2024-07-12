@@ -66,11 +66,13 @@
     <string name="add_item_dialog_add_button">Добавить</string>
     <string name="add_item_dialog_cancel_button">Отмена</string>
 
-    <!-- CreateFolderDialog -->
+    <!-- FolderDialog -->
     <string name="create_folder_dialog_title">Добавить папку</string>
     <string name="folder_name_label">Название папки</string>
     <string name="create_button_text">Создать</string>
     <string name="cancel_button_text">Отмена</string>
+    <string name="update_folder_dialog_title">Обновить папку</string>
+    <string name="update_button_text">Обновить</string>
 
     <!-- IncrementQuantity -->
     <string name="increment_quantity_dialog_title">Увеличение количества</string>

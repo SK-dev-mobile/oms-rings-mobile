@@ -30,14 +30,14 @@ class InventoryManagementScreenModel(
 
     private val _state = MutableStateFlow(
         InventoryState(
-            newFolderField = createNewFolderField(),
+            folderField = createFolderField(),
             newItemField = createNewItemField(),
             newQuantityField = createNewQuantityField()
         )
     )
     val state = _state.asStateFlow()
 
-    private fun createNewFolderField() = FormField(
+    private fun createFolderField() = FormField(
         scope = screenModelScope,
         initialValue = "",
         validation = flowBlock { value ->
@@ -78,32 +78,62 @@ class InventoryManagementScreenModel(
             is Event.RemoveInventoryItem -> removeInventoryItem(event.item)
             Event.DisplayAddInventoryItemDialog -> displayAddInventoryItemDialog()
             Event.CloseAddInventoryItemDialog -> closeAddInventoryItemDialog()
-            Event.CreateInventoryFolder -> createInventoryFolder()
-            is Event.RemoveInventoryFolder -> removeInventoryFolder(event.folder)
             is Event.SetSelectedInventoryFolder -> setSelectedInventoryFolder(event.folderId)
-            Event.DisplayCreateFolderDialog -> displayCreateFolderDialog()
-            Event.CloseCreateFolderDialog -> closeCreateFolderDialog()
             is Event.IncrementQuantityInventoryItem -> incrementQuantityInventoryItem(event.item)
             is Event.DisplayIncrementQuantityDialog -> displayIncrementQuantityDialog(event.item)
             Event.CloseIncrementQuantityDialog -> closeIncrementQuantityDialog()
+
+
+            // Folder
+            is Event.CreateOrUpdateFolder -> createOrUpdateFolder()
+            is Event.RemoveInventoryFolder -> removeInventoryFolder(event.folder)
+            is Event.DisplayFolderDialog -> displayFolderDialog(event.folder)
+            Event.CloseFolderDialog -> closeFolderDialog()
         }
     }
 
-
-    private fun createInventoryFolder() {
+    private fun createOrUpdateFolder() {
         screenModelScope.launch {
             val currentState = _state.value
-            if (validateAll(currentState.newFolderField)) {
-                val newFolder = Folder(name = currentState.newFolderField.data.value)
-                _state.update {
-                    it.copy(
-                        folders = it.folders + newFolder,
-                        newFolderField = createNewFolderField()
+            if (validateAll(currentState.folderField)) {
+                val folderName = currentState.folderField.data.value
+                _state.update { state ->
+                    val updatedFolders = if (state.folderToEdit != null) {
+                        state.folders.map { folder ->
+                            if (folder.id == state.folderToEdit.id) folder.copy(name = folderName) else folder
+                        }
+                    } else {
+                        state.folders + Folder(name = folderName)
+                    }
+                    state.copy(
+                        folders = updatedFolders,
+                        folderField = createFolderField(),
+                        folderToEdit = null,
+                        isFolderDialogVisible = false
                     )
                 }
             }
         }
-        closeCreateFolderDialog()
+    }
+
+    private fun displayFolderDialog(folder: Folder?) {
+        _state.update {
+            it.copy(
+                isFolderDialogVisible = true,
+                folderField = createFolderField().apply { data.value = folder?.name ?: "" },
+                folderToEdit = folder
+            )
+        }
+    }
+
+    private fun closeFolderDialog() {
+        _state.update {
+            it.copy(
+                isFolderDialogVisible = false,
+                folderField = createFolderField(),
+                folderToEdit = null
+            )
+        }
     }
 
     private fun removeInventoryFolder(folder: Folder) {
@@ -114,6 +144,7 @@ class InventoryManagementScreenModel(
             )
         }
     }
+
 
     private fun addInventoryItem() {
         screenModelScope.launch {
@@ -168,18 +199,6 @@ class InventoryManagementScreenModel(
         }
     }
 
-    private fun displayCreateFolderDialog() {
-        _state.update { it.copy(isAddingFolder = true) }
-    }
-
-    private fun closeCreateFolderDialog() {
-        _state.update {
-            it.copy(
-                isAddingFolder = false,
-                newFolderField = createNewFolderField()
-            )
-        }
-    }
 
     private fun displayIncrementQuantityDialog(item: InventoryItem) {
         _state.update { it.copy(isIncrementQuantity = true, selectedItem = item) }

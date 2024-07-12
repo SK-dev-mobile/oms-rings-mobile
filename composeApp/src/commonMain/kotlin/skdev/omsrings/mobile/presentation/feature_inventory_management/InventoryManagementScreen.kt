@@ -77,7 +77,7 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
                         if (state.selectedFolderId != null) {
                             screenModel.onEvent(Event.DisplayAddInventoryItemDialog)
                         } else {
-                            screenModel.onEvent(Event.DisplayCreateFolderDialog)
+                            screenModel.onEvent(Event.DisplayFolderDialog())
                         }
                     }
                 ) {
@@ -101,7 +101,7 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
                         folders = state.folders,
                         onFolderClick = { screenModel.onEvent(Event.SetSelectedInventoryFolder(it.id)) },
                         onDeleteFolder = { screenModel.onEvent(Event.RemoveInventoryFolder(it)) },
-                        onCreateFolderClick = { screenModel.onEvent(Event.DisplayCreateFolderDialog) }
+                        onCreateFolderClick = { screenModel.onEvent(Event.DisplayFolderDialog()) }
                     )
                 } else {
                     selectedFolder?.let { folder ->
@@ -116,20 +116,12 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
             }
         }
 
-        if (state.isAddingFolder) {
-            CreateFolderDialog(
-                inputField = state.newFolderField,
-                onConfirm = { screenModel.onEvent(Event.CreateInventoryFolder) },
-                onDismiss = { screenModel.onEvent(Event.CloseCreateFolderDialog) }
-            )
-            BaseInputDialog(
-                titleRes = Res.string.create_folder_dialog_title,
-                confirmTextRes = Res.string.create_button_text,
-                cancelTextRes = Res.string.cancel_button_text,
-                labelRes = Res.string.folder_name_label,
-                inputField = state.newFolderField,
-                onConfirm = { screenModel.onEvent(Event.CreateInventoryFolder) },
-                onDismiss = { screenModel.onEvent(Event.CloseCreateFolderDialog) }
+        if (state.isFolderDialogVisible) {
+            FolderDialog(
+                inputField = state.folderField,
+                isEditing = false,
+                onConfirm = { screenModel.onEvent(Event.CreateOrUpdateFolder) },
+                onDismiss = { screenModel.onEvent(Event.CloseFolderDialog) }
             )
         }
 
@@ -252,14 +244,15 @@ fun EmptyInventoryItemsMessage(onAddItemClick: () -> Unit) {
 
 
 @Composable
-fun CreateFolderDialog(
+fun FolderDialog(
     inputField: FormField<String, StringResource>,
+    isEditing: Boolean,
     onConfirm: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
     BaseInputDialog(
-        titleRes = Res.string.create_folder_dialog_title,
-        confirmTextRes = Res.string.create_button_text,
+        titleRes = if (isEditing) Res.string.update_folder_dialog_title else Res.string.create_folder_dialog_title,
+        confirmTextRes = if (isEditing) Res.string.update_button_text else Res.string.create_button_text,
         cancelTextRes = Res.string.cancel_button_text,
         labelRes = Res.string.folder_name_label,
         inputField = inputField,
