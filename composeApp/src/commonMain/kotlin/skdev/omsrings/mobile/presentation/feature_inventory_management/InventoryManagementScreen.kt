@@ -23,13 +23,11 @@ import skdev.omsrings.mobile.domain.model.InventoryItem
 import skdev.omsrings.mobile.presentation.base.BaseScreen
 import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenContract.Event
 import skdev.omsrings.mobile.presentation.feature_inventory_management.components.AddFolderDialog
-import skdev.omsrings.mobile.presentation.feature_inventory_management.components.AddItemDialog
+import skdev.omsrings.mobile.presentation.feature_inventory_management.components.AddInventoryItemDialog
 import skdev.omsrings.mobile.presentation.feature_inventory_management.components.EmptyStateMessage
 import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
 
 // TODO: сделать обновление экрана по swipe
-// TODO: сделать папки
-// TODO: сделать удаление папок
 // TODO: починить валидацию
 // TODO: навести красоту
 object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
@@ -111,7 +109,7 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
         }
 
         if (state.isAddingItem) {
-            AddItemDialog(state.newItemField, screenModel)
+            AddInventoryItemDialog(state.newItemField, screenModel)
         }
 
     }
@@ -247,6 +245,7 @@ fun InventoryItemList(
 @Composable
 fun EmptyFoldersMessage(onAddFolderClick: () -> Unit) {
     EmptyStateMessage(
+        modifier = Modifier.fillMaxSize(),
         icon = Icons.Rounded.Folder,
         title = stringResource(Res.string.empty_folders_title),
         description = stringResource(Res.string.empty_folders_description),
@@ -259,6 +258,7 @@ fun EmptyFoldersMessage(onAddFolderClick: () -> Unit) {
 @Composable
 fun EmptyInventoryItemsMessage(onAddItemClick: () -> Unit) {
     EmptyStateMessage(
+        modifier = Modifier.fillMaxSize(),
         icon = Icons.Rounded.Inventory,
         title = stringResource(Res.string.empty_inventory_items_title),
         description = stringResource(Res.string.empty_inventory_items_description),

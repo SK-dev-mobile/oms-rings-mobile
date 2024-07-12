@@ -97,8 +97,8 @@ class InventoryManagementScreenModel(
     private fun addInventoryItem() {
         screenModelScope.launch {
             val currentState = _state.value
-            if (validateAll(currentState.newItemField) && currentState.selectedFolderId != null) {
-                val newItem = InventoryItem(name = currentState.newItemField.data.value)
+            if (currentState.newItemField.validate() && currentState.selectedFolderId != null) {
+                val newItem = InventoryItem(name = currentState.newItemField.value())
                 _state.update { state ->
                     state.copy(
                         folders = state.folders.map { folder ->
@@ -111,9 +111,9 @@ class InventoryManagementScreenModel(
                         newItemField = createNewItemField()
                     )
                 }
+                closeAddInventoryItemDialog()
             }
         }
-        closeAddInventoryItemDialog()
     }
 
     private fun removeInventoryItem(item: InventoryItem) {

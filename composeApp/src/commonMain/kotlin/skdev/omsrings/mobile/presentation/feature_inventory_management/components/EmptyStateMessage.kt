@@ -1,6 +1,9 @@
 package skdev.omsrings.mobile.presentation.feature_inventory_management.components
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.Button
@@ -19,6 +22,7 @@ import skdev.omsrings.mobile.ui.theme.values.Dimens
 
 @Composable
 fun EmptyStateMessage(
+    modifier: Modifier = Modifier,
     icon: ImageVector,
     title: String,
     description: String,
@@ -26,7 +30,7 @@ fun EmptyStateMessage(
     onActionClick: () -> Unit
 ) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier,
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
