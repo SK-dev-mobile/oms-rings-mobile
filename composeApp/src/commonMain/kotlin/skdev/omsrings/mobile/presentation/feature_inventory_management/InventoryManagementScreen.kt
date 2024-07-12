@@ -22,7 +22,7 @@ import skdev.omsrings.mobile.domain.model.Folder
 import skdev.omsrings.mobile.domain.model.InventoryItem
 import skdev.omsrings.mobile.presentation.base.BaseScreen
 import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenContract.Event
-import skdev.omsrings.mobile.presentation.feature_inventory_management.components.AddFolderDialog
+import skdev.omsrings.mobile.presentation.feature_inventory_management.components.CreateFolderDialog
 import skdev.omsrings.mobile.presentation.feature_inventory_management.components.AddInventoryItemDialog
 import skdev.omsrings.mobile.presentation.feature_inventory_management.components.EmptyStateMessage
 import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
@@ -105,7 +105,7 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
         }
 
         if (state.isAddingFolder) {
-            AddFolderDialog(state.newFolderField, screenModel)
+            CreateFolderDialog(state.newFolderField, screenModel)
         }
 
         if (state.isAddingItem) {

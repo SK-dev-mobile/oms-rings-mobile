@@ -57,6 +57,12 @@
     <string name="add_item_dialog_add_button">Добавить</string>
     <string name="add_item_dialog_cancel_button">Отмена</string>
 
+    <!-- CreateFolderDialog -->
+    <string name="create_folder_dialog_title">Добавить папку</string>
+    <string name="folder_name_label">Название папки</string>
+    <string name="create_button_text">Создать</string>
+    <string name="cancel_button_text">Отмена</string>
+
     <!-- Empty Inventory Message -->
     <string name="empty_inventory_items_title">В этой папке пока нет товаров</string>
     <string name="empty_inventory_items_description">Добавьте новый товар, чтобы начать учет</string>
