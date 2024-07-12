@@ -66,8 +66,16 @@ class InventoryManagementScreenModel(
             is Event.SetSelectedInventoryFolder -> setSelectedInventoryFolder(event.folderId)
             Event.DisplayCreateFolderDialog -> displayCreateFolderDialog()
             Event.CloseCreateFolderDialog -> closeCreateFolderDialog()
+            is Event.IncrementQuanitityInventoryItem -> incrementQuanitityInventoryItem(
+                event.item,
+                event.additionalQuantity
+            )
+
+            is Event.DisplayIncrementQuantityDialog -> displayIncrementQuantityDialog(event.item)
+            Event.CloseIncrementQuantityDialog -> closeIncrementQuantityDialog()
         }
     }
+
 
     private fun createInventoryFolder() {
         screenModelScope.launch {
@@ -158,5 +166,30 @@ class InventoryManagementScreenModel(
                 newFolderField = createNewFolderField()
             )
         }
+    }
+
+    private fun displayIncrementQuantityDialog(item: InventoryItem) {
+        _state.update { it.copy(isUpdatingQuantity = true, selectedItem = item) }
+    }
+
+    private fun closeIncrementQuantityDialog() {
+        _state.update { it.copy(isUpdatingQuantity = false, selectedItem = null) }
+    }
+
+    private fun incrementQuanitityInventoryItem(item: InventoryItem, additionalQuantity: Int) {
+        _state.update { state ->
+            state.copy(
+                folders = state.folders.map { folder ->
+                    if (folder.id == state.selectedFolderId) {
+                        folder.copy(inventoryItems = folder.inventoryItems.map {
+                            if (it.id == item.id) it.incrementQuantity(additionalQuantity) else it
+                        })
+                    } else {
+                        folder
+                    }
+                }
+            )
+        }
+        closeIncrementQuantityDialog()
     }
 }

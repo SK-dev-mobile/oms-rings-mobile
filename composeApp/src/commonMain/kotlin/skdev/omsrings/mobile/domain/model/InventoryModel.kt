@@ -18,4 +18,7 @@ data class InventoryItem(
     val id: String = randomUUID(),
     val name: String,
     val stockQuantity: Int = 0
-)
+) {
+    fun incrementQuantity(amount: Int): InventoryItem =
+        copy(stockQuantity = stockQuantity + amount.coerceAtLeast(0))
+}
