@@ -17,15 +17,17 @@ import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.internal.BackHandler
 import omsringsmobile.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import skdev.omsrings.mobile.domain.model.Folder
 import skdev.omsrings.mobile.domain.model.InventoryItem
 import skdev.omsrings.mobile.presentation.base.BaseScreen
 import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenContract.Event
-import skdev.omsrings.mobile.presentation.feature_inventory_management.components.CreateFolderDialog
-import skdev.omsrings.mobile.presentation.feature_inventory_management.components.AddInventoryItemDialog
+import skdev.omsrings.mobile.presentation.feature_inventory_management.components.BaseInputDialog
 import skdev.omsrings.mobile.presentation.feature_inventory_management.components.EmptyStateMessage
 import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
+import skdev.omsrings.mobile.ui.theme.values.Dimens
+import skdev.omsrings.mobile.utils.fields.FormField
 
 // TODO: сделать обновление экрана по swipe
 // TODO: починить валидацию
@@ -204,7 +206,7 @@ fun FolderRow(
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = "${folder.inventoryItems.size} items",
+                    text = stringResource(Res.string.item_count, folder.inventoryItems.size),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -228,7 +230,7 @@ fun InventoryItemList(
     } else {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(vertical = 8.dp)
+            contentPadding = PaddingValues(vertical = Dimens.spaceSmall)
         ) {
             items(items) { item ->
                 InventoryItemRow(
@@ -264,5 +266,41 @@ fun EmptyInventoryItemsMessage(onAddItemClick: () -> Unit) {
         description = stringResource(Res.string.empty_inventory_items_description),
         actionText = stringResource(Res.string.add_inventory_item),
         onActionClick = onAddItemClick
+    )
+}
+
+@Composable
+fun AddInventoryItemDialog(
+    newItemField: FormField<String, StringResource>,
+    screenModel: InventoryManagementScreenModel,
+    modifier: Modifier = Modifier
+) {
+    BaseInputDialog(
+        titleRes = Res.string.add_item_dialog_title,
+        confirmTextRes = Res.string.add_item_dialog_add_button,
+        cancelTextRes = Res.string.add_item_dialog_cancel_button,
+        labelRes = Res.string.add_item_dialog_item_name,
+        inputField = newItemField,
+        onConfirm = { screenModel.onEvent(Event.AddInventoryItem) },
+        onDismiss = { screenModel.onEvent(Event.CloseAddInventoryItemDialog) },
+        modifier = modifier
+    )
+}
+
+@Composable
+fun CreateFolderDialog(
+    newFolderField: FormField<String, StringResource>,
+    screenModel: InventoryManagementScreenModel,
+    modifier: Modifier = Modifier
+) {
+    BaseInputDialog(
+        titleRes = Res.string.create_folder_dialog_title,
+        confirmTextRes = Res.string.create_button_text,
+        cancelTextRes = Res.string.cancel_button_text,
+        labelRes = Res.string.folder_name_label,
+        inputField = newFolderField,
+        onConfirm = { screenModel.onEvent(Event.CreateInventoryFolder) },
+        onDismiss = { screenModel.onEvent(Event.CloseCreateFolderDialog) },
+        modifier = modifier
     )
 }
