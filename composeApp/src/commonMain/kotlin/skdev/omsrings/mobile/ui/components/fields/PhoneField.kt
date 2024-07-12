@@ -57,5 +57,4 @@ fun PhoneField(
     keyboardOptions = keyboardOptions,
     keyboardActions = keyboardActions,
     readOnly = readOnly,
-    shape = MaterialTheme.shapes.medium
 )
