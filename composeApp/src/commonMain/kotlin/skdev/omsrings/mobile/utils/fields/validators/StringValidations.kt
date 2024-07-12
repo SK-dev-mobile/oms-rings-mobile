@@ -12,6 +12,7 @@
 package skdev.omsrings.mobile.utils.fields.validators
 
 import org.jetbrains.compose.resources.StringResource
+import skdev.omsrings.mobile.utils.fields.FormField
 
 fun ValidationResult<String>.notEmpty(errorText: StringResource) = nextValidation { value ->
     if (value.isNotEmpty()) {
@@ -63,6 +64,15 @@ fun ValidationResult<String>.matchRegex(errorText: StringResource, regex: Regex,
 fun ValidationResult<String>.containedIn(errorText: StringResource, validValues: List<String>) =
     nextValidation { value ->
         if (validValues.contains(value)) {
+            ValidationResult.success(value)
+        } else {
+            ValidationResult.failure(errorText)
+        }
+    }
+
+inline fun <D, E> ValidationResult<D>.sameAs(errorText: StringResource, field: FormField<D, E>) =
+    nextValidation { value ->
+        if (field.data.value == value) {
             ValidationResult.success(value)
         } else {
             ValidationResult.failure(errorText)

@@ -1,11 +1,13 @@
 package skdev.omsrings.mobile.ui.components.fields
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
@@ -48,9 +50,13 @@ fun TextField(
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     minLines: Int = 1,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    shape: Shape = MaterialTheme.shapes.medium
+    shape: Shape = MaterialTheme.shapes.large
 ) {
-    Box(modifier = Modifier.fillMaxWidth()) {
+    Column (
+        modifier = Modifier
+            .fillMaxWidth()
+            .animateContentSize()
+    ) {
         MaterialTextField(
             modifier = modifier,
             value = value,
@@ -82,7 +88,6 @@ fun TextField(
         )
 
         AnimatedVisibility(
-            modifier = Modifier.align(Alignment.BottomStart),
             enter = fadeIn(
                 animationSpec = tween(
                     durationMillis = 200,
