@@ -1,6 +1,5 @@
 package skdev.omsrings.mobile.presentation.feature_inventory_management
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,12 +11,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.koin.koinScreenModel
-import omsringsmobile.composeapp.generated.resources.Res
-import omsringsmobile.composeapp.generated.resources.inventory_management_add_item
-import omsringsmobile.composeapp.generated.resources.inventory_management_emptry_items_message
-import omsringsmobile.composeapp.generated.resources.inventory_management_header
+import omsringsmobile.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import skdev.omsrings.mobile.domain.model.Folder
 import skdev.omsrings.mobile.domain.model.InventoryItem
@@ -25,8 +22,8 @@ import skdev.omsrings.mobile.presentation.base.BaseScreen
 import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenContract.Event
 import skdev.omsrings.mobile.presentation.feature_inventory_management.components.AddFolderDialog
 import skdev.omsrings.mobile.presentation.feature_inventory_management.components.AddItemDialog
+import skdev.omsrings.mobile.presentation.feature_inventory_management.components.EmptyStateMessage
 import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
-import skdev.omsrings.mobile.ui.theme.values.Dimens
 
 // TODO: сделать обновление экрана по swipe
 // TODO: сделать папки
@@ -42,43 +39,59 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
         Scaffold(
             topBar = {
                 RingsTopAppBar(
-                    title = stringResource(Res.string.inventory_management_header),
-                    onNavigationClicked = {/* Handle pop navigator */ }
+                    title = when {
+                        state.selectedFolderId == null -> stringResource(Res.string.inventory_management_header)
+                        else -> state.folders.find { it.id == state.selectedFolderId }?.name
+                            ?: stringResource(Res.string.inventory_management_header)
+                    },
+                    onNavigationClicked = {
+                        if (state.selectedFolderId == null) {
+                            /* handle pop */
+                        } else {
+                            screenModel.onEvent(Event.SelectFolder(null))
+                        }
+                    }
                 )
             },
             floatingActionButton = {
-                if (state.selectedFolderId != null) {
-                    FloatingActionButton(onClick = { screenModel.onEvent(Event.ShowAddItemDialog) }) {
-                        Icon(
-                            Icons.Rounded.Add,
-                            contentDescription = stringResource(Res.string.inventory_management_add_item)
-                        )
+                FloatingActionButton(
+                    onClick = {
+                        if (state.selectedFolderId != null) {
+                            screenModel.onEvent(Event.ShowAddItemDialog)
+                        } else {
+                            screenModel.onEvent(Event.ShowAddFolderDialog)
+                        }
                     }
-                } else {
-                    FloatingActionButton(onClick = { screenModel.onEvent(Event.ShowAddFolderDialog) }) {
-                        Icon(
-                            Icons.Rounded.CreateNewFolder,
-                            contentDescription = "Add folder"
-                        )
-                    }
+                ) {
+                    Icon(
+                        if (state.selectedFolderId != null) Icons.Rounded.Add else Icons.Rounded.CreateNewFolder,
+                        contentDescription = if (state.selectedFolderId != null) stringResource(Res.string.inventory_management_add_item) else "Add Folder"
+                    )
                 }
             }
-        ) { paddingValues ->
+        )
+        { paddingValues ->
             Column(modifier = Modifier.padding(paddingValues)) {
                 if (state.selectedFolderId == null) {
-                    FolderList(
-                        folders = state.folders,
-                        onFolderClick = { screenModel.onEvent(Event.SelectFolder(it.id)) },
-                        onDeleteFolder = { screenModel.onEvent(Event.DeleteFolder(it)) }
-                    )
+                    if (state.folders.isEmpty()) {
+                        EmptyFoldersMessage(
+                            onAddFolderClick = { screenModel.onEvent(Event.ShowAddFolderDialog) }
+                        )
+
+                    } else {
+                        FolderList(
+                            folders = state.folders,
+                            onFolderClick = { screenModel.onEvent(Event.SelectFolder(it.id)) },
+                            onDeleteFolder = { screenModel.onEvent(Event.DeleteFolder(it)) }
+                        )
+                    }
                 } else {
                     val selectedFolder = state.folders.find { it.id == state.selectedFolderId }
                     if (selectedFolder != null) {
                         ItemList(
-                            folderName = selectedFolder.name,
                             items = selectedFolder.items,
-                            onBackClick = { screenModel.onEvent(Event.SelectFolder(null)) },
-                            onDeleteItem = { screenModel.onEvent(Event.DeleteItem(it)) }
+                            onDeleteItem = { screenModel.onEvent(Event.DeleteItem(it)) },
+                            onAddItemClick = { screenModel.onEvent(Event.ShowAddItemDialog) }
                         )
                     }
                 }
@@ -100,41 +113,40 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
 
 @Composable
 fun InventoryItemRow(
-    modifier: Modifier = Modifier,
     item: InventoryItem,
     onDeleteClick: () -> Unit
 ) {
-    Row(
-        modifier = modifier.padding(Dimens.spaceMedium),
-        verticalAlignment = Alignment.CenterVertically
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clip(MaterialTheme.shapes.medium),
+        tonalElevation = 1.dp
     ) {
-        Text(
-            text = item.name,
-            modifier = Modifier.weight(1f)
-        )
-        IconButton(onClick = onDeleteClick) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Icon(
-                imageVector = Icons.Rounded.Delete,
-                contentDescription = "Delete"
+                Icons.Rounded.Inventory,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.secondary
             )
+            Spacer(modifier = Modifier.width(16.dp))
+            Text(
+                text = item.name,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.weight(1f)
+            )
+            IconButton(onClick = onDeleteClick) {
+                Icon(Icons.Rounded.Delete, contentDescription = "Delete Item")
+            }
         }
     }
 }
 
-@Composable
-fun EmptyInventoryMessage(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = stringResource(Res.string.inventory_management_emptry_items_message),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-        )
-    }
-}
 
 @Composable
 fun FolderList(
@@ -160,41 +172,58 @@ fun FolderItem(
     onClick: () -> Unit,
     onDelete: () -> Unit
 ) {
-    ListItem(
-        headlineContent = { Text(folder.name) },
-        supportingContent = { Text("${folder.items.size} items") },
-        leadingContent = {
-            Icon(Icons.Rounded.Folder, contentDescription = null)
-        },
-        trailingContent = {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clip(MaterialTheme.shapes.medium),
+        tonalElevation = 1.dp,
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                Icons.Rounded.Folder,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = folder.name,
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    text = "${folder.items.size} items",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
             IconButton(onClick = onDelete) {
                 Icon(Icons.Rounded.Delete, contentDescription = "Delete Folder")
             }
-        },
-        modifier = Modifier.clickable(onClick = onClick)
-    )
+        }
+    }
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemList(
-    folderName: String,
     items: List<InventoryItem>,
-    onBackClick: () -> Unit,
-    onDeleteItem: (InventoryItem) -> Unit
+    onDeleteItem: (InventoryItem) -> Unit,
+    onAddItemClick: () -> Unit
 ) {
-    Column {
-        TopAppBar(
-            title = { Text(folderName) },
-            navigationIcon = {
-                IconButton(onClick = onBackClick) {
-                    Icon(Icons.Rounded.ArrowBack, contentDescription = "Back")
-                }
-            }
-        )
-
-        LazyColumn {
+    if (items.isEmpty()) {
+        EmptyInventoryItemsMessage(onAddItemClick)
+    } else {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(vertical = 8.dp)
+        ) {
             items(items) { item ->
                 InventoryItemRow(
                     item = item,
@@ -203,4 +232,29 @@ fun ItemList(
             }
         }
     }
+}
+
+
+// Использование для пустого списка папок
+@Composable
+fun EmptyFoldersMessage(onAddFolderClick: () -> Unit) {
+    EmptyStateMessage(
+        icon = Icons.Rounded.Folder,
+        title = stringResource(Res.string.empty_folders_title),
+        description = stringResource(Res.string.empty_folders_description),
+        actionText = stringResource(Res.string.add_folder),
+        onActionClick = onAddFolderClick
+    )
+}
+
+// Использование для пустого списка товаров
+@Composable
+fun EmptyInventoryItemsMessage(onAddItemClick: () -> Unit) {
+    EmptyStateMessage(
+        icon = Icons.Rounded.Inventory,
+        title = stringResource(Res.string.empty_inventory_items_title),
+        description = stringResource(Res.string.empty_inventory_items_description),
+        actionText = stringResource(Res.string.add_inventory_item),
+        onActionClick = onAddItemClick
+    )
 }

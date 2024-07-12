@@ -36,7 +36,7 @@
     <string name="faq_rescheduled_order_description">• Выберите заказ и удерживайте для вызова меню\n• Доступно для статусов "НОВЫЙ" и "ВЫПОЛНЕННЫЙ"\n• При переносе исходный заказ получает статус "СПИСАННЫЙ"\n• В описание добавляется пометка о переносе и новая дата</string>
     <string name="faq_expand">Развёрнуто</string>
     <string name="faq_collapse">Свёрнуто</string>
-    
+
     <!-- UserSettingsScreen -->
     <string name="user_settings_title">Настройки</string>
     <string name="user_settings_receive_notifications">Получать уведомления</string>
@@ -50,11 +50,21 @@
     <string name="inventory_management_header">Учет товара</string>
     <string name="inventory_management_add_item">Добавить товар</string>
     <string name="inventory_management_emptry_items_message">В данный момент товаров нет.\nНажмите '+', чтобы добавить новый товар.</string>
-    
+
     <!-- AddItemDialog -->
     <string name="add_item_dialog_title">Добавить новый товар</string>
     <string name="add_item_dialog_item_name">Название товара</string>
     <string name="add_item_dialog_add_button">Добавить</string>
     <string name="add_item_dialog_cancel_button">Отмена</string>
+
+    <!-- Empty Inventory Message -->
+    <string name="empty_inventory_items_title">В этой папке пока нет товаров</string>
+    <string name="empty_inventory_items_description">Добавьте новый товар, чтобы начать учет</string>
+    <string name="add_inventory_item">Добавить товар</string>
+
+    <!-- Empty Folder Message -->
+    <string name="empty_folders_title">У вас пока нет папок</string>
+    <string name="empty_folders_description">Создайте новую папку, чтобы начать учет товаров</string>
+    <string name="add_folder">Создать папку</string>
 
 </resources>
