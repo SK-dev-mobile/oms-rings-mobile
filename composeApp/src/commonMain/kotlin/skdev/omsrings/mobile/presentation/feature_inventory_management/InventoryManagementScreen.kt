@@ -7,14 +7,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.CreateNewFolder
-import androidx.compose.material.icons.rounded.Folder
-import androidx.compose.material.icons.rounded.Inventory
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
+import androidx.compose.material.icons.rounded.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -113,7 +107,7 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
                     selectedFolder?.let { folder ->
                         InventoryItemList(
                             items = folder.inventoryItems,
-                            onInventoryItemClick = { screenModel.onEvent(Event.DisplayIncrementQuantityDialog(it)) },
+                            onIncrementQuantity = { screenModel.onEvent(Event.DisplayIncrementQuantityDialog(it)) },
                             onDeleteItem = { screenModel.onEvent(Event.RemoveInventoryItem(it)) },
                             onAddItemClick = { screenModel.onEvent(Event.DisplayAddInventoryItemDialog) }
                         )
@@ -168,27 +162,6 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
 
 }
 
-@Composable
-fun IncrementQuantityDialog(
-    item: InventoryItem,
-    inputField: FormField<String, StringResource>,
-    onConfirm: (String) -> Unit,
-    onDismiss: () -> Unit
-) {
-    BaseInputDialog(
-        titleRes = Res.string.increment_quantity_dialog_title,
-        confirmTextRes = Res.string.confirm_increment,
-        cancelTextRes = Res.string.cancel_button_text,
-        labelRes = Res.string.increment_quantity_label,
-        inputField = inputField,
-        onConfirm = onConfirm,
-        onDismiss = onDismiss,
-        keyboardType = KeyboardType.Number,
-        currentValue = item.stockQuantity,
-        showNewValuePreview = true,
-        previewStringRes = Res.string.new_quantity_preview
-    )
-}
 
 @Composable
 fun FolderList(
@@ -223,7 +196,7 @@ fun FolderList(
 @Composable
 fun InventoryItemList(
     items: List<InventoryItem>,
-    onInventoryItemClick: (InventoryItem) -> Unit,
+    onIncrementQuantity: (InventoryItem) -> Unit,
     onDeleteItem: (InventoryItem) -> Unit,
     onAddItemClick: () -> Unit
 ) {
@@ -236,14 +209,13 @@ fun InventoryItemList(
         ) {
             items(
                 items = items,
-                key = { it.id } // Используем key для оптимизации обновлений списка
+                key = { it.id }
             ) { item ->
-                // Используем remember для кэширования колбэка
-                val onClickHandler = remember(item) { { onInventoryItemClick(item) } }
+                val onIncrementHandler = remember(item) { { onIncrementQuantity(item) } }
                 val onDeleteHandler = remember(item) { { onDeleteItem(item) } }
                 InventoryItemRow(
                     item = item,
-                    onClick = onClickHandler,
+                    onIncrementQuantity = onIncrementHandler,
                     onDeleteClick = onDeleteHandler
                 )
             }
@@ -313,6 +285,28 @@ fun AddInventoryItemDialog(
     )
 }
 
+@Composable
+fun IncrementQuantityDialog(
+    item: InventoryItem,
+    inputField: FormField<String, StringResource>,
+    onConfirm: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    BaseInputDialog(
+        titleRes = Res.string.increment_quantity_dialog_title,
+        confirmTextRes = Res.string.confirm_increment,
+        cancelTextRes = Res.string.cancel_button_text,
+        labelRes = Res.string.increment_quantity_label,
+        inputField = inputField,
+        onConfirm = onConfirm,
+        onDismiss = onDismiss,
+        keyboardType = KeyboardType.Number,
+        currentValue = item.stockQuantity,
+        showNewValuePreview = true,
+        previewStringRes = Res.string.new_quantity_preview
+    )
+}
+
 
 @Composable
 fun FolderRow(
@@ -326,22 +320,46 @@ fun FolderRow(
         title = folder.name,
         subtitle = pluralStringResource(Res.plurals.item_count, folder.inventoryItems.size, folder.inventoryItems.size),
         onRowClick = onClick,
-        onDeleteClick = onDelete
+        secondaryAction = {
+            IconButton(onClick = onDelete) {
+                Icon(
+                    Icons.Rounded.Delete,
+                    tint = MaterialTheme.colorScheme.error,
+                    contentDescription = stringResource(Res.string.delete)
+                )
+            }
+        }
     )
 }
 
 @Composable
 fun InventoryItemRow(
     item: InventoryItem,
-    onClick: () -> Unit,
+    onIncrementQuantity: () -> Unit,
     onDeleteClick: () -> Unit
 ) {
     GenericRow(
         icon = Icons.Rounded.Inventory,
         iconTint = MaterialTheme.colorScheme.secondary,
         title = item.name,
-        onRowClick = onClick,
-        onDeleteClick = onDeleteClick,
-        subtitle = stringResource(Res.string.item_stock, item.stockQuantity)
+        subtitle = stringResource(Res.string.item_stock, item.stockQuantity),
+        primaryAction = {
+            IconButton(onClick = onIncrementQuantity) {
+                Icon(
+                    Icons.Rounded.Add,
+                    tint = MaterialTheme.colorScheme.primary,
+                    contentDescription = stringResource(Res.string.increment_quantity_label)
+                )
+            }
+        },
+        secondaryAction = {
+            IconButton(onClick = onDeleteClick) {
+                Icon(
+                    Icons.Rounded.Delete,
+                    tint = MaterialTheme.colorScheme.error,
+                    contentDescription = stringResource(Res.string.delete)
+                )
+            }
+        }
     )
 }
