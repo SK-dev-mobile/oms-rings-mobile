@@ -13,7 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
 import cafe.adriel.voyager.koin.koinScreenModel
+import cafe.adriel.voyager.navigator.internal.BackHandler
 import omsringsmobile.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import skdev.omsrings.mobile.domain.model.Folder
@@ -31,10 +33,16 @@ import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
 // TODO: починить валидацию
 // TODO: навести красоту
 object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
+    @OptIn(InternalVoyagerApi::class)
     @Composable
     override fun MainContent() {
         val screenModel = koinScreenModel<InventoryManagementScreenModel>()
         val state by screenModel.state.collectAsState()
+
+
+        BackHandler(enabled = state.selectedFolderId != null) {
+            screenModel.onEvent(Event.SetSelectedInventoryFolder(null))
+        }
 
         Scaffold(
             topBar = {
