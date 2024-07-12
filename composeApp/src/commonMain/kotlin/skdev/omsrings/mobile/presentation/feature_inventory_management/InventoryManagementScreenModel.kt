@@ -83,7 +83,7 @@ class InventoryManagementScreenModel(
             is Event.SetSelectedInventoryFolder -> setSelectedInventoryFolder(event.folderId)
             Event.DisplayCreateFolderDialog -> displayCreateFolderDialog()
             Event.CloseCreateFolderDialog -> closeCreateFolderDialog()
-            is Event.IncrementQuanitityInventoryItem -> incrementQuanitityInventoryItem(event.item)
+            is Event.IncrementQuantityInventoryItem -> incrementQuantityInventoryItem(event.item)
             is Event.DisplayIncrementQuantityDialog -> displayIncrementQuantityDialog(event.item)
             Event.CloseIncrementQuantityDialog -> closeIncrementQuantityDialog()
         }
@@ -195,7 +195,7 @@ class InventoryManagementScreenModel(
         }
     }
 
-    private fun incrementQuanitityInventoryItem(item: InventoryItem) {
+    private fun incrementQuantityInventoryItem(item: InventoryItem) {
         if (_state.value.newQuantityField.validate()) {
             val incrementQuantity = _state.value.newQuantityField.value().toIntOrNull() ?: 0
             _state.update { state ->

@@ -35,7 +35,7 @@ object InventoryManagementScreenContract {
         data object CloseIncrementQuantityDialog : Event
 
         // Actions With Item
-        data class IncrementQuanitityInventoryItem(val item: InventoryItem, val additionalQuantity: Int) : Event
+        data class IncrementQuantityInventoryItem(val item: InventoryItem, val additionalQuantity: Int) : Event
         data object AddInventoryItem : Event
         data class RemoveInventoryItem(val item: InventoryItem) : Event
 

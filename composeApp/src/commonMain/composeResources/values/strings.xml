@@ -51,7 +51,12 @@
     <string name="inventory_management_header">Учет товара</string>
     <string name="inventory_management_add_item">Добавить товар</string>
     <string name="inventory_management_emptry_items_message">В данный момент товаров нет.\nНажмите '+', чтобы добавить новый товар.</string>
-    <string name="item_count">%1$d товаров</string>
+    <plurals name="item_count">
+        <item quantity="zero">$1$d товаров</item>
+        <item quantity="one">%1$d товар</item>
+        <item quantity="few">%1$d товара</item>
+        <item quantity="other">%1$d товаров</item>
+    </plurals>
     <string name="item_stock">Остаток: %1$d</string>
     <string name="delete">Удалить</string>
 
@@ -69,9 +74,9 @@
 
     <!-- IncrementQuantity -->
     <string name="increment_quantity_dialog_title">Увеличение количества</string>
-    <string name="current_quantity">Текущее количество: %d</string>
+    <string name="current_quantity">Текущее количество: %1$d</string>
     <string name="increment_quantity_label">Добавить количество</string>
-    <string name="new_quantity_preview">Новое количество: %d</string>
+    <string name="new_quantity_preview">Новое количество: %1$d</string>
     <string name="confirm_increment">Подтвердить</string>
 
     <!-- Empty Inventory Message -->
@@ -83,5 +88,5 @@
     <string name="empty_folders_title">У вас пока нет папок</string>
     <string name="empty_folders_description">Создайте новую папку, чтобы начать учет товаров</string>
     <string name="add_folder">Создать папку</string>
-    
+
 </resources>

@@ -1,20 +1,24 @@
 package skdev.omsrings.mobile.presentation.feature_inventory_management
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.CreateNewFolder
 import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.Inventory
-import androidx.compose.material3.*
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
@@ -22,6 +26,7 @@ import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.internal.BackHandler
 import omsringsmobile.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import skdev.omsrings.mobile.domain.model.Folder
 import skdev.omsrings.mobile.domain.model.InventoryItem
@@ -31,10 +36,8 @@ import skdev.omsrings.mobile.presentation.feature_inventory_management.component
 import skdev.omsrings.mobile.presentation.feature_inventory_management.components.EmptyStateMessage
 import skdev.omsrings.mobile.presentation.feature_inventory_management.components.GenericRow
 import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
-import skdev.omsrings.mobile.ui.components.helpers.Spacer
 import skdev.omsrings.mobile.ui.theme.values.Dimens
 import skdev.omsrings.mobile.utils.fields.FormField
-import skdev.omsrings.mobile.utils.fields.collectAsMutableState
 
 // TODO: сделать обновление экрана по swipe
 // TODO: навести красоту
@@ -120,22 +123,43 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
         }
 
         if (state.isAddingFolder) {
-            CreateFolderDialog(state.newFolderField, screenModel)
+            CreateFolderDialog(
+                inputField = state.newFolderField,
+                onConfirm = { screenModel.onEvent(Event.CreateInventoryFolder) },
+                onDismiss = { screenModel.onEvent(Event.CloseCreateFolderDialog) }
+            )
+            BaseInputDialog(
+                titleRes = Res.string.create_folder_dialog_title,
+                confirmTextRes = Res.string.create_button_text,
+                cancelTextRes = Res.string.cancel_button_text,
+                labelRes = Res.string.folder_name_label,
+                inputField = state.newFolderField,
+                onConfirm = { screenModel.onEvent(Event.CreateInventoryFolder) },
+                onDismiss = { screenModel.onEvent(Event.CloseCreateFolderDialog) }
+            )
         }
 
         if (state.isAddingItem) {
-            AddInventoryItemDialog(state.newItemField, screenModel)
+            AddInventoryItemDialog(
+                inputField = state.newItemField,
+                onConfirm = { screenModel.onEvent(Event.AddInventoryItem) },
+                onDismiss = { screenModel.onEvent(Event.CloseAddInventoryItemDialog) }
+            )
         }
 
         if (state.isIncrementQuantity) {
             state.selectedItem?.let { item ->
                 IncrementQuantityDialog(
                     item = item,
-                    quantityField = state.newQuantityField,
+                    inputField = state.newQuantityField,
                     onConfirm = { incrementAmount ->
-                        screenModel.onEvent(Event.IncrementQuanitityInventoryItem(item, incrementAmount))
+                        screenModel.onEvent(
+                            Event.IncrementQuantityInventoryItem(
+                                item, incrementAmount.toIntOrNull() ?: 0
+                            )
+                        )
                     },
-                    onDismiss = { screenModel.onEvent(Event.CloseIncrementQuantityDialog) }
+                    onDismiss = { screenModel.onEvent(Event.CloseIncrementQuantityDialog) },
                 )
             }
         }
@@ -144,6 +168,27 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
 
 }
 
+@Composable
+fun IncrementQuantityDialog(
+    item: InventoryItem,
+    inputField: FormField<String, StringResource>,
+    onConfirm: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    BaseInputDialog(
+        titleRes = Res.string.increment_quantity_dialog_title,
+        confirmTextRes = Res.string.confirm_increment,
+        cancelTextRes = Res.string.cancel_button_text,
+        labelRes = Res.string.increment_quantity_label,
+        inputField = inputField,
+        onConfirm = onConfirm,
+        onDismiss = onDismiss,
+        keyboardType = KeyboardType.Number,
+        currentValue = item.stockQuantity,
+        showNewValuePreview = true,
+        previewStringRes = Res.string.new_quantity_preview
+    )
+}
 
 @Composable
 fun FolderList(
@@ -233,111 +278,41 @@ fun EmptyInventoryItemsMessage(onAddItemClick: () -> Unit) {
     )
 }
 
-@Composable
-fun AddInventoryItemDialog(
-    newItemField: FormField<String, StringResource>,
-    screenModel: InventoryManagementScreenModel,
-    modifier: Modifier = Modifier
-) {
-    BaseInputDialog(
-        titleRes = Res.string.add_item_dialog_title,
-        confirmTextRes = Res.string.add_item_dialog_add_button,
-        cancelTextRes = Res.string.add_item_dialog_cancel_button,
-        labelRes = Res.string.add_item_dialog_item_name,
-        inputField = newItemField,
-        onConfirm = { screenModel.onEvent(Event.AddInventoryItem) },
-        onDismiss = { screenModel.onEvent(Event.CloseAddInventoryItemDialog) },
-        modifier = modifier
-    )
-}
 
 @Composable
 fun CreateFolderDialog(
-    newFolderField: FormField<String, StringResource>,
-    screenModel: InventoryManagementScreenModel,
-    modifier: Modifier = Modifier
+    inputField: FormField<String, StringResource>,
+    onConfirm: (String) -> Unit,
+    onDismiss: () -> Unit,
 ) {
     BaseInputDialog(
         titleRes = Res.string.create_folder_dialog_title,
         confirmTextRes = Res.string.create_button_text,
         cancelTextRes = Res.string.cancel_button_text,
         labelRes = Res.string.folder_name_label,
-        inputField = newFolderField,
-        onConfirm = { screenModel.onEvent(Event.CreateInventoryFolder) },
-        onDismiss = { screenModel.onEvent(Event.CloseCreateFolderDialog) },
-        modifier = modifier
+        inputField = inputField,
+        onConfirm = onConfirm,
+        onDismiss = onDismiss
     )
 }
 
 @Composable
-fun IncrementQuantityDialog(
-    item: InventoryItem,
-    quantityField: FormField<String, StringResource>,
-    onConfirm: (Int) -> Unit,
+fun AddInventoryItemDialog(
+    inputField: FormField<String, StringResource>,
+    onConfirm: (String) -> Unit,
     onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
-    val (quantity, setQuantity) = quantityField.data.collectAsMutableState()
-    val quantityError by quantityField.error.collectAsState()
-    val isValid by quantityField.isValid.collectAsState()
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(Res.string.increment_quantity_dialog_title)) },
-        text = {
-            Column(
-                modifier = modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = stringResource(Res.string.current_quantity, item.stockQuantity),
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Spacer(Dimens.spaceMedium)
-                TextField(
-                    value = quantity,
-                    onValueChange = {
-                        setQuantity(it)
-                        quantityField.validate()
-                    },
-                    isError = quantityError != null,
-                    label = { Text(stringResource(Res.string.increment_quantity_label)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(Dimens.spaceSmall)
-                quantityError?.let {
-                    Text(
-                        text = stringResource(it),
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-                Spacer(Dimens.spaceMedium)
-                Text(
-                    text = stringResource(
-                        Res.string.new_quantity_preview,
-                        item.stockQuantity + (quantity.toIntOrNull() ?: 0)
-                    ),
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = { onConfirm(quantity.toIntOrNull() ?: 0) },
-                enabled = isValid
-            ) {
-                Text(stringResource(Res.string.confirm_increment))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(Res.string.cancel_button_text))
-            }
-        }
+    BaseInputDialog(
+        titleRes = Res.string.add_item_dialog_title,
+        confirmTextRes = Res.string.add_item_dialog_add_button,
+        cancelTextRes = Res.string.add_item_dialog_cancel_button,
+        labelRes = Res.string.add_item_dialog_item_name,
+        inputField = inputField,
+        onConfirm = onConfirm,
+        onDismiss = onDismiss
     )
 }
+
 
 @Composable
 fun FolderRow(
@@ -349,7 +324,7 @@ fun FolderRow(
         icon = Icons.Rounded.Folder,
         iconTint = MaterialTheme.colorScheme.primary,
         title = folder.name,
-        subtitle = stringResource(Res.string.item_count, folder.inventoryItems.size),
+        subtitle = pluralStringResource(Res.plurals.item_count, folder.inventoryItems.size, folder.inventoryItems.size),
         onRowClick = onClick,
         onDeleteClick = onDelete
     )
