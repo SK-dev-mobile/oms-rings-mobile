@@ -17,10 +17,11 @@ object InventoryManagementScreenContract {
         // Visible Dialog
         val isAddingFolder: Boolean = false,
         val isAddingItem: Boolean = false,
-        val isUpdatingQuantity: Boolean = false,
+        val isIncrementQuantity: Boolean = false,
         // Field
         val newFolderField: FormField<String, StringResource>,
         val newItemField: FormField<String, StringResource>,
+        val newQuantityField: FormField<String, StringResource>
     )
 
     sealed interface Event {

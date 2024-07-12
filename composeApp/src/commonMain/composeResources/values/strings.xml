@@ -6,6 +6,7 @@
     <string name="theme">Theme</string>
     <string name="back">Назад</string>
     <string name="cant_be_blank">Не может быть пустым</string>
+    <string name="quantity_must_be_positive_number">Количество должно быть положительным числом</string>
 
     <!-- in-app notifications -->
     <string name="error">Ошибка</string>
@@ -66,6 +67,13 @@
     <string name="create_button_text">Создать</string>
     <string name="cancel_button_text">Отмена</string>
 
+    <!-- IncrementQuantity -->
+    <string name="increment_quantity_dialog_title">Увеличение количества</string>
+    <string name="current_quantity">Текущее количество: %d</string>
+    <string name="increment_quantity_label">Добавить количество</string>
+    <string name="new_quantity_preview">Новое количество: %d</string>
+    <string name="confirm_increment">Подтвердить</string>
+
     <!-- Empty Inventory Message -->
     <string name="empty_inventory_items_title">В этой папке пока нет товаров</string>
     <string name="empty_inventory_items_description">Добавьте новый товар, чтобы начать учет</string>
@@ -75,5 +83,5 @@
     <string name="empty_folders_title">У вас пока нет папок</string>
     <string name="empty_folders_description">Создайте новую папку, чтобы начать учет товаров</string>
     <string name="add_folder">Создать папку</string>
-
+    
 </resources>

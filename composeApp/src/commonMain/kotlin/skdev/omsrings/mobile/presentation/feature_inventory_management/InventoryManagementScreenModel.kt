@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.cant_be_blank
+import omsringsmobile.composeapp.generated.resources.quantity_must_be_positive_number
 import skdev.omsrings.mobile.domain.model.Folder
 import skdev.omsrings.mobile.domain.model.InventoryItem
 import skdev.omsrings.mobile.presentation.base.BaseScreenModel
@@ -17,6 +18,7 @@ import skdev.omsrings.mobile.utils.fields.FormField
 import skdev.omsrings.mobile.utils.fields.flowBlock
 import skdev.omsrings.mobile.utils.fields.validateAll
 import skdev.omsrings.mobile.utils.fields.validators.ValidationResult
+import skdev.omsrings.mobile.utils.fields.validators.matchRegex
 import skdev.omsrings.mobile.utils.fields.validators.notBlank
 import skdev.omsrings.mobile.utils.notification.NotificationManager
 
@@ -29,7 +31,8 @@ class InventoryManagementScreenModel(
     private val _state = MutableStateFlow(
         InventoryState(
             newFolderField = createNewFolderField(),
-            newItemField = createNewItemField()
+            newItemField = createNewItemField(),
+            newQuantityField = createNewQuantityField()
         )
     )
     val state = _state.asStateFlow()
@@ -37,8 +40,8 @@ class InventoryManagementScreenModel(
     private fun createNewFolderField() = FormField(
         scope = screenModelScope,
         initialValue = "",
-        validation = flowBlock {
-            ValidationResult.of(it) {
+        validation = flowBlock { value ->
+            ValidationResult.of(value) {
                 notBlank(Res.string.cant_be_blank)
             }
         }
@@ -47,10 +50,24 @@ class InventoryManagementScreenModel(
     private fun createNewItemField() = FormField(
         scope = screenModelScope,
         initialValue = "",
-        validation = flowBlock {
-            ValidationResult.of(it) {
+        validation = flowBlock { value ->
+            ValidationResult.of(value) {
                 notBlank(Res.string.cant_be_blank)
             }
+        }
+    )
+
+    private fun createNewQuantityField() = FormField(
+        scope = screenModelScope,
+        initialValue = "",
+        validation = flowBlock { value ->
+            ValidationResult.of(value) {
+                notBlank(Res.string.cant_be_blank).matchRegex(
+                    Res.string.quantity_must_be_positive_number,
+                    Regex("^[1-9]\\d*$")
+                )
+            }
+
         }
     )
 
@@ -66,11 +83,7 @@ class InventoryManagementScreenModel(
             is Event.SetSelectedInventoryFolder -> setSelectedInventoryFolder(event.folderId)
             Event.DisplayCreateFolderDialog -> displayCreateFolderDialog()
             Event.CloseCreateFolderDialog -> closeCreateFolderDialog()
-            is Event.IncrementQuanitityInventoryItem -> incrementQuanitityInventoryItem(
-                event.item,
-                event.additionalQuantity
-            )
-
+            is Event.IncrementQuanitityInventoryItem -> incrementQuanitityInventoryItem(event.item)
             is Event.DisplayIncrementQuantityDialog -> displayIncrementQuantityDialog(event.item)
             Event.CloseIncrementQuantityDialog -> closeIncrementQuantityDialog()
         }
@@ -169,27 +182,36 @@ class InventoryManagementScreenModel(
     }
 
     private fun displayIncrementQuantityDialog(item: InventoryItem) {
-        _state.update { it.copy(isUpdatingQuantity = true, selectedItem = item) }
+        _state.update { it.copy(isIncrementQuantity = true, selectedItem = item) }
     }
 
     private fun closeIncrementQuantityDialog() {
-        _state.update { it.copy(isUpdatingQuantity = false, selectedItem = null) }
-    }
-
-    private fun incrementQuanitityInventoryItem(item: InventoryItem, additionalQuantity: Int) {
-        _state.update { state ->
-            state.copy(
-                folders = state.folders.map { folder ->
-                    if (folder.id == state.selectedFolderId) {
-                        folder.copy(inventoryItems = folder.inventoryItems.map {
-                            if (it.id == item.id) it.incrementQuantity(additionalQuantity) else it
-                        })
-                    } else {
-                        folder
-                    }
-                }
+        _state.update {
+            it.copy(
+                isIncrementQuantity = false,
+                selectedItem = null,
+                newQuantityField = createNewQuantityField()
             )
         }
-        closeIncrementQuantityDialog()
+    }
+
+    private fun incrementQuanitityInventoryItem(item: InventoryItem) {
+        if (_state.value.newQuantityField.validate()) {
+            val incrementQuantity = _state.value.newQuantityField.value().toIntOrNull() ?: 0
+            _state.update { state ->
+                state.copy(
+                    folders = state.folders.map { folder ->
+                        if (folder.id == state.selectedFolderId) {
+                            folder.copy(inventoryItems = folder.inventoryItems.map {
+                                if (it.id == item.id) it.incrementQuantity(incrementQuantity) else it
+                            })
+                        } else {
+                            folder
+                        }
+                    }
+                )
+            }
+            closeIncrementQuantityDialog()
+        }
     }
 }
