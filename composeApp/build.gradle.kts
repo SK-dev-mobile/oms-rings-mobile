@@ -4,6 +4,8 @@ import org.gradle.kotlin.dsl.support.kotlinCompilerOptions
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.multiplatform)
@@ -110,6 +112,45 @@ android {
     namespace = "skdev.omsrings.mobile"
     compileSdk = 34
 
+    val keystorePropertiesFile = rootProject.file("signing/keystore.properties")
+    val keystoreProperties = Properties()
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+
+    signingConfigs {
+        create("release") {
+            keyAlias = keystoreProperties["keyAliasRelease"] as String
+            keyPassword = keystoreProperties["keyPasswordRelease"] as String
+            storeFile = rootProject.file("signing/keystore.jks")
+            storePassword = keystoreProperties["storePassword"] as String
+        }
+
+        getByName("debug") {
+            keyAlias = keystoreProperties["keyAliasDebug"] as String
+            keyPassword = keystoreProperties["keyPasswordDebug"] as String
+            storeFile = rootProject.file("signing/keystore.jks")
+            storePassword = keystoreProperties["storePassword"] as String
+        }
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            isDebuggable = false
+            signingConfig = signingConfigs.getByName("release")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+
+        debug {
+            isDebuggable = true
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-DEBUG"
+            signingConfig = signingConfigs.getByName("debug")
+        }
+    }
+
     defaultConfig {
         minSdk = 24
         targetSdk = 34
@@ -120,14 +161,17 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+
     sourceSets["main"].apply {
         manifest.srcFile("src/androidMain/AndroidManifest.xml")
         res.srcDirs("src/androidMain/res")
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
     buildFeatures {
         //enables a Compose tooling support in the AndroidStudio
         compose = true
