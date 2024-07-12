@@ -22,6 +22,13 @@
     <string name="user_not_found">Пользователь не найден</string>
     <string name="user_not_loggined_in">Не выполнен вход в систему</string>
     <string name="user_already_exists">Пользователь уже существует</string>
+    <string name="incorrect_email_or_password">Неверная почта или пароль</string>
+
+    <!-- Fields warnings -->
+    <string name="cant_be_blank">Поле не может быть пустым</string>
+    <string name="passwords_not_match">Пароли не совпадают</string>
+    <string name="password_too_short">Пароль должен содержать не менее 6 символов</string>
+    <string name="invalid_format">Неверный формат</string>
 
     <!-- FAQ Screen -->
     <string name="faq_header">FAQ: ЖБИ Кольца</string>
@@ -45,4 +52,25 @@
     <string name="clear_cancelled_orders_title">Списанные заказы очищены</string>
     <string name="clear_cancelled_orders_message">Все списанные заказы старше 3 месяцев были успешно удалены из системы.</string>
 
+    <!-- AuthScreen -->
+    <string name="contragent">Контрагент</string>
+    <string name="employer">Сотрудник</string>
+    <string name="sign_up">Регистрация</string>
+    <string name="sign_in">Авторизация</string>
+    <string name="password_reset">Восстановление пароля</string>
+    <string name="forgot_password">Забыли пароль?</string>
+    <string name="enter_email_for_password_reset">Укажите почту для сбора пароля</string>
+    <string name="password_reset_form_will_be_sended_to_your_email">На вышу почту будет отправлено письмо с формой для сбора пароля</string>
+    <string name="check_your_email">Проверьте почту</string>
+    <string name="password_reseting_form_was_sended">Форма для сброса пароля отправлена</string>
+    <string name="welcome_to_rings">Добро пожаловать!</string>
+    <string name="enter_your_data">Введите ваши данные, чтобы продолжить</string>
+    <string name="email">Ваш email</string>
+    <string name="password">Пароль</string>
+    <string name="password_confirm">Подтвердите пароль</string>
+    <string name="phone_number">Номер телефона</string>
+    <string name="full_name">ФИО</string>
+    <string name="continue_process">Продолжить</string>
+    <string name="dont_have_account">У вас нет аккаунта?</string>
+    <string name="create_account">Создать</string>
 </resources>

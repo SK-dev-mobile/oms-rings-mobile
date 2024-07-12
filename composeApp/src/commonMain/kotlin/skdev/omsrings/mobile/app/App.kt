@@ -14,6 +14,7 @@ import cafe.adriel.voyager.core.annotation.ExperimentalVoyagerApi
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
 import org.koin.compose.koinInject
+import skdev.omsrings.mobile.presentation.feature_auth.AuthScreen
 import skdev.omsrings.mobile.presentation.feature_faq.FAQScreen
 import skdev.omsrings.mobile.presentation.feature_main.MainScreen
 import skdev.omsrings.mobile.ui.components.notification.NotificationDisplay
@@ -29,7 +30,7 @@ internal fun App() = AppTheme(
 
     Box {
         Navigator(
-            MainScreen
+            AuthScreen
         ) { navigator ->
             SlideTransition(
                 navigator = navigator,
