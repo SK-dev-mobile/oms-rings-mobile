@@ -25,7 +25,7 @@ fun AddItemDialog(newItemField: FormField<String, StringResource>, screenModel: 
     val newItemError: StringResource? by newItemField.error.collectAsState()
 
     AlertDialog(
-        onDismissRequest = { screenModel.onEvent(Event.HideAddItemDialog) },
+        onDismissRequest = { screenModel.onEvent(Event.CloseAddInventoryItemDialog) },
         title = { Text(stringResource(Res.string.add_item_dialog_title)) },
         text = {
             TextField(
@@ -37,12 +37,12 @@ fun AddItemDialog(newItemField: FormField<String, StringResource>, screenModel: 
             )
         },
         confirmButton = {
-            Button(onClick = { screenModel.onEvent(Event.AddItem) }) {
+            Button(onClick = { screenModel.onEvent(Event.AddInventoryItem) }) {
                 Text(stringResource(Res.string.add_item_dialog_add_button))
             }
         },
         dismissButton = {
-            TextButton(onClick = { screenModel.onEvent(Event.HideAddItemDialog) }) {
+            TextButton(onClick = { screenModel.onEvent(Event.CloseAddInventoryItemDialog) }) {
                 Text(stringResource(Res.string.add_item_dialog_cancel_button))
             }
         }

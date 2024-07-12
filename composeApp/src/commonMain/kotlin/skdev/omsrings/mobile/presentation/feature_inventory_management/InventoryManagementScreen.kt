@@ -48,7 +48,7 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
                         if (state.selectedFolderId == null) {
                             /* handle pop */
                         } else {
-                            screenModel.onEvent(Event.SelectFolder(null))
+                            screenModel.onEvent(Event.SetSelectedInventoryFolder(null))
                         }
                     }
                 )
@@ -57,9 +57,9 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
                 FloatingActionButton(
                     onClick = {
                         if (state.selectedFolderId != null) {
-                            screenModel.onEvent(Event.ShowAddItemDialog)
+                            screenModel.onEvent(Event.DisplayAddInventoryItemDialog)
                         } else {
-                            screenModel.onEvent(Event.ShowAddFolderDialog)
+                            screenModel.onEvent(Event.DisplayCreateFolderDialog)
                         }
                     }
                 ) {
@@ -75,23 +75,23 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
                 if (state.selectedFolderId == null) {
                     if (state.folders.isEmpty()) {
                         EmptyFoldersMessage(
-                            onAddFolderClick = { screenModel.onEvent(Event.ShowAddFolderDialog) }
+                            onAddFolderClick = { screenModel.onEvent(Event.DisplayCreateFolderDialog) }
                         )
 
                     } else {
                         FolderList(
                             folders = state.folders,
-                            onFolderClick = { screenModel.onEvent(Event.SelectFolder(it.id)) },
-                            onDeleteFolder = { screenModel.onEvent(Event.DeleteFolder(it)) }
+                            onFolderClick = { screenModel.onEvent(Event.SetSelectedInventoryFolder(it.id)) },
+                            onDeleteFolder = { screenModel.onEvent(Event.RemoveInventoryFolder(it)) }
                         )
                     }
                 } else {
                     val selectedFolder = state.folders.find { it.id == state.selectedFolderId }
                     if (selectedFolder != null) {
-                        ItemList(
-                            items = selectedFolder.items,
-                            onDeleteItem = { screenModel.onEvent(Event.DeleteItem(it)) },
-                            onAddItemClick = { screenModel.onEvent(Event.ShowAddItemDialog) }
+                        InventoryItemList(
+                            items = selectedFolder.inventoryItems,
+                            onDeleteItem = { screenModel.onEvent(Event.RemoveInventoryItem(it)) },
+                            onAddItemClick = { screenModel.onEvent(Event.DisplayAddInventoryItemDialog) }
                         )
                     }
                 }
@@ -156,7 +156,7 @@ fun FolderList(
 ) {
     LazyColumn {
         items(folders) { folder ->
-            FolderItem(
+            FolderRow(
                 folder = folder,
                 onClick = { onFolderClick(folder) },
                 onDelete = { onDeleteFolder(folder) }
@@ -167,7 +167,7 @@ fun FolderList(
 
 
 @Composable
-fun FolderItem(
+fun FolderRow(
     folder: Folder,
     onClick: () -> Unit,
     onDelete: () -> Unit
@@ -198,7 +198,7 @@ fun FolderItem(
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = "${folder.items.size} items",
+                    text = "${folder.inventoryItems.size} items",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -212,7 +212,7 @@ fun FolderItem(
 
 
 @Composable
-fun ItemList(
+fun InventoryItemList(
     items: List<InventoryItem>,
     onDeleteItem: (InventoryItem) -> Unit,
     onAddItemClick: () -> Unit

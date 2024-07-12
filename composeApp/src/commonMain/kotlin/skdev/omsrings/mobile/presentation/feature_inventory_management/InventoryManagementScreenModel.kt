@@ -57,19 +57,19 @@ class InventoryManagementScreenModel(
 
     override fun onEvent(event: Event) {
         when (event) {
-            is Event.AddItem -> addItem()
-            is Event.DeleteItem -> deleteItem(event.item)
-            is Event.ShowAddItemDialog -> showAddItemDialog()
-            is Event.HideAddItemDialog -> hideAddItemDialog()
-            is Event.AddFolder -> addFolder()
-            is Event.DeleteFolder -> deleteFolder(event.folder)
-            is Event.SelectFolder -> selectFolder(event.folderId)
-            Event.ShowAddFolderDialog -> showAddFolderDialog()
-            Event.HideAddFolderDialog -> hideAddFolderDialog()
+            Event.AddInventoryItem -> addInventoryItem()
+            is Event.RemoveInventoryItem -> removeInventoryItem(event.item)
+            Event.DisplayAddInventoryItemDialog -> displayAddInventoryItemDialog()
+            Event.CloseAddInventoryItemDialog -> closeAddInventoryItemDialog()
+            Event.CreateInventoryFolder -> createInventoryFolder()
+            is Event.RemoveInventoryFolder -> removeInventoryFolder(event.folder)
+            is Event.SetSelectedInventoryFolder -> setSelectedInventoryFolder(event.folderId)
+            Event.DisplayCreateFolderDialog -> displayCreateFolderDialog()
+            Event.CloseCreateFolderDialog -> closeCreateFolderDialog()
         }
     }
 
-    private fun addFolder() {
+    private fun createInventoryFolder() {
         screenModelScope.launch {
             val currentState = _state.value
             if (validateAll(currentState.newFolderField)) {
@@ -82,10 +82,10 @@ class InventoryManagementScreenModel(
                 }
             }
         }
-        hideAddFolderDialog()
+        closeCreateFolderDialog()
     }
 
-    private fun deleteFolder(folder: Folder) {
+    private fun removeInventoryFolder(folder: Folder) {
         _state.update { state ->
             state.copy(
                 folders = state.folders - folder,
@@ -94,7 +94,7 @@ class InventoryManagementScreenModel(
         }
     }
 
-    private fun addItem() {
+    private fun addInventoryItem() {
         screenModelScope.launch {
             val currentState = _state.value
             if (validateAll(currentState.newItemField) && currentState.selectedFolderId != null) {
@@ -103,7 +103,7 @@ class InventoryManagementScreenModel(
                     state.copy(
                         folders = state.folders.map { folder ->
                             if (folder.id == state.selectedFolderId) {
-                                folder.copy(items = folder.items + newItem)
+                                folder.copy(inventoryItems = folder.inventoryItems + newItem)
                             } else {
                                 folder
                             }
@@ -113,15 +113,15 @@ class InventoryManagementScreenModel(
                 }
             }
         }
-        hideAddItemDialog()
+        closeAddInventoryItemDialog()
     }
 
-    private fun deleteItem(item: InventoryItem) {
+    private fun removeInventoryItem(item: InventoryItem) {
         _state.update { state ->
             state.copy(
                 folders = state.folders.map { folder ->
                     if (folder.id == state.selectedFolderId) {
-                        folder.copy(items = folder.items - item)
+                        folder.copy(inventoryItems = folder.inventoryItems - item)
                     } else {
                         folder
                     }
@@ -130,15 +130,15 @@ class InventoryManagementScreenModel(
         }
     }
 
-    private fun selectFolder(folderId: String?) {
+    private fun setSelectedInventoryFolder(folderId: String?) {
         _state.update { it.copy(selectedFolderId = folderId) }
     }
 
-    private fun showAddItemDialog() {
+    private fun displayAddInventoryItemDialog() {
         _state.update { it.copy(isAddingItem = true) }
     }
 
-    private fun hideAddItemDialog() {
+    private fun closeAddInventoryItemDialog() {
         _state.update {
             it.copy(
                 isAddingItem = false,
@@ -147,11 +147,11 @@ class InventoryManagementScreenModel(
         }
     }
 
-    private fun showAddFolderDialog() {
+    private fun displayCreateFolderDialog() {
         _state.update { it.copy(isAddingFolder = true) }
     }
 
-    private fun hideAddFolderDialog() {
+    private fun closeCreateFolderDialog() {
         _state.update {
             it.copy(
                 isAddingFolder = false,

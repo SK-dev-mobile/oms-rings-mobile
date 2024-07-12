@@ -25,7 +25,7 @@ fun AddFolderDialog(
     val newFolderError: StringResource? by newFolderField.error.collectAsState()
 
     AlertDialog(
-        onDismissRequest = { screenModel.onEvent(Event.HideAddFolderDialog) },
+        onDismissRequest = { screenModel.onEvent(Event.CloseCreateFolderDialog) },
         title = { Text("Add Folder") },
         text = {
             TextField(
@@ -37,12 +37,12 @@ fun AddFolderDialog(
             )
         },
         confirmButton = {
-            Button(onClick = { screenModel.onEvent(Event.AddFolder) }) {
+            Button(onClick = { screenModel.onEvent(Event.CreateInventoryFolder) }) {
                 Text("Add")
             }
         },
         dismissButton = {
-            TextButton(onClick = { screenModel.onEvent(Event.HideAddFolderDialog) }) {
+            TextButton(onClick = { screenModel.onEvent(Event.CloseCreateFolderDialog) }) {
                 Text("Cancel")
             }
         }

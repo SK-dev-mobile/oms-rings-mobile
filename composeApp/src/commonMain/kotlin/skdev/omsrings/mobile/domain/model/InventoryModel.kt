@@ -10,7 +10,7 @@ import skdev.omsrings.mobile.utils.uuid.randomUUID
 data class Folder(
     val id: String = randomUUID(),
     val name: String,
-    val items: List<InventoryItem> = emptyList()
+    val inventoryItems: List<InventoryItem> = emptyList()
 )
 
 @Serializable

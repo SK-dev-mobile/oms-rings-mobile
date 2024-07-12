@@ -19,19 +19,19 @@ object InventoryManagementScreenContract {
     sealed interface Event {
 
         // Dialogs
-        data object ShowAddFolderDialog : Event
-        data object HideAddFolderDialog : Event
-        data object ShowAddItemDialog : Event
-        data object HideAddItemDialog : Event
+        data object DisplayCreateFolderDialog : Event
+        data object CloseCreateFolderDialog : Event
+        data object DisplayAddInventoryItemDialog : Event
+        data object CloseAddInventoryItemDialog : Event
 
         // Actions With Item
-        data object AddItem : Event
-        data class DeleteItem(val item: InventoryItem) : Event
+        data object AddInventoryItem : Event
+        data class RemoveInventoryItem(val item: InventoryItem) : Event
 
         // Actions With Folder
-        data class SelectFolder(val folderId: String?) : Event
-        data object AddFolder : Event
-        data class DeleteFolder(val folder: Folder) : Event
+        data class SetSelectedInventoryFolder(val folderId: String?) : Event
+        data object CreateInventoryFolder : Event
+        data class RemoveInventoryFolder(val folder: Folder) : Event
     }
 
     sealed interface Effect {
