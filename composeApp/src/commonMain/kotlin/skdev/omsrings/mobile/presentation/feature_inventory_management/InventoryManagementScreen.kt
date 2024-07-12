@@ -1,18 +1,24 @@
 package skdev.omsrings.mobile.presentation.feature_inventory_management
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.*
-import androidx.compose.material3.*
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.CreateNewFolder
+import androidx.compose.material.icons.rounded.Folder
+import androidx.compose.material.icons.rounded.Inventory
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.internal.BackHandler
@@ -25,6 +31,7 @@ import skdev.omsrings.mobile.presentation.base.BaseScreen
 import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenContract.Event
 import skdev.omsrings.mobile.presentation.feature_inventory_management.components.BaseInputDialog
 import skdev.omsrings.mobile.presentation.feature_inventory_management.components.EmptyStateMessage
+import skdev.omsrings.mobile.presentation.feature_inventory_management.components.GenericRow
 import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
 import skdev.omsrings.mobile.ui.theme.values.Dimens
 import skdev.omsrings.mobile.utils.fields.FormField
@@ -120,43 +127,6 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
 
 
 @Composable
-fun InventoryItemRow(
-    item: InventoryItem,
-    onDeleteClick: () -> Unit
-) {
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clip(MaterialTheme.shapes.medium),
-        tonalElevation = 1.dp
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                Icons.Rounded.Inventory,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.secondary
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(
-                text = item.name,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.weight(1f)
-            )
-            IconButton(onClick = onDeleteClick) {
-                Icon(Icons.Rounded.Delete, contentDescription = "Delete Item")
-            }
-        }
-    }
-}
-
-
-@Composable
 fun FolderList(
     folders: List<Folder>,
     onFolderClick: (Folder) -> Unit,
@@ -169,51 +139,6 @@ fun FolderList(
                 onClick = { onFolderClick(folder) },
                 onDelete = { onDeleteFolder(folder) }
             )
-        }
-    }
-}
-
-
-@Composable
-fun FolderRow(
-    folder: Folder,
-    onClick: () -> Unit,
-    onDelete: () -> Unit
-) {
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clip(MaterialTheme.shapes.medium),
-        tonalElevation = 1.dp,
-        onClick = onClick
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                Icons.Rounded.Folder,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = folder.name,
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-                    text = stringResource(Res.string.item_count, folder.inventoryItems.size),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            IconButton(onClick = onDelete) {
-                Icon(Icons.Rounded.Delete, contentDescription = "Delete Folder")
-            }
         }
     }
 }
@@ -302,5 +227,35 @@ fun CreateFolderDialog(
         onConfirm = { screenModel.onEvent(Event.CreateInventoryFolder) },
         onDismiss = { screenModel.onEvent(Event.CloseCreateFolderDialog) },
         modifier = modifier
+    )
+}
+
+@Composable
+fun FolderRow(
+    folder: Folder,
+    onClick: () -> Unit,
+    onDelete: () -> Unit
+) {
+    GenericRow(
+        icon = Icons.Rounded.Folder,
+        iconTint = MaterialTheme.colorScheme.primary,
+        title = folder.name,
+        subtitle = stringResource(Res.string.item_count, folder.inventoryItems.size),
+        onRowClick = onClick,
+        onDeleteClick = onDelete
+    )
+}
+
+@Composable
+fun InventoryItemRow(
+    item: InventoryItem,
+    onDeleteClick: () -> Unit
+) {
+    GenericRow(
+        icon = Icons.Rounded.Inventory,
+        iconTint = MaterialTheme.colorScheme.secondary,
+        title = item.name,
+        onRowClick = { /* Можно добавить действие при клике, если нужно */ },
+        onDeleteClick = onDeleteClick
     )
 }
