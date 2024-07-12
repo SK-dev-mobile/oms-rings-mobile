@@ -8,11 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import omsringsmobile.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenContract.Event
-import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenModel
 import skdev.omsrings.mobile.ui.components.fields.TextField
 import skdev.omsrings.mobile.ui.components.helpers.Spacer
 import skdev.omsrings.mobile.ui.theme.values.Dimens
@@ -20,32 +17,37 @@ import skdev.omsrings.mobile.utils.fields.FormField
 import skdev.omsrings.mobile.utils.fields.collectAsMutableState
 
 @Composable
-fun CreateFolderDialog(
-    newFolderField: FormField<String, StringResource>,
-    screenModel: InventoryManagementScreenModel,
+fun BaseInputDialog(
+    titleRes: StringResource,
+    confirmTextRes: StringResource,
+    cancelTextRes: StringResource,
+    labelRes: StringResource,
+    inputField: FormField<String, StringResource>,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val (newFolderValue, newFolderSetter) = newFolderField.data.collectAsMutableState()
-    val newFolderError: StringResource? by newFolderField.error.collectAsState()
-    val isValid by newFolderField.isValid.collectAsState()
+    val (inputValue, inputSetter) = inputField.data.collectAsMutableState()
+    val inputError by inputField.error.collectAsState()
+    val isValid by inputField.isValid.collectAsState()
 
     AlertDialog(
-        onDismissRequest = { screenModel.onEvent(Event.CloseCreateFolderDialog) },
-        title = { Text(stringResource(Res.string.create_folder_dialog_title)) },
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(titleRes)) },
         text = {
             Column(modifier = modifier.fillMaxWidth()) {
                 TextField(
-                    value = newFolderValue,
+                    value = inputValue,
                     onValueChange = {
-                        newFolderSetter(it)
-                        newFolderField.validate()
+                        inputSetter(it)
+                        inputField.validate()
                     },
-                    isError = newFolderError != null,
-                    label = { Text(stringResource(Res.string.folder_name_label)) },
-                    modifier = Modifier.fillMaxWidth()
+                    isError = inputError != null,
+                    label = { Text(stringResource(labelRes)) },
+                    modifier = Modifier.fillMaxWidth().padding(bottom = Dimens.spaceMedium)
                 )
                 Spacer(Dimens.spaceSmall)
-                newFolderError?.let {
+                inputError?.let {
                     Text(
                         text = stringResource(it),
                         color = MaterialTheme.colorScheme.error,
@@ -55,13 +57,16 @@ fun CreateFolderDialog(
             }
         },
         confirmButton = {
-            Button(onClick = { screenModel.onEvent(Event.CreateInventoryFolder) }, enabled = isValid) {
-                Text(stringResource(Res.string.create_button_text))
+            Button(
+                onClick = onConfirm,
+                enabled = isValid
+            ) {
+                Text(stringResource(confirmTextRes))
             }
         },
         dismissButton = {
-            TextButton(onClick = { screenModel.onEvent(Event.CloseCreateFolderDialog) }) {
-                Text(stringResource(Res.string.cancel_button_text))
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(cancelTextRes))
             }
         }
     )
