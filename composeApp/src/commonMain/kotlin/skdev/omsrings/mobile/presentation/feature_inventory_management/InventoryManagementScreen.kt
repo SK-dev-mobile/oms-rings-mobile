@@ -38,7 +38,6 @@ import skdev.omsrings.mobile.ui.theme.values.Dimens
 import skdev.omsrings.mobile.utils.fields.FormField
 
 // TODO: сделать обновление экрана по swipe
-// TODO: починить валидацию
 // TODO: навести красоту
 object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
     @OptIn(InternalVoyagerApi::class)
@@ -280,6 +279,7 @@ fun InventoryItemRow(
         iconTint = MaterialTheme.colorScheme.secondary,
         title = item.name,
         onRowClick = { /* Можно добавить действие при клике, если нужно */ },
-        onDeleteClick = onDeleteClick
+        onDeleteClick = onDeleteClick,
+        subtitle = stringResource(Res.string.item_stock, item.stockQuantity)
     )
 }

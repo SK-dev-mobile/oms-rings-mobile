@@ -16,5 +16,6 @@ data class Folder(
 @Serializable
 data class InventoryItem(
     val id: String = randomUUID(),
-    val name: String
+    val name: String,
+    val stockQuantity: Int = 0
 )

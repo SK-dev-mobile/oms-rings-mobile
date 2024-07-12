@@ -51,6 +51,7 @@
     <string name="inventory_management_add_item">Добавить товар</string>
     <string name="inventory_management_emptry_items_message">В данный момент товаров нет.\nНажмите '+', чтобы добавить новый товар.</string>
     <string name="item_count">%1$d товаров</string>
+    <string name="item_stock">Остаток: %1$d</string>
 
     <!-- AddItemDialog -->
     <string name="add_item_dialog_title">Добавить новый товар</string>
