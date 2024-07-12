@@ -14,6 +14,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import omsringsmobile.composeapp.generated.resources.Res
+import omsringsmobile.composeapp.generated.resources.delete
+import org.jetbrains.compose.resources.stringResource
 import skdev.omsrings.mobile.ui.components.helpers.Spacer
 import skdev.omsrings.mobile.ui.theme.values.Dimens
 
@@ -61,7 +64,11 @@ fun GenericRow(
                 }
             }
             IconButton(onClick = onDeleteClick) {
-                Icon(Icons.Rounded.Delete, contentDescription = "Delete")
+                Icon(
+                    Icons.Rounded.Delete,
+                    tint = MaterialTheme.colorScheme.error,
+                    contentDescription = stringResource(Res.string.delete)
+                )
             }
         }
     }
