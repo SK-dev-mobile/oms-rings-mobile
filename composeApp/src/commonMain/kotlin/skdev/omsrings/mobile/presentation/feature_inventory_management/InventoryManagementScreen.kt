@@ -18,6 +18,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
 import cafe.adriel.voyager.koin.koinScreenModel
@@ -47,6 +48,17 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
         val state by screenModel.state.collectAsState()
 
 
+        val selectedFolder = remember(state.selectedFolderId, state.folders) {
+            state.folders.find { it.id == state.selectedFolderId }
+        }
+
+        val defaultHeaderText = stringResource(Res.string.inventory_management_header)
+        val title = if (state.selectedFolderId == null) {
+            defaultHeaderText
+        } else {
+            selectedFolder?.name ?: defaultHeaderText
+        }
+
         BackHandler(enabled = state.selectedFolderId != null) {
             screenModel.onEvent(Event.SetSelectedInventoryFolder(null))
         }
@@ -54,11 +66,7 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
         Scaffold(
             topBar = {
                 RingsTopAppBar(
-                    title = when {
-                        state.selectedFolderId == null -> stringResource(Res.string.inventory_management_header)
-                        else -> state.folders.find { it.id == state.selectedFolderId }?.name
-                            ?: stringResource(Res.string.inventory_management_header)
-                    },
+                    title = title,
                     onNavigationClicked = {
                         if (state.selectedFolderId == null) {
                             /* handle pop */
@@ -78,33 +86,32 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
                         }
                     }
                 ) {
-                    Icon(
-                        if (state.selectedFolderId != null) Icons.Rounded.Add else Icons.Rounded.CreateNewFolder,
-                        contentDescription = if (state.selectedFolderId != null) stringResource(Res.string.inventory_management_add_item) else "Add Folder"
-                    )
+                    // Используем remember для кэширования иконки
+                    val icon = remember(state.selectedFolderId) {
+                        if (state.selectedFolderId != null) Icons.Rounded.Add else Icons.Rounded.CreateNewFolder
+                    }
+                    val contentDescription = if (state.selectedFolderId != null) {
+                        stringResource(Res.string.inventory_management_add_item)
+                    } else {
+                        stringResource(Res.string.add_folder)
+                    }
+                    Icon(icon, contentDescription = contentDescription)
                 }
             }
         )
         { paddingValues ->
             Column(modifier = Modifier.padding(paddingValues)) {
                 if (state.selectedFolderId == null) {
-                    if (state.folders.isEmpty()) {
-                        EmptyFoldersMessage(
-                            onAddFolderClick = { screenModel.onEvent(Event.DisplayCreateFolderDialog) }
-                        )
-
-                    } else {
-                        FolderList(
-                            folders = state.folders,
-                            onFolderClick = { screenModel.onEvent(Event.SetSelectedInventoryFolder(it.id)) },
-                            onDeleteFolder = { screenModel.onEvent(Event.RemoveInventoryFolder(it)) }
-                        )
-                    }
+                    FolderList(
+                        folders = state.folders,
+                        onFolderClick = { screenModel.onEvent(Event.SetSelectedInventoryFolder(it.id)) },
+                        onDeleteFolder = { screenModel.onEvent(Event.RemoveInventoryFolder(it)) },
+                        onCreateFolderClick = { screenModel.onEvent(Event.DisplayCreateFolderDialog) }
+                    )
                 } else {
-                    val selectedFolder = state.folders.find { it.id == state.selectedFolderId }
-                    if (selectedFolder != null) {
+                    selectedFolder?.let { folder ->
                         InventoryItemList(
-                            items = selectedFolder.inventoryItems,
+                            items = folder.inventoryItems,
                             onDeleteItem = { screenModel.onEvent(Event.RemoveInventoryItem(it)) },
                             onAddItemClick = { screenModel.onEvent(Event.DisplayAddInventoryItemDialog) }
                         )
@@ -129,16 +136,28 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
 @Composable
 fun FolderList(
     folders: List<Folder>,
+    onCreateFolderClick: () -> Unit,
     onFolderClick: (Folder) -> Unit,
     onDeleteFolder: (Folder) -> Unit
 ) {
-    LazyColumn {
-        items(folders) { folder ->
-            FolderRow(
-                folder = folder,
-                onClick = { onFolderClick(folder) },
-                onDelete = { onDeleteFolder(folder) }
-            )
+    if (folders.isEmpty()) {
+        EmptyFoldersMessage(onAddFolderClick = onCreateFolderClick)
+    } else {
+        LazyColumn {
+            items(
+                items = folders,
+                key = { it.id } // Используем key для оптимизации обновлений списка
+            ) { folder ->
+                // Используем remember для кэширования колбэков
+                val onClickHandler = remember(folder) { { onFolderClick(folder) } }
+                val onDeleteHandler = remember(folder) { { onDeleteFolder(folder) } }
+
+                FolderRow(
+                    folder = folder,
+                    onClick = onClickHandler,
+                    onDelete = onDeleteHandler
+                )
+            }
         }
     }
 }
@@ -157,10 +176,15 @@ fun InventoryItemList(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(vertical = Dimens.spaceSmall)
         ) {
-            items(items) { item ->
+            items(
+                items = items,
+                key = { it.id } // Используем key для оптимизации обновлений списка
+            ) { item ->
+                // Используем remember для кэширования колбэка
+                val onDeleteHandler = remember(item) { { onDeleteItem(item) } }
                 InventoryItemRow(
                     item = item,
-                    onDeleteClick = { onDeleteItem(item) }
+                    onDeleteClick = onDeleteHandler
                 )
             }
         }
