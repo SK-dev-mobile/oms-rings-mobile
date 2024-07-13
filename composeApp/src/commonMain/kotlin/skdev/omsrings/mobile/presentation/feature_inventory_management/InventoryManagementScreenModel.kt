@@ -102,7 +102,11 @@ class InventoryManagementScreenModel(
             Event.CloseInventoryItemDialog -> closeInventoryItemDialog()
 
             // Item Quantity
-            is Event.IncrementQuantityInventoryItem -> incrementQuantityInventoryItem(event.item)
+            is Event.IncrementQuantityInventoryItem -> incrementQuantityInventoryItem(
+                event.item,
+                event.additionalQuantity
+            )
+
             is Event.DisplayIncrementQuantityDialog -> displayIncrementQuantityDialog(event.item)
             Event.CloseIncrementQuantityDialog -> closeIncrementQuantityDialog()
         }
@@ -154,43 +158,25 @@ class InventoryManagementScreenModel(
     private fun addOrUpdateInventoryItem() {
         screenModelScope.launch {
             val currentState = _state.value
-            if (validateAll(currentState.itemField)) {
+            if (validateAll(currentState.itemField) && currentState.selectedFolderId != null) {
                 val itemName = currentState.itemField.data.value
-                _state.update { state ->
-                    val updatedFolders = state.folders.map { folder ->
-                        if (folder.id == state.selectedFolderId) {
-                            val updatedItems = if (state.itemToEdit != null) {
-                                folder.inventoryItems.map { item ->
-                                    if (item.id == state.itemToEdit.id) item.setName(itemName) else item
-                                }
-                            } else {
-                                folder.inventoryItems + InventoryItem(name = itemName)
-                            }
-                            folder.copy(inventoryItems = updatedItems)
-                        } else {
-                            folder
-                        }
-                    }
-                    state.copy(
-                        folders = updatedFolders,
-                    )
+                val item = currentState.itemToEdit?.copy(name = itemName) ?: InventoryItem(name = itemName)
+                if (currentState.itemToEdit != null) {
+                    inventoryRepository.updateInventoryItem(currentState.selectedFolderId, item)
+                } else {
+                    inventoryRepository.addInventoryItem(currentState.selectedFolderId, item)
                 }
+                closeInventoryItemDialog()
             }
         }
-        closeInventoryItemDialog()
     }
 
     private fun removeInventoryItem(item: InventoryItem) {
-        _state.update { state ->
-            state.copy(
-                folders = state.folders.map { folder ->
-                    if (folder.id == state.selectedFolderId) {
-                        folder.copy(inventoryItems = folder.inventoryItems - item)
-                    } else {
-                        folder
-                    }
-                }
-            )
+        screenModelScope.launch {
+            val currentState = _state.value
+            if (currentState.selectedFolderId != null) {
+                inventoryRepository.deleteInventoryItem(currentState.selectedFolderId, item.id)
+            }
         }
     }
 
@@ -233,21 +219,12 @@ class InventoryManagementScreenModel(
         }
     }
 
-    private fun incrementQuantityInventoryItem(item: InventoryItem) {
-        if (_state.value.quantityField.validate()) {
-            val incrementQuantity = _state.value.quantityField.value().toIntOrNull() ?: 0
-            _state.update { state ->
-                state.copy(
-                    folders = state.folders.map { folder ->
-                        if (folder.id == state.selectedFolderId) {
-                            folder.copy(inventoryItems = folder.inventoryItems.map {
-                                if (it.id == item.id) it.incrementQuantity(incrementQuantity) else it
-                            })
-                        } else {
-                            folder
-                        }
-                    }
-                )
+    private fun incrementQuantityInventoryItem(item: InventoryItem, additionalQuantity: Int) {
+        screenModelScope.launch {
+            val currentState = _state.value
+            if (currentState.selectedFolderId != null) {
+                val updatedItem = item.copy(stockQuantity = item.stockQuantity + additionalQuantity)
+                inventoryRepository.updateInventoryItem(currentState.selectedFolderId, updatedItem)
             }
             closeIncrementQuantityDialog()
         }

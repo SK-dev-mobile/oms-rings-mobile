@@ -13,6 +13,11 @@ data class Folder(
     val inventoryItems: List<InventoryItem> = emptyList()
 ) {
     fun setName(name: String): Folder = copy(name = name)
+    fun addItem(item: InventoryItem): Folder = copy(inventoryItems = inventoryItems + item)
+    fun updateItem(item: InventoryItem): Folder =
+        copy(inventoryItems = inventoryItems.map { if (it.id == item.id) item else it })
+
+    fun removeItem(itemId: String): Folder = copy(inventoryItems = inventoryItems.filter { it.id != itemId })
 }
 
 @Serializable

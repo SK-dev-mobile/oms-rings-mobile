@@ -33,21 +33,22 @@ class FirebaseInventoryRepository(
     }
 
     override suspend fun addInventoryItem(folderId: String, item: InventoryItem) {
-        foldersCollection.document(folderId).collection("items").document(item.id).set(item)
+        updateFolderItems(folderId) { it.addItem(item) }
     }
 
     override suspend fun updateInventoryItem(folderId: String, item: InventoryItem) {
-        foldersCollection.document(folderId)
-            .collection("items")
-            .document(item.id)
-            .set(item)
+        updateFolderItems(folderId) { it.updateItem(item) }
     }
 
     override suspend fun deleteInventoryItem(folderId: String, itemId: String) {
-        foldersCollection.document(folderId)
-            .collection("items")
-            .document(itemId)
-            .delete()
+        updateFolderItems(folderId) { it.removeItem(itemId) }
+    }
+
+    private suspend fun updateFolderItems(folderId: String, update: (Folder) -> Folder) {
+        val folderRef = foldersCollection.document(folderId)
+        val folder = folderRef.get().data<Folder>() ?: return
+        val updatedFolder = update(folder)
+        folderRef.set(updatedFolder)
     }
 
 

@@ -33,8 +33,6 @@ import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
 import skdev.omsrings.mobile.ui.theme.values.Dimens
 import skdev.omsrings.mobile.utils.fields.FormField
 
-// TODO: сделать обновление экрана по swipe
-// TODO: навести красоту
 object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
     @OptIn(InternalVoyagerApi::class)
     @Composable
