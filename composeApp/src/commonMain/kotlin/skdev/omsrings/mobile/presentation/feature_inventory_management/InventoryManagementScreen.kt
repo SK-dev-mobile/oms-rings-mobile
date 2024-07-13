@@ -109,6 +109,7 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
                         InventoryItemList(
                             items = folder.inventoryItems,
                             onIncrementQuantity = { screenModel.onEvent(Event.DisplayIncrementQuantityDialog(it)) },
+                            onEditItem = { screenModel.onEvent(Event.DisplayInventoryItemDialog(it)) },
                             onDeleteItem = { screenModel.onEvent(Event.RemoveInventoryItem(it)) },
                             onAddItemClick = { screenModel.onEvent(Event.DisplayInventoryItemDialog()) }
                         )
@@ -127,8 +128,9 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
         }
 
         if (state.isItemDialogVisible) {
-            AddInventoryItemDialog(
+            InventoryItemDialog(
                 inputField = state.itemField,
+                isEditing = state.itemToEdit != null,
                 onConfirm = { screenModel.onEvent(Event.AddOrUpdateInventoryItem) },
                 onDismiss = { screenModel.onEvent(Event.CloseInventoryItemDialog) }
             )
@@ -193,6 +195,7 @@ fun FolderList(
 fun InventoryItemList(
     items: List<InventoryItem>,
     onIncrementQuantity: (InventoryItem) -> Unit,
+    onEditItem: (InventoryItem) -> Unit,
     onDeleteItem: (InventoryItem) -> Unit,
     onAddItemClick: () -> Unit
 ) {
@@ -208,10 +211,12 @@ fun InventoryItemList(
                 key = { it.id }
             ) { item ->
                 val onIncrementHandler = remember(item) { { onIncrementQuantity(item) } }
+                val onEditHandler = remember(item) { { onEditItem(item) } }
                 val onDeleteHandler = remember(item) { { onDeleteItem(item) } }
                 InventoryItemRow(
                     item = item,
                     onIncrementQuantity = onIncrementHandler,
+                    onEditClick = onEditHandler,
                     onDeleteClick = onDeleteHandler
                 )
             }
@@ -266,14 +271,15 @@ fun FolderDialog(
 }
 
 @Composable
-fun AddInventoryItemDialog(
+fun InventoryItemDialog(
     inputField: FormField<String, StringResource>,
+    isEditing: Boolean,
     onConfirm: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
     BaseInputDialog(
-        titleRes = Res.string.add_item_dialog_title,
-        confirmTextRes = Res.string.add_item_dialog_add_button,
+        titleRes = if (isEditing) Res.string.update_item_dialog_title else Res.string.add_item_dialog_title,
+        confirmTextRes = if (isEditing) Res.string.update_button_text else Res.string.add_item_dialog_add_button,
         cancelTextRes = Res.string.add_item_dialog_cancel_button,
         labelRes = Res.string.add_item_dialog_item_name,
         inputField = inputField,
@@ -343,6 +349,7 @@ fun FolderRow(
 fun InventoryItemRow(
     item: InventoryItem,
     onIncrementQuantity: () -> Unit,
+    onEditClick: () -> Unit,
     onDeleteClick: () -> Unit
 ) {
     GenericRow(
@@ -360,6 +367,15 @@ fun InventoryItemRow(
             }
         },
         secondaryAction = {
+            IconButton(onClick = onEditClick) {
+                Icon(
+                    Icons.Rounded.Edit,
+                    tint = MaterialTheme.colorScheme.secondary,
+                    contentDescription = ""
+                )
+            }
+        },
+        tertiaryAction = {
             IconButton(onClick = onDeleteClick) {
                 Icon(
                     Icons.Rounded.Delete,

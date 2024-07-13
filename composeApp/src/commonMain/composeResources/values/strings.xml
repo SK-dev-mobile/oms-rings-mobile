@@ -46,7 +46,7 @@
     <string name="user_settings_clear_orders_description">Нажмите кнопку ниже, чтобы удалить данные о составах заявок. Будут удалены все сохраненные заявки, кроме тех, что были сделаны за последние 3 месяца.</string>
     <string name="clear_cancelled_orders_title">Списанные заказы очищены</string>
     <string name="clear_cancelled_orders_message">Все списанные заказы старше 3 месяцев были успешно удалены из системы.</string>
-    
+
     <!-- Inventory Management Screen -->
     <string name="inventory_management_header">Учет товара</string>
     <string name="inventory_management_add_item">Добавить товар</string>
@@ -60,19 +60,20 @@
     <string name="item_stock">Остаток: %1$d</string>
     <string name="delete">Удалить</string>
 
-    <!-- AddItemDialog -->
+    <!--InventoryItemDialog -->
     <string name="add_item_dialog_title">Добавить новый товар</string>
     <string name="add_item_dialog_item_name">Название товара</string>
     <string name="add_item_dialog_add_button">Добавить</string>
     <string name="add_item_dialog_cancel_button">Отмена</string>
-
+    <string name="update_item_dialog_title">Изменить товар</string>
+    
     <!-- FolderDialog -->
     <string name="create_folder_dialog_title">Добавить папку</string>
     <string name="folder_name_label">Название папки</string>
     <string name="create_button_text">Создать</string>
     <string name="cancel_button_text">Отмена</string>
-    <string name="update_folder_dialog_title">Обновить папку</string>
-    <string name="update_button_text">Обновить</string>
+    <string name="update_folder_dialog_title">Изменить папку</string>
+    <string name="update_button_text">Изменить</string>
 
     <!-- IncrementQuantity -->
     <string name="increment_quantity_dialog_title">Увеличение количества</string>
