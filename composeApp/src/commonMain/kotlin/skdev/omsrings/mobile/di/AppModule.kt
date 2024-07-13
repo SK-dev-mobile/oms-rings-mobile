@@ -20,6 +20,7 @@ import skdev.omsrings.mobile.domain.usecase.feature_user_settings.UpdateNotifica
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.UpdateShowClearedOrdersSettingsUseCase
 import skdev.omsrings.mobile.presentation.feature_auth.AuthScreenModel
 import skdev.omsrings.mobile.presentation.feature_main.MainScreenModel
+import skdev.omsrings.mobile.presentation.feature_order_form.OrderFormScreenModel
 import skdev.omsrings.mobile.presentation.feature_user_settings.UserSettingsModel
 import skdev.omsrings.mobile.utils.notification.NotificationManager
 
@@ -77,6 +78,13 @@ private val viewModels = module {
             updateNotificationSettingsUseCase = get(),
             updateShowClearedOrdersSettingsUseCase = get(),
             clearOldOrdersUseCase = get()
+        )
+    }
+
+    // OrderForm
+    factory<OrderFormScreenModel> {
+        OrderFormScreenModel(
+            notificationManager = get()
         )
     }
 
