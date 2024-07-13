@@ -3,6 +3,7 @@ package skdev.omsrings.mobile.presentation.feature_order_form
 import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.cant_be_blank
 import org.jetbrains.compose.resources.StringResource
@@ -17,7 +18,9 @@ import skdev.omsrings.mobile.utils.notification.NotificationManager
 
 class OrderFormScreenModel(
     notificationManager: NotificationManager
-) : BaseScreenModel<OrderFormScreenContract.Event, OrderFormScreenContract.Effect>(notificationManager) {
+) : BaseScreenModel<OrderFormScreenContract.Event, OrderFormScreenContract.Effect>(
+    notificationManager
+) {
 
     private val _state = MutableStateFlow(
         OrderFormScreenContract.State(
@@ -50,7 +53,24 @@ class OrderFormScreenModel(
     )
 
     override fun onEvent(event: OrderFormScreenContract.Event) {
-        TODO("Not yet implemented")
+        when (event) {
+            is OrderFormScreenContract.Event.PhoneChanged -> updatePhone(event.phone)
+            is OrderFormScreenContract.Event.DeliveryMethodChanged -> updateDeliveryMethod(event.method)
+            is OrderFormScreenContract.Event.AddressChanged -> updateAddress(event.address)
+            OrderFormScreenContract.Event.OnBackClicked -> TODO()
+        }
+    }
+
+    private fun updatePhone(phone: String) {
+        _state.update { it.copy(phoneField = it.phoneField.apply { setValue(phone) }) }
+    }
+
+    private fun updateDeliveryMethod(method: DeliveryMethod) {
+        _state.update { it.copy(deliveryMethod = method) }
+    }
+
+    private fun updateAddress(newAddress: String) {
+        _state.update { it.copy(addressField = it.addressField.apply { setValue(newAddress) }) }
     }
 
 }

@@ -18,6 +18,11 @@ class OrderFormScreenContract {
     sealed interface Event {
         data object OnBackClicked : Event
 
+        // Form
+        data class PhoneChanged(val phone: String) : Event
+        data class DeliveryMethodChanged(val method: DeliveryMethod) : Event
+        data class AddressChanged(val address: String) : Event
+
     }
 
     sealed interface Effect {
