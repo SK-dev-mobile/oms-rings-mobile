@@ -75,7 +75,7 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
                 FloatingActionButton(
                     onClick = {
                         if (state.selectedFolderId != null) {
-                            screenModel.onEvent(Event.DisplayAddInventoryItemDialog)
+                            screenModel.onEvent(Event.DisplayInventoryItemDialog())
                         } else {
                             screenModel.onEvent(Event.DisplayFolderDialog())
                         }
@@ -110,7 +110,7 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
                             items = folder.inventoryItems,
                             onIncrementQuantity = { screenModel.onEvent(Event.DisplayIncrementQuantityDialog(it)) },
                             onDeleteItem = { screenModel.onEvent(Event.RemoveInventoryItem(it)) },
-                            onAddItemClick = { screenModel.onEvent(Event.DisplayAddInventoryItemDialog) }
+                            onAddItemClick = { screenModel.onEvent(Event.DisplayInventoryItemDialog()) }
                         )
                     }
                 }
@@ -126,19 +126,19 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
             )
         }
 
-        if (state.isAddingItem) {
+        if (state.isItemDialogVisible) {
             AddInventoryItemDialog(
-                inputField = state.newItemField,
-                onConfirm = { screenModel.onEvent(Event.AddInventoryItem) },
-                onDismiss = { screenModel.onEvent(Event.CloseAddInventoryItemDialog) }
+                inputField = state.itemField,
+                onConfirm = { screenModel.onEvent(Event.AddOrUpdateInventoryItem) },
+                onDismiss = { screenModel.onEvent(Event.CloseInventoryItemDialog) }
             )
         }
 
-        if (state.isIncrementQuantity) {
+        if (state.incrementQuantityDialogVisible) {
             state.selectedItem?.let { item ->
                 IncrementQuantityDialog(
                     item = item,
-                    inputField = state.newQuantityField,
+                    inputField = state.quantityField,
                     onConfirm = { incrementAmount ->
                         screenModel.onEvent(
                             Event.IncrementQuantityInventoryItem(

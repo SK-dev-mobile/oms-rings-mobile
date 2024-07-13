@@ -31,8 +31,8 @@ class InventoryManagementScreenModel(
     private val _state = MutableStateFlow(
         InventoryState(
             folderField = createFolderField(),
-            newItemField = createNewItemField(),
-            newQuantityField = createNewQuantityField()
+            itemField = createItemField(),
+            quantityField = createNewQuantityField()
         )
     )
     val state = _state.asStateFlow()
@@ -47,7 +47,7 @@ class InventoryManagementScreenModel(
         }
     )
 
-    private fun createNewItemField() = FormField(
+    private fun createItemField() = FormField(
         scope = screenModelScope,
         initialValue = "",
         validation = flowBlock { value ->
@@ -74,21 +74,23 @@ class InventoryManagementScreenModel(
 
     override fun onEvent(event: Event) {
         when (event) {
-            Event.AddInventoryItem -> addInventoryItem()
-            is Event.RemoveInventoryItem -> removeInventoryItem(event.item)
-            Event.DisplayAddInventoryItemDialog -> displayAddInventoryItemDialog()
-            Event.CloseAddInventoryItemDialog -> closeAddInventoryItemDialog()
-            is Event.SetSelectedInventoryFolder -> setSelectedInventoryFolder(event.folderId)
-            is Event.IncrementQuantityInventoryItem -> incrementQuantityInventoryItem(event.item)
-            is Event.DisplayIncrementQuantityDialog -> displayIncrementQuantityDialog(event.item)
-            Event.CloseIncrementQuantityDialog -> closeIncrementQuantityDialog()
-
-
             // Folder
+            is Event.SetSelectedInventoryFolder -> setSelectedInventoryFolder(event.folderId)
             is Event.CreateOrUpdateFolder -> createOrUpdateFolder()
             is Event.RemoveInventoryFolder -> removeInventoryFolder(event.folder)
             is Event.DisplayFolderDialog -> displayFolderDialog(event.folder)
             Event.CloseFolderDialog -> closeFolderDialog()
+
+            // Item
+            Event.AddOrUpdateInventoryItem -> addOrUpdateInventoryItem()
+            is Event.DisplayInventoryItemDialog -> displayInventoryItemDialog(event.item)
+            is Event.RemoveInventoryItem -> removeInventoryItem(event.item)
+            Event.CloseInventoryItemDialog -> closeInventoryItemDialog()
+
+            // Item Quantity
+            is Event.IncrementQuantityInventoryItem -> incrementQuantityInventoryItem(event.item)
+            is Event.DisplayIncrementQuantityDialog -> displayIncrementQuantityDialog(event.item)
+            Event.CloseIncrementQuantityDialog -> closeIncrementQuantityDialog()
         }
     }
 
@@ -100,20 +102,18 @@ class InventoryManagementScreenModel(
                 _state.update { state ->
                     val updatedFolders = if (state.folderToEdit != null) {
                         state.folders.map { folder ->
-                            if (folder.id == state.folderToEdit.id) folder.copy(name = folderName) else folder
+                            if (folder.id == state.folderToEdit.id) folder.setName(folderName) else folder
                         }
                     } else {
                         state.folders + Folder(name = folderName)
                     }
                     state.copy(
-                        folders = updatedFolders,
-                        folderField = createFolderField(),
-                        folderToEdit = null,
-                        isFolderDialogVisible = false
+                        folders = updatedFolders
                     )
                 }
             }
         }
+        closeFolderDialog()
     }
 
     private fun displayFolderDialog(folder: Folder?) {
@@ -145,27 +145,33 @@ class InventoryManagementScreenModel(
         }
     }
 
-
-    private fun addInventoryItem() {
+    private fun addOrUpdateInventoryItem() {
         screenModelScope.launch {
             val currentState = _state.value
-            if (currentState.newItemField.validate() && currentState.selectedFolderId != null) {
-                val newItem = InventoryItem(name = currentState.newItemField.value())
+            if (validateAll(currentState.itemField)) {
+                val itemName = currentState.itemField.data.value
                 _state.update { state ->
-                    state.copy(
-                        folders = state.folders.map { folder ->
-                            if (folder.id == state.selectedFolderId) {
-                                folder.copy(inventoryItems = folder.inventoryItems + newItem)
+                    val updatedFolders = state.folders.map { folder ->
+                        if (folder.id == state.selectedFolderId) {
+                            val updatedItems = if (state.itemToEdit != null) {
+                                folder.inventoryItems.map { item ->
+                                    if (item.id == state.itemToEdit.id) item.setName(itemName) else item
+                                }
                             } else {
-                                folder
+                                folder.inventoryItems + InventoryItem(name = itemName)
                             }
-                        },
-                        newItemField = createNewItemField()
+                            folder.copy(inventoryItems = updatedItems)
+                        } else {
+                            folder
+                        }
+                    }
+                    state.copy(
+                        folders = updatedFolders,
                     )
                 }
-                closeAddInventoryItemDialog()
             }
         }
+        closeInventoryItemDialog()
     }
 
     private fun removeInventoryItem(item: InventoryItem) {
@@ -186,37 +192,44 @@ class InventoryManagementScreenModel(
         _state.update { it.copy(selectedFolderId = folderId) }
     }
 
-    private fun displayAddInventoryItemDialog() {
-        _state.update { it.copy(isAddingItem = true) }
-    }
-
-    private fun closeAddInventoryItemDialog() {
+    private fun displayInventoryItemDialog(item: InventoryItem?) {
         _state.update {
             it.copy(
-                isAddingItem = false,
-                newItemField = createNewItemField()
+                isItemDialogVisible = true,
+                itemField = createItemField().apply { data.value = item?.name ?: "" },
+                itemToEdit = item
+            )
+        }
+    }
+
+    private fun closeInventoryItemDialog() {
+        _state.update {
+            it.copy(
+                isItemDialogVisible = false,
+                itemField = createItemField(),
+                itemToEdit = null
             )
         }
     }
 
 
     private fun displayIncrementQuantityDialog(item: InventoryItem) {
-        _state.update { it.copy(isIncrementQuantity = true, selectedItem = item) }
+        _state.update { it.copy(incrementQuantityDialogVisible = true, selectedItem = item) }
     }
 
     private fun closeIncrementQuantityDialog() {
         _state.update {
             it.copy(
-                isIncrementQuantity = false,
+                incrementQuantityDialogVisible = false,
                 selectedItem = null,
-                newQuantityField = createNewQuantityField()
+                quantityField = createNewQuantityField()
             )
         }
     }
 
     private fun incrementQuantityInventoryItem(item: InventoryItem) {
-        if (_state.value.newQuantityField.validate()) {
-            val incrementQuantity = _state.value.newQuantityField.value().toIntOrNull() ?: 0
+        if (_state.value.quantityField.validate()) {
+            val incrementQuantity = _state.value.quantityField.value().toIntOrNull() ?: 0
             _state.update { state ->
                 state.copy(
                     folders = state.folders.map { folder ->

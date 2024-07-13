@@ -16,14 +16,16 @@ object InventoryManagementScreenContract {
         val isFolderDialogVisible: Boolean = false,
         val folderField: FormField<String, StringResource>,
         val folderToEdit: Folder? = null,
-        // Quantity
+
+        // InventoryItem
+        val isItemDialogVisible: Boolean = false,
+        val itemToEdit: InventoryItem? = null,
+        val itemField: FormField<String, StringResource>,
+
+        // Inventory Item Quantity
         val selectedItem: InventoryItem? = null,
-        // Visible Dialog
-        val isAddingItem: Boolean = false,
-        val isIncrementQuantity: Boolean = false,
-        // Field
-        val newItemField: FormField<String, StringResource>,
-        val newQuantityField: FormField<String, StringResource>
+        val incrementQuantityDialogVisible: Boolean = false,
+        val quantityField: FormField<String, StringResource>
 
     )
 
@@ -35,15 +37,18 @@ object InventoryManagementScreenContract {
         data class RemoveInventoryFolder(val folder: Folder) : Event
 
         // Dialogs
-        data object DisplayAddInventoryItemDialog : Event
-        data object CloseAddInventoryItemDialog : Event
         data class DisplayIncrementQuantityDialog(val item: InventoryItem) : Event
         data object CloseIncrementQuantityDialog : Event
 
         // Actions With Item
         data class IncrementQuantityInventoryItem(val item: InventoryItem, val additionalQuantity: Int) : Event
-        data object AddInventoryItem : Event
+
+        // Item
+        data object AddOrUpdateInventoryItem : Event
+        data class DisplayInventoryItemDialog(val item: InventoryItem? = null) : Event
+        data object CloseInventoryItemDialog : Event
         data class RemoveInventoryItem(val item: InventoryItem) : Event
+
 
         // Transition
         data class SetSelectedInventoryFolder(val folderId: String?) : Event

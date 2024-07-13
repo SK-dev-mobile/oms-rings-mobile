@@ -11,7 +11,9 @@ data class Folder(
     val id: String = randomUUID(),
     val name: String,
     val inventoryItems: List<InventoryItem> = emptyList()
-)
+) {
+    fun setName(name: String): Folder = copy(name = name)
+}
 
 @Serializable
 data class InventoryItem(
@@ -21,4 +23,6 @@ data class InventoryItem(
 ) {
     fun incrementQuantity(amount: Int): InventoryItem =
         copy(stockQuantity = stockQuantity + amount.coerceAtLeast(0))
+
+    fun setName(name: String): InventoryItem = copy(name = name)
 }
