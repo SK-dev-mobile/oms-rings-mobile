@@ -5,6 +5,7 @@
     <string name="stop">Stop</string>
     <string name="theme">Theme</string>
     <string name="back">Назад</string>
+    <string name="cant_be_blank">Не может быть пустым</string>
 
     <!-- in-app notifications -->
     <string name="error">Ошибка</string>
@@ -42,7 +43,7 @@
     <string name="faq_rescheduled_order_description">• Выберите заказ и удерживайте для вызова меню\n• Доступно для статусов "НОВЫЙ" и "ВЫПОЛНЕННЫЙ"\n• При переносе исходный заказ получает статус "СПИСАННЫЙ"\n• В описание добавляется пометка о переносе и новая дата</string>
     <string name="faq_expand">Развёрнуто</string>
     <string name="faq_collapse">Свёрнуто</string>
-    
+
     <!-- UserSettingsScreen -->
     <string name="user_settings_title">Настройки</string>
     <string name="user_settings_receive_notifications">Получать уведомления</string>
@@ -73,4 +74,15 @@
     <string name="continue_process">Продолжить</string>
     <string name="dont_have_account">У вас нет аккаунта?</string>
     <string name="create_account">Создать</string>
+    <!-- Inventory Management Screen -->
+    <string name="inventory_management_header">Учет товара</string>
+    <string name="inventory_management_add_item">Добавить товар</string>
+    <string name="inventory_management_emptry_items_message">В данный момент товаров нет.\nНажмите '+', чтобы добавить новый товар.</string>
+
+    <!-- AddItemDialog -->
+    <string name="add_item_dialog_title">Добавить новый товар</string>
+    <string name="add_item_dialog_item_name">Название товара</string>
+    <string name="add_item_dialog_add_button">Добавить</string>
+    <string name="add_item_dialog_cancel_button">Отмена</string>
+
 </resources>

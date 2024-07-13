@@ -19,6 +19,7 @@ import skdev.omsrings.mobile.domain.usecase.feature_user_settings.GetUserSetting
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.UpdateNotificationSettingsUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.UpdateShowClearedOrdersSettingsUseCase
 import skdev.omsrings.mobile.presentation.feature_auth.AuthScreenModel
+import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenModel
 import skdev.omsrings.mobile.presentation.feature_main.MainScreenModel
 import skdev.omsrings.mobile.presentation.feature_user_settings.UserSettingsModel
 import skdev.omsrings.mobile.utils.notification.NotificationManager
@@ -41,7 +42,6 @@ private val data = module {
             firestore = Firebase.firestore
         )
     }
-
 }
 
 private val utils = module {
@@ -80,6 +80,8 @@ private val viewModels = module {
         )
     }
 
+    // Feature Inventory Management
+    factory<InventoryManagementScreenModel> { InventoryManagementScreenModel(notificationManager = get()) }
 }
 
 private val useCases = module {
