@@ -34,7 +34,7 @@ class InventoryManagementScreenModel(
         InventoryState(
             folderField = createFolderField(),
             itemField = createItemField(),
-            quantityField = createNewQuantityField()
+            quantityField = createQuantityField()
         )
     )
     val state = _state.asStateFlow()
@@ -59,7 +59,7 @@ class InventoryManagementScreenModel(
         }
     )
 
-    private fun createNewQuantityField() = FormField(
+    private fun createQuantityField() = FormField(
         scope = screenModelScope,
         initialValue = "",
         validation = flowBlock { value ->
@@ -74,10 +74,10 @@ class InventoryManagementScreenModel(
     )
 
     init {
-        loadFolders()
+        loadFoldersAndItems()
     }
 
-    private fun loadFolders() {
+    private fun loadFoldersAndItems() {
         screenModelScope.launch {
             inventoryRepository.getFoldersAndItems().collect { folders ->
                 _state.update { it.copy(folders = folders) }
@@ -88,8 +88,10 @@ class InventoryManagementScreenModel(
 
     override fun onEvent(event: Event) {
         when (event) {
-            // Folder
+            // Transition between folder
             is Event.SetSelectedInventoryFolder -> setSelectedInventoryFolder(event.folderId)
+            
+            // Folder
             is Event.CreateOrUpdateFolder -> createOrUpdateFolder()
             is Event.RemoveInventoryFolder -> removeInventoryFolder(event.folder)
             is Event.DisplayFolderDialog -> displayFolderDialog(event.folder)
@@ -214,7 +216,7 @@ class InventoryManagementScreenModel(
             it.copy(
                 incrementQuantityDialogVisible = false,
                 selectedItem = null,
-                quantityField = createNewQuantityField()
+                quantityField = createQuantityField()
             )
         }
     }

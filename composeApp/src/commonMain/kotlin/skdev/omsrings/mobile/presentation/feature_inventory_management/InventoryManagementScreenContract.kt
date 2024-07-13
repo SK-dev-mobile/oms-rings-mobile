@@ -30,18 +30,15 @@ object InventoryManagementScreenContract {
     )
 
     sealed interface Event {
+        // Event for navigating between folders (in, out)
+        data class SetSelectedInventoryFolder(val folderId: String?) : Event
+
         // Folder
         data object CreateOrUpdateFolder : Event
         data class DisplayFolderDialog(val folder: Folder? = null) : Event
         data object CloseFolderDialog : Event
         data class RemoveInventoryFolder(val folder: Folder) : Event
 
-        // Dialogs
-        data class DisplayIncrementQuantityDialog(val item: InventoryItem) : Event
-        data object CloseIncrementQuantityDialog : Event
-
-        // Actions With Item
-        data class IncrementQuantityInventoryItem(val item: InventoryItem, val additionalQuantity: Int) : Event
 
         // Item
         data object AddOrUpdateInventoryItem : Event
@@ -49,9 +46,12 @@ object InventoryManagementScreenContract {
         data object CloseInventoryItemDialog : Event
         data class RemoveInventoryItem(val item: InventoryItem) : Event
 
+        // Inventory Item Quantity
+        data class IncrementQuantityInventoryItem(val item: InventoryItem, val additionalQuantity: Int) : Event
+        data class DisplayIncrementQuantityDialog(val item: InventoryItem) : Event
+        data object CloseIncrementQuantityDialog : Event
 
-        // Transition
-        data class SetSelectedInventoryFolder(val folderId: String?) : Event
+
     }
 
     sealed interface Effect {
