@@ -46,7 +46,7 @@
     <string name="user_settings_clear_orders_description">Нажмите кнопку ниже, чтобы удалить данные о составах заявок. Будут удалены все сохраненные заявки, кроме тех, что были сделаны за последние 3 месяца.</string>
     <string name="clear_cancelled_orders_title">Списанные заказы очищены</string>
     <string name="clear_cancelled_orders_message">Все списанные заказы старше 3 месяцев были успешно удалены из системы.</string>
-
+    
     <!-- Inventory Management Screen -->
     <string name="inventory_management_header">Учет товара</string>
     <string name="inventory_management_add_item">Добавить товар</string>

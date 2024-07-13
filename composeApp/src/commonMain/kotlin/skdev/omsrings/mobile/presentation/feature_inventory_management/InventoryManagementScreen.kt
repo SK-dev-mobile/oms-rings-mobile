@@ -99,9 +99,10 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
                 if (state.selectedFolderId == null) {
                     FolderList(
                         folders = state.folders,
-                        onFolderClick = { screenModel.onEvent(Event.SetSelectedInventoryFolder(it.id)) },
-                        onDeleteFolder = { screenModel.onEvent(Event.RemoveInventoryFolder(it)) },
-                        onCreateFolderClick = { screenModel.onEvent(Event.DisplayFolderDialog()) }
+                        onCreateFolderClick = { screenModel.onEvent(Event.DisplayFolderDialog()) },
+                        onFolderClick = { folder -> screenModel.onEvent(Event.SetSelectedInventoryFolder(folder.id)) },
+                        onEditFolderClick = { folder -> screenModel.onEvent(Event.DisplayFolderDialog(folder)) },
+                        onDeleteFolder = { folder -> screenModel.onEvent(Event.RemoveInventoryFolder(folder)) }
                     )
                 } else {
                     selectedFolder?.let { folder ->
@@ -119,7 +120,7 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
         if (state.isFolderDialogVisible) {
             FolderDialog(
                 inputField = state.folderField,
-                isEditing = false,
+                isEditing = state.folderToEdit != null,
                 onConfirm = { screenModel.onEvent(Event.CreateOrUpdateFolder) },
                 onDismiss = { screenModel.onEvent(Event.CloseFolderDialog) }
             )
@@ -160,6 +161,7 @@ fun FolderList(
     folders: List<Folder>,
     onCreateFolderClick: () -> Unit,
     onFolderClick: (Folder) -> Unit,
+    onEditFolderClick: (Folder) -> Unit,
     onDeleteFolder: (Folder) -> Unit
 ) {
     if (folders.isEmpty()) {
@@ -172,11 +174,13 @@ fun FolderList(
             ) { folder ->
                 // Используем remember для кэширования колбэков
                 val onClickHandler = remember(folder) { { onFolderClick(folder) } }
+                val onEditHandler = remember(folder) { { onEditFolderClick(folder) } }
                 val onDeleteHandler = remember(folder) { { onDeleteFolder(folder) } }
 
                 FolderRow(
                     folder = folder,
                     onClick = onClickHandler,
+                    onEdit = onEditHandler,
                     onDelete = onDeleteHandler
                 )
             }
@@ -305,6 +309,7 @@ fun IncrementQuantityDialog(
 fun FolderRow(
     folder: Folder,
     onClick: () -> Unit,
+    onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
     GenericRow(
@@ -313,6 +318,15 @@ fun FolderRow(
         title = folder.name,
         subtitle = pluralStringResource(Res.plurals.item_count, folder.inventoryItems.size, folder.inventoryItems.size),
         onRowClick = onClick,
+        primaryAction = {
+            IconButton(onClick = onEdit) {
+                Icon(
+                    Icons.Rounded.Edit,
+                    tint = MaterialTheme.colorScheme.secondary,
+                    contentDescription = "test"
+                )
+            }
+        },
         secondaryAction = {
             IconButton(onClick = onDelete) {
                 Icon(

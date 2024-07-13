@@ -62,7 +62,7 @@ fun BaseInputDialog(
                     },
                     isError = inputError != null,
                     label = { Text(stringResource(labelRes)) },
-                    
+
                     keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
                     modifier = Modifier.fillMaxWidth()
                 )
