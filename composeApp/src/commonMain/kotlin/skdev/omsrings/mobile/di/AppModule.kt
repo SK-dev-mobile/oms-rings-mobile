@@ -8,8 +8,10 @@ import org.koin.core.module.Module
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 import skdev.omsrings.mobile.data.repository.AuthRepositoryImpl
+import skdev.omsrings.mobile.data.repository.FirebaseInventoryRepository
 import skdev.omsrings.mobile.data.repository.FirebaseUserSettingsRepository
 import skdev.omsrings.mobile.domain.repository.AuthRepository
+import skdev.omsrings.mobile.domain.repository.InventoryRepository
 import skdev.omsrings.mobile.domain.repository.UserSettingsRepository
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignInUserUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignUpUserUseCase
@@ -41,6 +43,12 @@ private val data = module {
         )
     }
 
+    single<InventoryRepository> {
+        FirebaseInventoryRepository(
+            firestore = Firebase.firestore
+        )
+    }
+
 }
 
 private val utils = module {
@@ -68,7 +76,12 @@ private val viewModels = module {
     }
 
     // Feature Inventory Management
-    factory<InventoryManagementScreenModel> { InventoryManagementScreenModel(notificationManager = get()) }
+    factory<InventoryManagementScreenModel> {
+        InventoryManagementScreenModel(
+            inventoryRepository = get(),
+            notificationManager = get()
+        )
+    }
 
     //
     factory<UserSettingsModel> {

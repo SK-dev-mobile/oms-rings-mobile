@@ -10,6 +10,7 @@ import omsringsmobile.composeapp.generated.resources.cant_be_blank
 import omsringsmobile.composeapp.generated.resources.quantity_must_be_positive_number
 import skdev.omsrings.mobile.domain.model.Folder
 import skdev.omsrings.mobile.domain.model.InventoryItem
+import skdev.omsrings.mobile.domain.repository.InventoryRepository
 import skdev.omsrings.mobile.presentation.base.BaseScreenModel
 import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenContract.Effect
 import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenContract.Event
@@ -24,7 +25,8 @@ import skdev.omsrings.mobile.utils.notification.NotificationManager
 
 
 class InventoryManagementScreenModel(
-    val notificationManager: NotificationManager
+    private val inventoryRepository: InventoryRepository,
+    notificationManager: NotificationManager,
 ) : BaseScreenModel<Event, Effect>(notificationManager) {
 
 
@@ -70,6 +72,18 @@ class InventoryManagementScreenModel(
 
         }
     )
+
+    init {
+        loadFolders()
+    }
+
+    private fun loadFolders() {
+        screenModelScope.launch {
+            inventoryRepository.getFolders().collect { folders ->
+                _state.update { it.copy(folders = folders) }
+            }
+        }
+    }
 
 
     override fun onEvent(event: Event) {

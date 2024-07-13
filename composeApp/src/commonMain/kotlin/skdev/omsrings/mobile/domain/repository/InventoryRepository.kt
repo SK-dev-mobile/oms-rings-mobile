@@ -10,7 +10,6 @@ interface InventoryRepository {
     suspend fun addFolder(folder: Folder)
     suspend fun updateFolder(folder: Folder)
     suspend fun deleteFolder(folderId: String)
-    fun getInventoryItems(folderId: String): Flow<List<InventoryItem>>
     suspend fun addInventoryItem(folderId: String, item: InventoryItem)
     suspend fun updateInventoryItem(folderId: String, item: InventoryItem)
     suspend fun deleteInventoryItem(folderId: String, itemId: String)
