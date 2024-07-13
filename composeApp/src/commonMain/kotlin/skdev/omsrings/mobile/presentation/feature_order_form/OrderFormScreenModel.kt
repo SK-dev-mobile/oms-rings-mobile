@@ -25,10 +25,11 @@ class OrderFormScreenModel(
     private val _state = MutableStateFlow(
         OrderFormScreenContract.State(
             isLoading = false,
+            showDatePicker = false,
+            showTimePicker = false,
             phoneField = createPhoneField(),
             deliveryMethod = DeliveryMethod.PICKUP,
-            timeField = createTimeField(),
-            dateField = createDateField(),
+            dateTimeField = createDateTimeField(),
             commentField = createCommentField(),
             addressField = createAddressField(),
         )
@@ -56,19 +57,9 @@ class OrderFormScreenModel(
         }
     )
 
-    fun createTimeField() = FormField<String, StringResource>(
+    private fun createDateTimeField() = FormField<String, StringResource>(
         scope = screenModelScope,
-        initialValue = "",
-        validation = flowBlock {
-            ValidationResult.of(it) {
-                notBlank(Res.string.cant_be_blank)
-            }
-        }
-    )
-
-    private fun createDateField() = FormField<String, StringResource>(
-        scope = screenModelScope,
-        initialValue = "",
+        initialValue = "2023-01-02T23:40:57.120Z",
         validation = flowBlock {
             ValidationResult.of(it) {
                 notBlank(Res.string.cant_be_blank)
@@ -91,10 +82,13 @@ class OrderFormScreenModel(
             is OrderFormScreenContract.Event.PhoneChanged -> updatePhone(event.phone)
             is OrderFormScreenContract.Event.DeliveryMethodChanged -> updateDeliveryMethod(event.method)
             is OrderFormScreenContract.Event.AddressChanged -> updateAddress(event.address)
-            OrderFormScreenContract.Event.OnBackClicked -> TODO()
             is OrderFormScreenContract.Event.CommentChanged -> TODO()
             is OrderFormScreenContract.Event.DateChanged -> TODO()
-            is OrderFormScreenContract.Event.TimeChanged -> updateTime(event.time)
+            is OrderFormScreenContract.Event.DateTimeFieldClicked -> showDatePicker()
+            OrderFormScreenContract.Event.DismissDatePicker -> hideDatePicker()
+            OrderFormScreenContract.Event.OnBackClicked -> TODO()
+            is OrderFormScreenContract.Event.ConfirmTime -> TODO()
+            OrderFormScreenContract.Event.DismissTimePicker -> TODO()
         }
     }
 
@@ -110,8 +104,12 @@ class OrderFormScreenModel(
         _state.update { it.copy(addressField = it.addressField.apply { setValue(newAddress) }) }
     }
 
-    private fun updateTime(newTime: String) {
-        _state.update { it.copy(timeField = it.timeField.apply { setValue(newTime) }) }
+    private fun showDatePicker() {
+        _state.update { it.copy(showDatePicker = true) }
+    }
+
+    private fun hideDatePicker() {
+        _state.update { it.copy(showDatePicker = false) }
     }
 
 }

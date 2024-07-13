@@ -13,9 +13,12 @@ class OrderFormScreenContract {
         val phoneField: FormField<String, StringResource>,
         val deliveryMethod: DeliveryMethod,
         val addressField: FormField<String, StringResource>,
-        val timeField: FormField<String, StringResource>,
-        val dateField: FormField<String, StringResource>,
-        val commentField: FormField<String, StringResource>
+        val dateTimeField: FormField<String, StringResource>,
+        val commentField: FormField<String, StringResource>,
+
+        // Dialog
+        val showDatePicker: Boolean,
+        val showTimePicker: Boolean,
     )
 
     sealed interface Event {
@@ -25,10 +28,16 @@ class OrderFormScreenContract {
         data class PhoneChanged(val phone: String) : Event
         data class DeliveryMethodChanged(val method: DeliveryMethod) : Event
         data class AddressChanged(val address: String) : Event
-        data class TimeChanged(val time: String) : Event
         data class DateChanged(val date: String) : Event
         data class CommentChanged(val comment: String) : Event
 
+        // Date Picker
+        data class DateTimeFieldClicked(val dateTimeValue: String) : Event
+        data object DismissDatePicker : Event
+
+        // Time Picker
+        data class ConfirmTime(val hour: Int, val minute: Int) : Event
+        data object DismissTimePicker : Event
     }
 
     sealed interface Effect {

@@ -1,26 +1,30 @@
 package skdev.omsrings.mobile.presentation.feature_order_form
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.koin.koinScreenModel
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
 import skdev.omsrings.mobile.domain.model.DeliveryMethod
 import skdev.omsrings.mobile.presentation.base.BaseScreen
 import skdev.omsrings.mobile.presentation.feature_order_form.OrderFormScreenContract.Event
-import skdev.omsrings.mobile.presentation.feature_order_form.components.EnhancedTimeInput
 import skdev.omsrings.mobile.ui.components.fields.PhoneField
 import skdev.omsrings.mobile.ui.components.fields.SupportingText
 import skdev.omsrings.mobile.ui.components.fields.TextField
@@ -78,9 +82,8 @@ private fun OrderFormContent(
                 AddressInput(state, onEvent)
                 Spacer(16.dp)
             }
-            TimePickerField(state = state, onEvent = onEvent)
             Spacer(16.dp)
-            DatePickerField(
+            DeliveryDateTimeField(
                 state = state,
                 onEvent = onEvent
             )
@@ -196,69 +199,141 @@ private fun AddressInput(state: OrderFormScreenContract.State, onEvent: (Event) 
     )
 }
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TimePickerField(
+fun DeliveryDateTimeField(
     state: OrderFormScreenContract.State,
-    onEvent: (Event) -> Unit
+    onEvent: (Event) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val (timeValue, onTimeValueChanged) = state.timeField.data.collectAsMutableState()
-    val timeError by state.timeField.error.collectAsState()
+    val dateTime = remember(state.dateTimeField.data.value) {
+        Instant.parse(state.dateTimeField.data.value).toLocalDateTime(TimeZone.currentSystemDefault())
+    }
 
-    EnhancedTimeInput(
-        value = timeValue,
-        onValueChange = { newValue ->
-            onTimeValueChanged(newValue)
-            onEvent(OrderFormScreenContract.Event.TimeChanged(newValue))
-        },
-        modifier = Modifier.fillMaxWidth(),
-        isError = timeError != null,
-        label = { Text("Время доставки") }
-    )
-
-    if (timeError != null) {
-        Text(
-            text = timeError.toString(),
-            color = MaterialTheme.colorScheme.error,
-            style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+    Column(modifier = modifier) {
+        TextField(
+            value = dateTime.toString(),
+            onValueChange = { },
+            label = { Text("Дата и время доставки") },
+            readOnly = true,
+            enabled = !state.isLoading,
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.DateRange,
+                    contentDescription = "Select date and time"
+                )
+            },
+            modifier = Modifier.fillMaxWidth(),
+            interactionSource = remember { MutableInteractionSource() }.also { interactionSource ->
+                LaunchedEffect(interactionSource) {
+                    interactionSource.interactions.collect {
+                        if (it is PressInteraction.Release) {
+                            if (!state.isLoading) {
+                                onEvent(Event.DateTimeFieldClicked(dateTime.toString()))
+                            }
+                        }
+                    }
+                }
+            }
         )
+
+
+
+        if (state.showDatePicker) {
+            DatePickerDialog(
+                onDismissRequest = { onEvent(Event.DismissDatePicker) },
+                confirmButton = {
+                    TextButton(onClick = {
+                        onEvent(Event.DismissDatePicker)
+                        onEvent(Event.DateTimeFieldClicked(dateTime.toString()))
+                    }) { Text("OK") }
+                },
+                dismissButton = {
+                    TextButton(onClick = { onEvent(Event.DismissDatePicker) }) {
+                        Text("Отмена")
+                    }
+                }
+            ) {
+                DatePicker(
+                    state = rememberDatePickerState(
+                        initialSelectedDateMillis = dateTime.toInstant(TimeZone.currentSystemDefault())
+                            .toEpochMilliseconds()
+                    )
+                )
+
+            }
+        }
+
+        if (state.showTimePicker) {
+            TimePickerDialog(
+                onDismissRequest = { onEvent(Event.DismissTimePicker) },
+                onTimeSelected = { hour, minute ->
+                    onEvent(Event.ConfirmTime(hour, minute))
+                },
+                initialHour = dateTime.hour,
+                initialMinute = dateTime.minute
+            )
+        }
+
+//        if (showTimePicker) {
+//            TimePickerDialog(
+//                onDismissRequest = { showTimePicker = false },
+//                onTimeSelected = { hour, minute ->
+//                    tempDateTime = LocalDateTime(
+//                        year = tempDateTime.year,
+//                        monthNumber = tempDateTime.monthNumber,
+//                        dayOfMonth = tempDateTime.dayOfMonth,
+//                        hour = hour,
+//                        minute = minute,
+//                        second = 0,
+//                        nanosecond = 0
+//                    )
+//                    onDateTimeChanged(tempDateTime)
+//                    showTimePicker = false
+//                },
+//                initialHour = tempDateTime.hour,
+//                initialMinute = tempDateTime.minute
+//            )
+//        }
     }
 }
 
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DatePickerField(
-    state: OrderFormScreenContract.State,
-    onEvent: (Event) -> Unit
+private fun TimePickerDialog(
+    onDismissRequest: () -> Unit,
+    onTimeSelected: (hour: Int, minute: Int) -> Unit,
+    initialHour: Int,
+    initialMinute: Int
 ) {
-    val (dateValue, onDateValueChanged) = state.timeField.data.collectAsMutableState()
-    val dateError by state.timeField.error.collectAsState()
+    var selectedHour by remember { mutableStateOf(initialHour) }
+    var selectedMinute by remember { mutableStateOf(initialMinute) }
 
-    val label = if (state.deliveryMethod == DeliveryMethod.DELIVERY) {
-        "Дата доставки"
-    } else {
-        "Дата самовывоза"
-    }
-
-    TextField(
-        value = dateValue,
-        onValueChange = {
-            onDateValueChanged(it)
-            onEvent(Event.TimeChanged(it))
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = { Text("Выберите время") },
+        text = {
+            TimePicker(
+                state = rememberTimePickerState(
+                    initialHour = selectedHour,
+                    initialMinute = selectedMinute
+                )
+            )
         },
-        label = { Text(label) },
-        isError = dateError != null,
-        supportingText = SupportingText(dateError),
-        keyboardOptions = KeyboardOptions(
-            capitalization = KeyboardCapitalization.None,
-            autoCorrect = false,
-            keyboardType = KeyboardType.Number,
-            imeAction = ImeAction.Done
-        ),
-        modifier = Modifier.fillMaxWidth(),
-        enabled = !state.isLoading
+        confirmButton = {
+            TextButton(onClick = { onTimeSelected(selectedHour, selectedMinute) }) {
+                Text("OK")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text("Отмена")
+            }
+        }
     )
 }
+
 
 @Composable
 private fun CommentField(
