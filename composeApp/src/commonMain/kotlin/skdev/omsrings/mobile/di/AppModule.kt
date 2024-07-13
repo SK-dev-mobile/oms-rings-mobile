@@ -99,7 +99,12 @@ private val viewModels = module {
     }
 
     // Feature Inventory Management
-    factory<InventoryManagementScreenModel> { InventoryManagementScreenModel(notificationManager = get()) }
+    factory<InventoryManagementScreenModel> {
+        InventoryManagementScreenModel(
+            inventoryRepository = get(),
+            notificationManager = get()
+        )
+    }
 }
 
 private val useCases = module {
@@ -129,7 +134,11 @@ private val useCases = module {
     // Feature User Settings
     factory<GetUserSettingsUseCase> { GetUserSettingsUseCase(repository = get()) }
     factory<UpdateNotificationSettingsUseCase> { UpdateNotificationSettingsUseCase(repository = get()) }
-    factory<UpdateShowClearedOrdersSettingsUseCase> { UpdateShowClearedOrdersSettingsUseCase(repository = get()) }
+    factory<UpdateShowClearedOrdersSettingsUseCase> {
+        UpdateShowClearedOrdersSettingsUseCase(
+            repository = get()
+        )
+    }
     factory<ClearOldOrdersUseCase> { ClearOldOrdersUseCase(repository = get()) }
 }
 

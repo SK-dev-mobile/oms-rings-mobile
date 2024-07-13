@@ -1,11 +1,5 @@
 <resources>
-    <string name="cyclone">Cyclone</string>
-    <string name="open_github">Open github</string>
-    <string name="run">Run</string>
-    <string name="stop">Stop</string>
-    <string name="theme">Theme</string>
     <string name="back">Назад</string>
-    <string name="cant_be_blank">Не может быть пустым</string>
     <string name="quantity_must_be_positive_number">Количество должно быть положительным числом</string>
 
     <!-- in-app notifications -->
