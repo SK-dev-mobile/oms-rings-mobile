@@ -6,7 +6,7 @@ import skdev.omsrings.mobile.domain.model.InventoryItem
 
 
 interface InventoryRepository {
-    fun getFolders(): Flow<List<Folder>>
+    fun getFoldersAndItems(): Flow<List<Folder>>
     suspend fun addFolder(folder: Folder)
     suspend fun updateFolder(folder: Folder)
     suspend fun deleteFolder(folderId: String)

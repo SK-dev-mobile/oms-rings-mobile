@@ -14,7 +14,7 @@ class FirebaseInventoryRepository(
     private val foldersCollection = firestore.collection("folders")
 
 
-    override fun getFolders(): Flow<List<Folder>> =
+    override fun getFoldersAndItems(): Flow<List<Folder>> =
         foldersCollection.snapshots().map { snapshot ->
             snapshot.documents.mapNotNull { it.data { Folder.serializer() } }
         }

@@ -79,7 +79,7 @@ class InventoryManagementScreenModel(
 
     private fun loadFolders() {
         screenModelScope.launch {
-            inventoryRepository.getFolders().collect { folders ->
+            inventoryRepository.getFoldersAndItems().collect { folders ->
                 _state.update { it.copy(folders = folders) }
             }
         }
