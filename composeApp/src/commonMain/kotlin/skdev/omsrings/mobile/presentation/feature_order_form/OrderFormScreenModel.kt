@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.cant_be_blank
 import org.jetbrains.compose.resources.StringResource
+import skdev.omsrings.mobile.domain.model.DeliveryMethod
 import skdev.omsrings.mobile.presentation.base.BaseScreenModel
 import skdev.omsrings.mobile.utils.fields.FormField
 import skdev.omsrings.mobile.utils.fields.flowBlock
@@ -20,12 +21,25 @@ class OrderFormScreenModel(
 
     private val _state = MutableStateFlow(
         OrderFormScreenContract.State(
-            phoneField = createPhoneField()
+            isLoading = false,
+            phoneField = createPhoneField(),
+            deliveryMethod = DeliveryMethod.PICKUP,
+            addressField = createAddressField()
         )
     )
     val state = _state.asStateFlow()
 
     private fun createPhoneField() = FormField<String, StringResource>(
+        scope = screenModelScope,
+        initialValue = "",
+        validation = flowBlock {
+            ValidationResult.of(it) {
+                notBlank(Res.string.cant_be_blank)
+            }
+        }
+    )
+
+    private fun createAddressField() = FormField<String, StringResource>(
         scope = screenModelScope,
         initialValue = "",
         validation = flowBlock {
