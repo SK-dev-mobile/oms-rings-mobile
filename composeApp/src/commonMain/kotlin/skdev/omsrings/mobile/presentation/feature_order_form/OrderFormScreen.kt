@@ -17,10 +17,10 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.koin.koinScreenModel
-import org.jetbrains.compose.resources.stringResource
 import skdev.omsrings.mobile.domain.model.DeliveryMethod
 import skdev.omsrings.mobile.presentation.base.BaseScreen
 import skdev.omsrings.mobile.presentation.feature_order_form.OrderFormScreenContract.Event
+import skdev.omsrings.mobile.presentation.feature_order_form.components.EnhancedTimeInput
 import skdev.omsrings.mobile.ui.components.fields.PhoneField
 import skdev.omsrings.mobile.ui.components.fields.SupportingText
 import skdev.omsrings.mobile.ui.components.fields.TextField
@@ -78,34 +78,14 @@ private fun OrderFormContent(
                 AddressInput(state, onEvent)
                 Spacer(16.dp)
             }
-            TimePickerField(
-                value = state.timeField.data,
-                onValueChange = { onEvent(OrderFormScreenContract.Event.TimeChanged(it)) },
-                label = {
-                    Text(
-                        if (state.deliveryMethod == DeliveryMethod.DELIVERY)
-                            "Время доставки"
-                        else
-                            "Время самовывоза"
-                    )
-                },
-                isError = state.timeField.error != null,
-                supportingText = state.timeField.error?.let { stringResource(it) },
-                enabled = !state.isLoading
-            )
+            TimePickerField(state = state, onEvent = onEvent)
             Spacer(16.dp)
             DatePickerField(
-                value = state.dateField.data,
-                onValueChange = { onEvent(OrderFormScreenContract.Event.DateChanged(it)) },
-                label = { Text("Дата") },
-                isError = state.dateField.error != null,
-                supportingText = state.dateField.error?.let { stringResource(it) },
-                enabled = !state.isLoading
+                state = state,
+                onEvent = onEvent
             )
             Spacer(16.dp)
-            CommentField(
-
-            )
+            CommentField(state, onEvent)
             Spacer(16.dp)
             Button(
                 onClick = { /* onEvent(OrderFormScreenContract.Event.SubmitOrder) */ },
@@ -213,6 +193,70 @@ private fun AddressInput(state: OrderFormScreenContract.State, onEvent: (Event) 
             imeAction = ImeAction.Done
         ),
         modifier = Modifier.fillMaxWidth()
+    )
+}
+
+@Composable
+private fun TimePickerField(
+    state: OrderFormScreenContract.State,
+    onEvent: (Event) -> Unit
+) {
+    val (timeValue, onTimeValueChanged) = state.timeField.data.collectAsMutableState()
+    val timeError by state.timeField.error.collectAsState()
+
+    EnhancedTimeInput(
+        value = timeValue,
+        onValueChange = { newValue ->
+            onTimeValueChanged(newValue)
+            onEvent(OrderFormScreenContract.Event.TimeChanged(newValue))
+        },
+        modifier = Modifier.fillMaxWidth(),
+        isError = timeError != null,
+        label = { Text("Время доставки") }
+    )
+
+    if (timeError != null) {
+        Text(
+            text = timeError.toString(),
+            color = MaterialTheme.colorScheme.error,
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+        )
+    }
+}
+
+
+@Composable
+private fun DatePickerField(
+    state: OrderFormScreenContract.State,
+    onEvent: (Event) -> Unit
+) {
+    val (dateValue, onDateValueChanged) = state.timeField.data.collectAsMutableState()
+    val dateError by state.timeField.error.collectAsState()
+
+    val label = if (state.deliveryMethod == DeliveryMethod.DELIVERY) {
+        "Дата доставки"
+    } else {
+        "Дата самовывоза"
+    }
+
+    TextField(
+        value = dateValue,
+        onValueChange = {
+            onDateValueChanged(it)
+            onEvent(Event.TimeChanged(it))
+        },
+        label = { Text(label) },
+        isError = dateError != null,
+        supportingText = SupportingText(dateError),
+        keyboardOptions = KeyboardOptions(
+            capitalization = KeyboardCapitalization.None,
+            autoCorrect = false,
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done
+        ),
+        modifier = Modifier.fillMaxWidth(),
+        enabled = !state.isLoading
     )
 }
 

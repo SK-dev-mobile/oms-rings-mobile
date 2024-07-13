@@ -27,7 +27,10 @@ class OrderFormScreenModel(
             isLoading = false,
             phoneField = createPhoneField(),
             deliveryMethod = DeliveryMethod.PICKUP,
-            addressField = createAddressField()
+            timeField = createTimeField(),
+            dateField = createDateField(),
+            commentField = createCommentField(),
+            addressField = createAddressField(),
         )
     )
     val state = _state.asStateFlow()
@@ -42,7 +45,38 @@ class OrderFormScreenModel(
         }
     )
 
+
     private fun createAddressField() = FormField<String, StringResource>(
+        scope = screenModelScope,
+        initialValue = "",
+        validation = flowBlock {
+            ValidationResult.of(it) {
+                notBlank(Res.string.cant_be_blank)
+            }
+        }
+    )
+
+    fun createTimeField() = FormField<String, StringResource>(
+        scope = screenModelScope,
+        initialValue = "",
+        validation = flowBlock {
+            ValidationResult.of(it) {
+                notBlank(Res.string.cant_be_blank)
+            }
+        }
+    )
+
+    private fun createDateField() = FormField<String, StringResource>(
+        scope = screenModelScope,
+        initialValue = "",
+        validation = flowBlock {
+            ValidationResult.of(it) {
+                notBlank(Res.string.cant_be_blank)
+            }
+        }
+    )
+
+    private fun createCommentField() = FormField<String, StringResource>(
         scope = screenModelScope,
         initialValue = "",
         validation = flowBlock {
@@ -58,6 +92,9 @@ class OrderFormScreenModel(
             is OrderFormScreenContract.Event.DeliveryMethodChanged -> updateDeliveryMethod(event.method)
             is OrderFormScreenContract.Event.AddressChanged -> updateAddress(event.address)
             OrderFormScreenContract.Event.OnBackClicked -> TODO()
+            is OrderFormScreenContract.Event.CommentChanged -> TODO()
+            is OrderFormScreenContract.Event.DateChanged -> TODO()
+            is OrderFormScreenContract.Event.TimeChanged -> updateTime(event.time)
         }
     }
 
@@ -71,6 +108,10 @@ class OrderFormScreenModel(
 
     private fun updateAddress(newAddress: String) {
         _state.update { it.copy(addressField = it.addressField.apply { setValue(newAddress) }) }
+    }
+
+    private fun updateTime(newTime: String) {
+        _state.update { it.copy(timeField = it.timeField.apply { setValue(newTime) }) }
     }
 
 }
