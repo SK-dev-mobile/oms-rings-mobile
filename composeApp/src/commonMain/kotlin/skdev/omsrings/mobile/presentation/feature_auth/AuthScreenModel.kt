@@ -205,6 +205,7 @@ class AuthScreenModel(
     private fun onCreateAccountClicked() {
         screenModelScope.launch {
             clearFieldsErrors()
+            passwordField.setValue("")
             _uiState.update { AuthScreenContract.State.SignUp }
         }
     }
