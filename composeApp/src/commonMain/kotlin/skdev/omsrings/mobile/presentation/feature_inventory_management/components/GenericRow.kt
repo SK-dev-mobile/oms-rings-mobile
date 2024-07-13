@@ -28,6 +28,7 @@ fun GenericRow(
     onRowClick: (() -> Unit)? = null,
     primaryAction: (@Composable () -> Unit)? = null,
     secondaryAction: (@Composable () -> Unit)? = null,
+    tertiaryAction: (@Composable () -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -65,6 +66,7 @@ fun GenericRow(
             }
             primaryAction?.invoke()
             secondaryAction?.invoke()
+            tertiaryAction?.invoke()
         }
     }
 }
