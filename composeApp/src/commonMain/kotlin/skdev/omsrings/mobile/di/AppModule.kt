@@ -11,6 +11,7 @@ import skdev.omsrings.mobile.data.repository.AuthRepositoryImpl
 import skdev.omsrings.mobile.data.repository.FirebaseUserSettingsRepository
 import skdev.omsrings.mobile.domain.repository.AuthRepository
 import skdev.omsrings.mobile.domain.repository.UserSettingsRepository
+import skdev.omsrings.mobile.domain.usecase.feature_auth.SendResetPasswordEmailUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignInUserUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignUpUserUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.ClearOldOrdersUseCase
@@ -29,7 +30,8 @@ private val data = module {
 
     single<AuthRepository> {
         AuthRepositoryImpl(
-            firebaseAuth = Firebase.auth
+            firebaseAuth = Firebase.auth,
+            firestore = Firebase.firestore,
         )
     }
     // TODO: Replace userId with real user id
@@ -62,7 +64,9 @@ private val viewModels = module {
     factory<AuthScreenModel> {
         AuthScreenModel(
             notificationManager = get(),
-            signUpUserUseCase = get()
+            signUpUserUseCase = get(),
+            signInUserUseCase = get(),
+            sendResetPasswordEmailUseCase = get(),
         )
     }
 
@@ -90,6 +94,13 @@ private val useCases = module {
 
     factory<SignUpUserUseCase> {
         SignUpUserUseCase(
+            authRepository = get(),
+            notificationManager = get()
+        )
+    }
+
+    factory<SendResetPasswordEmailUseCase> {
+        SendResetPasswordEmailUseCase(
             authRepository = get(),
             notificationManager = get()
         )

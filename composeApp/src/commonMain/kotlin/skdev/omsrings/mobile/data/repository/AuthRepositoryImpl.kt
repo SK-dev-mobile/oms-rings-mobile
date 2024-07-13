@@ -1,35 +1,72 @@
 package skdev.omsrings.mobile.data.repository
 
 import dev.gitlive.firebase.auth.FirebaseAuth
-import dev.gitlive.firebase.auth.FirebaseAuthUserCollisionException
 import dev.gitlive.firebase.auth.FirebaseAuthInvalidCredentialsException
-import dev.gitlive.firebase.auth.FirebaseUser
-import dev.gitlive.firebase.auth.UserInfo
-import skdev.omsrings.mobile.data.model.UserInfoDTO
+import dev.gitlive.firebase.auth.FirebaseAuthUserCollisionException
+import dev.gitlive.firebase.firestore.DocumentReference
+import dev.gitlive.firebase.firestore.FirebaseFirestore
+import skdev.omsrings.mobile.data.base.BaseRepository
+import skdev.omsrings.mobile.domain.model.UserInfo
+import skdev.omsrings.mobile.domain.model.UserSettings
 import skdev.omsrings.mobile.utils.result.DataResult
 import skdev.omsrings.mobile.domain.repository.AuthRepository
+import skdev.omsrings.mobile.presentation.feature_auth.enitity.UserRole
 import skdev.omsrings.mobile.utils.error.DataError
 
 
 class AuthRepositoryImpl(
-    private val firebaseAuth: FirebaseAuth
-) : AuthRepository {
+    private val firebaseAuth: FirebaseAuth,
+    private val firestore: FirebaseFirestore,
+) : BaseRepository, AuthRepository {
 
-    override suspend fun signIn(email: String, password: String): DataResult<String, DataError> {
-        return firebaseAuth.signInWithEmailAndPassword(email, password).user?.let {
-            DataResult.Success(it.uid)
-        } ?: DataResult.Error(DataError.Network.UNKNOWN)
+    // User info
+    private val userInfoCollection = firestore.collection("user_info")
+    private val userInfoDocument: DocumentReference?
+        get() = firebaseAuth.currentUser?.uid?.let { userInfoCollection.document(it) }
+
+
+    override suspend fun signIn(email: String, password: String): DataResult<Unit, DataError> =
+        withCathing {
+            firebaseAuth.signInWithEmailAndPassword(email, password).user?.let {
+                DataResult.Success(Unit)
+            } ?: DataResult.Error(DataError.Network.UNKNOWN)
+        }
+
+    override suspend fun signUp(email: String, password: String): DataResult<Unit, DataError> =
+        withCathing {
+            firebaseAuth.createUserWithEmailAndPassword(email, password).user?.let {
+                DataResult.Success(Unit)
+            } ?: DataResult.Error(DataError.Network.UNKNOWN)
+        }
+
+    override suspend fun resetPassword(email: String): DataResult<Unit, DataError> = withCathing {
+        firebaseAuth.sendPasswordResetEmail(email)
+        DataResult.Success(Unit)
     }
 
-    override suspend fun signUp(email: String, password: String): DataResult<String, DataError> {
-        try {
-            return firebaseAuth.createUserWithEmailAndPassword(email, password).user?.let {
-                DataResult.Success(it.uid)
-            } ?: DataResult.Error(DataError.Network.UNKNOWN)
-        } catch (e: FirebaseAuthUserCollisionException) {
-            return DataResult.Error(DataError.Auth.USER_ALREADY_EXISTS)
-        } catch (e: Exception) {
-            return DataResult.Error(DataError.Auth.UNKNOWN)
+    override suspend fun addUserInfo(
+        phoneNumber: String,
+        fullName: String,
+        isEmployer: Boolean
+    ): DataResult<Unit, DataError> = withCathing {
+        val user = firebaseAuth.currentUser ?: return@withCathing DataResult.Error(DataError.Network.UNKNOWN)
+        val document = userInfoDocument ?: userInfoCollection.add(user.uid)
+        setUserInfo(document, UserInfo(phoneNumber, fullName, isEmployer))
+    }
+
+    private suspend fun setUserInfo(
+        userInfoDocument: DocumentReference,
+        userInfo: UserInfo
+    ): DataResult<Unit, DataError> = withCathing {
+        userInfoDocument.set(userInfo)
+        DataResult.Success(Unit)
+    }
+
+    override fun Exception.toDataError(): DataError {
+        return when (this) {
+            is FirebaseAuthUserCollisionException -> DataError.Auth.USER_ALREADY_EXISTS
+            is FirebaseAuthInvalidCredentialsException -> DataError.Auth.WRONG_CREDITIALS
+            else -> DataError.Network.UNKNOWN
         }
     }
 }

@@ -60,7 +60,7 @@
     <string name="password_reset">Восстановление пароля</string>
     <string name="forgot_password">Забыли пароль?</string>
     <string name="enter_email_for_password_reset">Укажите почту для сбора пароля</string>
-    <string name="password_reset_form_will_be_sended_to_your_email">На вышу почту будет отправлено письмо с формой для сбора пароля</string>
+    <string name="password_reset_form_will_be_sended_to_your_email">На вашу почту будет отправлено письмо с формой для сбора пароля</string>
     <string name="check_your_email">Проверьте почту</string>
     <string name="password_reseting_form_was_sended">Форма для сброса пароля отправлена</string>
     <string name="welcome_to_rings">Добро пожаловать!</string>

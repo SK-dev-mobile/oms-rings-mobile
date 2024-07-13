@@ -2,6 +2,7 @@ package skdev.omsrings.mobile.utils.error
 
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.error
+import omsringsmobile.composeapp.generated.resources.incorrect_email_or_password
 import omsringsmobile.composeapp.generated.resources.no_data
 import omsringsmobile.composeapp.generated.resources.no_internet
 import omsringsmobile.composeapp.generated.resources.read_error
@@ -62,6 +63,10 @@ fun Error.toNotificationModel(): NotificationModel {
         DataError.Auth.USER_ALREADY_EXISTS -> NotificationModel.Error(
             titleRes = Res.string.error,
             messageRes = Res.string.user_already_exists
+        )
+        DataError.Auth.WRONG_CREDITIALS -> NotificationModel.Error(
+            titleRes = Res.string.error,
+            messageRes = Res.string.incorrect_email_or_password
         )
         else -> NotificationModel.Error(
             titleRes = Res.string.unknown_error,
