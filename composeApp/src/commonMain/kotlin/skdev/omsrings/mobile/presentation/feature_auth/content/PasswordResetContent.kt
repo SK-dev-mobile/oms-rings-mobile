@@ -37,6 +37,7 @@ import skdev.omsrings.mobile.ui.components.fields.TextField
 import skdev.omsrings.mobile.ui.components.helpers.Spacer
 import skdev.omsrings.mobile.ui.theme.values.Dimens
 import skdev.omsrings.mobile.ui.theme.values.IconSize
+import skdev.omsrings.mobile.utils.compose.HideKeyboardOnUpdate
 import skdev.omsrings.mobile.utils.fields.FormField
 import skdev.omsrings.mobile.utils.fields.collectAsMutableState
 
@@ -50,6 +51,8 @@ fun PasswordResetContent(
 ) {
     val (emailValue, emailSetter) = emailField.data.collectAsMutableState()
     val emailError: StringResource? by emailField.error.collectAsState()
+
+    HideKeyboardOnUpdate(updating)
 
     Column(
         modifier = modifier,

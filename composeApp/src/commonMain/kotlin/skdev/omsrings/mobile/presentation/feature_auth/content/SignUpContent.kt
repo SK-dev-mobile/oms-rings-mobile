@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.continue_process
 import omsringsmobile.composeapp.generated.resources.email
@@ -46,6 +47,7 @@ import skdev.omsrings.mobile.ui.components.fields.TextField
 import skdev.omsrings.mobile.ui.components.helpers.Spacer
 import skdev.omsrings.mobile.ui.theme.values.Dimens
 import skdev.omsrings.mobile.ui.theme.values.IconSize
+import skdev.omsrings.mobile.utils.compose.HideKeyboardOnUpdate
 import skdev.omsrings.mobile.utils.fields.FormField
 import skdev.omsrings.mobile.utils.fields.collectAsMutableState
 
@@ -78,152 +80,152 @@ fun SignUpContent(
 
     var userRole: UserRole by remember { mutableStateOf(UserRole.CONTRAGENT) }
 
-    Box(
+    HideKeyboardOnUpdate(updating)
+
+    Column(
         modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
 
-            Icon(
-                modifier = Modifier.size(IconSize.ExtraLarge),
-                imageVector = Icons.Rounded.HowToReg,
-                contentDescription = stringResource(Res.string.password_reset),
-                tint = MaterialTheme.colorScheme.primary
+        Icon(
+            modifier = Modifier.size(IconSize.ExtraLarge),
+            imageVector = Icons.Rounded.HowToReg,
+            contentDescription = stringResource(Res.string.password_reset),
+            tint = MaterialTheme.colorScheme.primary
+        )
+
+        Spacer(Dimens.spaceLarge)
+
+        Text(
+            text = stringResource(Res.string.enter_your_data),
+            style = MaterialTheme.typography.titleMedium
+        )
+
+        Spacer(Dimens.spaceLarge)
+
+        RoleSelector(
+            value = userRole,
+            onChangeValue = { userRole = it }
+        )
+
+        Spacer(Dimens.spaceSmall)
+
+        TextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = emailValue,
+            onValueChange = emailSetter,
+            label = {
+                Text(stringResource(Res.string.email))
+            },
+            supportingText = SupportingText(emailError),
+            isError = emailError != null,
+            enabled = !updating,
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.None,
+                autoCorrect = false,
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next
             )
+        )
 
-            Spacer(Dimens.spaceLarge)
+        Spacer(Dimens.spaceSmall)
 
+        TextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = passwordValue,
+            onValueChange = passwordSetter,
+            label = {
+                Text(stringResource(Res.string.password))
+            },
+            supportingText = SupportingText(passwordError),
+            isError = passwordError != null,
+            enabled = !updating,
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.None,
+                autoCorrect = false,
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Next
+            )
+        )
+
+        Spacer(Dimens.spaceSmall)
+
+        TextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = confirmPasswordValue,
+            onValueChange = confirmPasswordSetter,
+            label = {
+                Text(stringResource(Res.string.password_confirm))
+            },
+            supportingText = SupportingText(confirmPasswordError),
+            isError = confirmPasswordError != null,
+            enabled = !updating,
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.None,
+                autoCorrect = false,
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Next
+            )
+        )
+
+        Spacer(Dimens.spaceSmall)
+
+        TextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = nameValue,
+            onValueChange = nameSetter,
+            label = {
+                Text(stringResource(Res.string.full_name))
+            },
+            supportingText = SupportingText(nameError),
+            isError = nameError != null,
+            enabled = !updating,
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.Words,
+                autoCorrect = true,
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            )
+        )
+
+        AnimatedVisibility(visible = userRole == UserRole.CONTRAGENT) {
+            Column {
+                Spacer(Dimens.spaceSmall)
+
+                PhoneField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = phoneValue,
+                    onValueChange = phoneSetter,
+                    supportingText = SupportingText(phoneError),
+                    isError = phoneError != null,
+                    enabled = !updating,
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.None,
+                        autoCorrect = false,
+                        keyboardType = KeyboardType.Phone,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions {
+                        onAction(AuthScreenContract.Event.OnSignUpClicked(userRole))
+                    }
+                )
+            }
+        }
+
+
+        Spacer(Dimens.spaceLarge)
+
+        Button(
+            enabled = !updating,
+            onClick = { onAction(AuthScreenContract.Event.OnSignUpClicked(userRole)) }
+        ) {
             Text(
-                text = stringResource(Res.string.enter_your_data),
+                text = stringResource(Res.string.continue_process),
                 style = MaterialTheme.typography.titleMedium
             )
-
-            Spacer(Dimens.spaceLarge)
-
-            RoleSelector(
-                value = userRole,
-                onChangeValue = { userRole = it }
-            )
-
-            Spacer(Dimens.spaceSmall)
-
-            TextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = emailValue,
-                onValueChange = emailSetter,
-                label = {
-                    Text(stringResource(Res.string.email))
-                },
-                supportingText = SupportingText(emailError),
-                isError = emailError != null,
-                enabled = !updating,
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.None,
-                    autoCorrect = false,
-                    keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Next
-                )
-            )
-
-            Spacer(Dimens.spaceSmall)
-
-            TextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = passwordValue,
-                onValueChange = passwordSetter,
-                label = {
-                    Text(stringResource(Res.string.password))
-                },
-                supportingText = SupportingText(passwordError),
-                isError = passwordError != null,
-                enabled = !updating,
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.None,
-                    autoCorrect = false,
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Next
-                )
-            )
-
-            Spacer(Dimens.spaceSmall)
-
-            TextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = confirmPasswordValue,
-                onValueChange = confirmPasswordSetter,
-                label = {
-                    Text(stringResource(Res.string.password_confirm))
-                },
-                supportingText = SupportingText(confirmPasswordError),
-                isError = confirmPasswordError != null,
-                enabled = !updating,
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.None,
-                    autoCorrect = false,
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Next
-                )
-            )
-
-            Spacer(Dimens.spaceSmall)
-
-            TextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = nameValue,
-                onValueChange = nameSetter,
-                label = {
-                    Text(stringResource(Res.string.full_name))
-                },
-                supportingText = SupportingText(nameError),
-                isError = nameError != null,
-                enabled = !updating,
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Words,
-                    autoCorrect = true,
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next
-                )
-            )
-
-            AnimatedVisibility(visible = userRole == UserRole.CONTRAGENT) {
-                Column {
-                    Spacer(Dimens.spaceSmall)
-
-                    PhoneField(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = phoneValue,
-                        onValueChange = phoneSetter,
-                        supportingText = SupportingText(phoneError),
-                        isError = phoneError != null,
-                        enabled = !updating,
-                        keyboardOptions = KeyboardOptions(
-                            capitalization = KeyboardCapitalization.None,
-                            autoCorrect = false,
-                            keyboardType = KeyboardType.Phone,
-                            imeAction = ImeAction.Done
-                        ),
-                        keyboardActions = KeyboardActions {
-                            onAction(AuthScreenContract.Event.OnSignUpClicked(userRole))
-                        }
-                    )
-                }
-            }
-
-
-            Spacer(Dimens.spaceLarge)
-
-            Button(
-                enabled = !updating,
-                onClick = { onAction(AuthScreenContract.Event.OnSignUpClicked(userRole)) }
-            ) {
-                Text(
-                    text = stringResource(Res.string.continue_process),
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
         }
     }
 }

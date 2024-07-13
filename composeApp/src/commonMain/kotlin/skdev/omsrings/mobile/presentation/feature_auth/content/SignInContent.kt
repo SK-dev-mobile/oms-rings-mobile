@@ -16,13 +16,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.continue_process
 import omsringsmobile.composeapp.generated.resources.create_account
@@ -42,6 +45,7 @@ import skdev.omsrings.mobile.ui.components.fields.TextField
 import skdev.omsrings.mobile.ui.components.helpers.Spacer
 import skdev.omsrings.mobile.ui.theme.values.Dimens
 import skdev.omsrings.mobile.ui.theme.values.IconSize
+import skdev.omsrings.mobile.utils.compose.HideKeyboardOnUpdate
 import skdev.omsrings.mobile.utils.fields.FormField
 import skdev.omsrings.mobile.utils.fields.collectAsMutableState
 
@@ -58,6 +62,8 @@ fun SignInContent(
 
     val (passwordValue, passwordSetter) = passwordField.data.collectAsMutableState()
     val passwordError: StringResource? by passwordField.error.collectAsState()
+
+    HideKeyboardOnUpdate(updating)
 
     Column(
         modifier = modifier,
@@ -118,6 +124,7 @@ fun SignInContent(
             supportingText = SupportingText(passwordError),
             isError = passwordError != null,
             enabled = !updating,
+            visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.None,
                 autoCorrect = false,
