@@ -84,11 +84,17 @@ class OrderFormScreenModel(
             is OrderFormScreenContract.Event.AddressChanged -> updateAddress(event.address)
             is OrderFormScreenContract.Event.CommentChanged -> TODO()
             is OrderFormScreenContract.Event.DateChanged -> TODO()
+
+
             is OrderFormScreenContract.Event.DateTimeFieldClicked -> showDatePicker()
             OrderFormScreenContract.Event.DismissDatePicker -> hideDatePicker()
             OrderFormScreenContract.Event.OnBackClicked -> TODO()
-            is OrderFormScreenContract.Event.ConfirmTime -> TODO()
-            OrderFormScreenContract.Event.DismissTimePicker -> TODO()
+            is OrderFormScreenContract.Event.ConfirmTime -> updateTime(event.hour, event.minute)
+            OrderFormScreenContract.Event.DismissTimePicker -> hideTimePicker()
+            OrderFormScreenContract.Event.TransitionToTimePicker -> {
+                hideDatePicker()
+                showTimePicker()
+            }
         }
     }
 
@@ -110,6 +116,22 @@ class OrderFormScreenModel(
 
     private fun hideDatePicker() {
         _state.update { it.copy(showDatePicker = false) }
+    }
+
+    private fun showTimePicker() {
+        _state.update { it.copy(showTimePicker = true) }
+    }
+
+    private fun hideTimePicker() {
+        _state.update { it.copy(showTimePicker = false) }
+    }
+
+    private fun updateTime(hour: Int, minute: Int) {
+        _state.update { it.copy(dateTimeField = it.dateTimeField.apply { setValue("$hour:$minute") }) }
+    }
+
+    private fun updateDateTime(dateTime: String) {
+        _state.update { it.copy() }
     }
 
 }

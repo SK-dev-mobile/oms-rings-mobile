@@ -19,7 +19,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.koin.koinScreenModel
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import skdev.omsrings.mobile.domain.model.DeliveryMethod
@@ -31,7 +33,17 @@ import skdev.omsrings.mobile.ui.components.fields.TextField
 import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
 import skdev.omsrings.mobile.ui.components.helpers.Spacer
 import skdev.omsrings.mobile.utils.fields.collectAsMutableState
-
+// TODO: сделать отображение даты и времени в поле ввода в формате "дд.мм.гггг чч:мм"
+// TODO: реализовать выбор даты в диалоге DatePickerDialog и отображение выбранной даты в поле ввода
+// TODO: реализовать выбор времени в диалоге TimePickerDialog и отображение выбранного времени в поле ввода
+// TODO: добавить валидацию полей
+// TODO: сделать часть в форме с выбором количества товаров
+// TODO: сделать функцию переноса заказа на другой день
+// TODO: сделать редактирование заказа
+// TODO: сделать отправку заказа на сервер
+// TODO: сделать отображение ошибок
+// TODO: сделать отображение загрузки
+// TODO: привести в порядок строковые ресурсы
 
 object OrderFormScreen : BaseScreen("order_form_screen") {
     @Composable
@@ -207,13 +219,14 @@ fun DeliveryDateTimeField(
     onEvent: (Event) -> Unit,
     modifier: Modifier = Modifier
 ) {
+
     val dateTime = remember(state.dateTimeField.data.value) {
         Instant.parse(state.dateTimeField.data.value).toLocalDateTime(TimeZone.currentSystemDefault())
     }
 
     Column(modifier = modifier) {
         TextField(
-            value = dateTime.toString(),
+            value = dateTime.format(LocalDateTime.Formats.ISO),
             onValueChange = { },
             label = { Text("Дата и время доставки") },
             readOnly = true,
@@ -238,15 +251,14 @@ fun DeliveryDateTimeField(
             }
         )
 
-
+        
 
         if (state.showDatePicker) {
             DatePickerDialog(
                 onDismissRequest = { onEvent(Event.DismissDatePicker) },
                 confirmButton = {
                     TextButton(onClick = {
-                        onEvent(Event.DismissDatePicker)
-                        onEvent(Event.DateTimeFieldClicked(dateTime.toString()))
+                        onEvent(Event.TransitionToTimePicker)
                     }) { Text("OK") }
                 },
                 dismissButton = {
@@ -257,11 +269,11 @@ fun DeliveryDateTimeField(
             ) {
                 DatePicker(
                     state = rememberDatePickerState(
-                        initialSelectedDateMillis = dateTime.toInstant(TimeZone.currentSystemDefault())
-                            .toEpochMilliseconds()
+                        initialDisplayedMonthMillis = dateTime.toInstant(TimeZone.currentSystemDefault())
+                            .toEpochMilliseconds(),
+                        initialSelectedDateMillis = null
                     )
                 )
-
             }
         }
 
@@ -275,27 +287,6 @@ fun DeliveryDateTimeField(
                 initialMinute = dateTime.minute
             )
         }
-
-//        if (showTimePicker) {
-//            TimePickerDialog(
-//                onDismissRequest = { showTimePicker = false },
-//                onTimeSelected = { hour, minute ->
-//                    tempDateTime = LocalDateTime(
-//                        year = tempDateTime.year,
-//                        monthNumber = tempDateTime.monthNumber,
-//                        dayOfMonth = tempDateTime.dayOfMonth,
-//                        hour = hour,
-//                        minute = minute,
-//                        second = 0,
-//                        nanosecond = 0
-//                    )
-//                    onDateTimeChanged(tempDateTime)
-//                    showTimePicker = false
-//                },
-//                initialHour = tempDateTime.hour,
-//                initialMinute = tempDateTime.minute
-//            )
-//        }
     }
 }
 

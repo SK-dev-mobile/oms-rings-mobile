@@ -11,9 +11,7 @@
 
 package skdev.omsrings.mobile.utils.datetime
 
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.format
 
 
 /**
@@ -32,9 +30,10 @@ expect fun LocalDateTime.format(pattern: String, default: String = ""): String
  * SIMPLE_DATE – день, месяц и год, пример: "12.03.2024"
  * FULL_DATE_TIME – день, месяц, год, часы, минуты и секунды, пример: "12.03.2024 12:30:45"
  */
-enum class DateTimePattern(val petternValue: String) {
+enum class DateTimePattern(val patternValue: String) {
     CALENDAR_MONTH_YEAR("MMMM yyyy"),
     DAY_MONTH_YEAR("dd MMMM yyyy"),
     SIMPLE_DATE("dd.MM.yyyy"),
     FULL_DATE_TIME("dd.MM.yyyy HH:mm:ss"),
+    FULL_DATE_TIME_WITHOUT_SECONDS("dd.MM.yyyy HH:mm"),
 }

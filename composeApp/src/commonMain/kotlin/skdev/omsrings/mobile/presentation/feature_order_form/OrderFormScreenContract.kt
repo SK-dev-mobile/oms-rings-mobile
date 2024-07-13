@@ -32,8 +32,9 @@ class OrderFormScreenContract {
         data class CommentChanged(val comment: String) : Event
 
         // Date Picker
-        data class DateTimeFieldClicked(val dateTimeValue: String) : Event
+        data class DateTimeFieldClicked(val dateTime: String) : Event
         data object DismissDatePicker : Event
+        data object TransitionToTimePicker : Event
 
         // Time Picker
         data class ConfirmTime(val hour: Int, val minute: Int) : Event
