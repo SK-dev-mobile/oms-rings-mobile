@@ -41,6 +41,7 @@ import skdev.omsrings.mobile.presentation.feature_auth.AuthScreenContract
 import skdev.omsrings.mobile.presentation.feature_auth.OnAction
 import skdev.omsrings.mobile.presentation.feature_auth.components.RoleSelector
 import skdev.omsrings.mobile.presentation.feature_auth.enitity.UserRole
+import skdev.omsrings.mobile.ui.components.fields.PasswordField
 import skdev.omsrings.mobile.ui.components.fields.PhoneField
 import skdev.omsrings.mobile.ui.components.fields.SupportingText
 import skdev.omsrings.mobile.ui.components.fields.TextField
@@ -121,6 +122,7 @@ fun SignUpContent(
             supportingText = SupportingText(emailError),
             isError = emailError != null,
             enabled = !updating,
+            singleLine = true,
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.None,
                 autoCorrect = false,
@@ -131,7 +133,7 @@ fun SignUpContent(
 
         Spacer(Dimens.spaceSmall)
 
-        TextField(
+        PasswordField(
             modifier = Modifier.fillMaxWidth(),
             value = passwordValue,
             onValueChange = passwordSetter,
@@ -141,7 +143,6 @@ fun SignUpContent(
             supportingText = SupportingText(passwordError),
             isError = passwordError != null,
             enabled = !updating,
-            visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.None,
                 autoCorrect = false,
@@ -152,7 +153,7 @@ fun SignUpContent(
 
         Spacer(Dimens.spaceSmall)
 
-        TextField(
+        PasswordField(
             modifier = Modifier.fillMaxWidth(),
             value = confirmPasswordValue,
             onValueChange = confirmPasswordSetter,
@@ -162,7 +163,6 @@ fun SignUpContent(
             supportingText = SupportingText(confirmPasswordError),
             isError = confirmPasswordError != null,
             enabled = !updating,
-            visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.None,
                 autoCorrect = false,
@@ -183,6 +183,7 @@ fun SignUpContent(
             supportingText = SupportingText(nameError),
             isError = nameError != null,
             enabled = !updating,
+            singleLine = true,
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.Words,
                 autoCorrect = true,

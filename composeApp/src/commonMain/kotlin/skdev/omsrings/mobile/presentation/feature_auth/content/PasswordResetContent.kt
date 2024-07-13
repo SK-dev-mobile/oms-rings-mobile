@@ -94,6 +94,7 @@ fun PasswordResetContent(
             supportingText = SupportingText(emailError),
             isError = emailError != null,
             enabled = !updating,
+            singleLine = true,
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.None,
                 autoCorrect = false,

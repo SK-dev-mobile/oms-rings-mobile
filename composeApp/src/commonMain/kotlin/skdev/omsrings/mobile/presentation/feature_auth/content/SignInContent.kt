@@ -40,6 +40,7 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import skdev.omsrings.mobile.presentation.feature_auth.AuthScreenContract
 import skdev.omsrings.mobile.presentation.feature_auth.OnAction
+import skdev.omsrings.mobile.ui.components.fields.PasswordField
 import skdev.omsrings.mobile.ui.components.fields.SupportingText
 import skdev.omsrings.mobile.ui.components.fields.TextField
 import skdev.omsrings.mobile.ui.components.helpers.Spacer
@@ -104,6 +105,7 @@ fun SignInContent(
             supportingText = SupportingText(emailError),
             isError = emailError != null,
             enabled = !updating,
+            singleLine = true,
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.None,
                 autoCorrect = false,
@@ -114,7 +116,7 @@ fun SignInContent(
 
         Spacer(Dimens.spaceSmall)
 
-        TextField(
+        PasswordField(
             modifier = Modifier.fillMaxWidth(),
             value = passwordValue,
             onValueChange = passwordSetter,
@@ -124,7 +126,6 @@ fun SignInContent(
             supportingText = SupportingText(passwordError),
             isError = passwordError != null,
             enabled = !updating,
-            visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.None,
                 autoCorrect = false,
