@@ -1,5 +1,7 @@
 package skdev.omsrings.mobile.presentation.feature_main.components
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -17,13 +19,17 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ChevronLeft
+import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -34,6 +40,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -42,6 +49,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
@@ -101,7 +109,7 @@ data class YearMonth(val month: Month, val year: Int) {
 val LocalDate.yearMonth: YearMonth
     get() = YearMonth(month, year)
 
-fun DayOfWeek.getStringResource(): StringResource = when(this) {
+fun DayOfWeek.getStringResource(): StringResource = when (this) {
     DayOfWeek.MONDAY -> Res.string.day_of_week_monday
     DayOfWeek.TUESDAY -> Res.string.day_of_week_tuesday
     DayOfWeek.WEDNESDAY -> Res.string.day_of_week_wednesday
@@ -111,7 +119,6 @@ fun DayOfWeek.getStringResource(): StringResource = when(this) {
     DayOfWeek.SUNDAY -> Res.string.day_of_week_sunday
     else -> Res.string.day_of_week_sunday
 }
-
 
 
 @Stable
@@ -144,6 +151,8 @@ class CalendarState(
     fun updateStartDayOfWeek(dayOfWeek: DayOfWeek) {
         _startDayOfWeek.value = dayOfWeek
     }
+
+
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -160,6 +169,7 @@ fun CalendarView(
     )
 
     val currentDate = remember { Clock.System.todayIn(TimeZone.currentSystemDefault()) }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }
@@ -171,36 +181,54 @@ fun CalendarView(
             }
     }
 
-    Column(modifier = modifier) {
-        if (showWeekBar) {
-            WeekBarView(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(Dimens.spaceMedium),
-                startDayOfWeek = state.startDayOfWeek.value
-            )
-            HorizontalDivider()
-        }
-
-        HorizontalPager(
+    Column {
+        MonthBarView(
             modifier = Modifier.fillMaxWidth(),
-            state = pagerState,
-            key = { it },
-            beyondBoundsPageCount = 4,
-        ) { page ->
-            val monthDiff = page - initialPage
-            val month = remember(page) {
-                currentDate.yearMonth.plus(monthDiff, DateTimeUnit.MONTH)
+            month = state.currentMonth.value,
+            onNextClicked = {
+                scope.launch {
+                    pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                }
+            },
+            onPreviousClicked ={
+                scope.launch {
+                    pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                }
+            },
+        )
+        Column(
+            modifier = modifier
+        ) {
+            if (showWeekBar) {
+                WeekBarView(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(Dimens.spaceMedium),
+                    startDayOfWeek = state.startDayOfWeek.value
+                )
+                HorizontalDivider()
             }
 
-            CalendarMonthView(
+            HorizontalPager(
                 modifier = Modifier.fillMaxWidth(),
-                month = month,
-                currentDate = currentDate,
-                selectedDate = state.selectedDate.value,
-                startDayOfWeek = state.startDayOfWeek.value,
-                onDateClick = state::selectDate
-            )
+                state = pagerState,
+                key = { it },
+                beyondBoundsPageCount = 4,
+            ) { page ->
+                val monthDiff = page - initialPage
+                val month = remember(page) {
+                    currentDate.yearMonth.plus(monthDiff, DateTimeUnit.MONTH)
+                }
+
+                CalendarMonthView(
+                    modifier = Modifier.fillMaxWidth(),
+                    month = month,
+                    currentDate = currentDate,
+                    selectedDate = state.selectedDate.value,
+                    startDayOfWeek = state.startDayOfWeek.value,
+                    onDateClick = state::selectDate
+                )
+            }
         }
     }
 }
@@ -220,6 +248,12 @@ private fun CalendarMonthView(
         firstDayOfMonth.minus(offset, DateTimeUnit.DAY)
     }
 
+    val itemModifier: Modifier = remember {
+        Modifier
+            .fillMaxWidth()
+            .padding(Dimens.spaceExtraSmall)
+    }
+
     LazyVerticalGrid(
         modifier = modifier,
         columns = GridCells.Fixed(7),
@@ -232,6 +266,7 @@ private fun CalendarMonthView(
             val date = startDay.plus(dayOffset, DateTimeUnit.DAY)
             DayView(
                 modifier = Modifier.fillMaxWidth(),
+                itemModifier = itemModifier,
                 date = date,
                 enabled = date.month == month.month,
                 selected = date == selectedDate,
@@ -269,8 +304,67 @@ private fun WeekBarView(
 }
 
 @Composable
+private fun MonthBarView(
+    modifier: Modifier = Modifier,
+    month: YearMonth,
+    onNextClicked: () -> Unit,
+    onPreviousClicked: () -> Unit,
+) {
+    val formattedMonth: String by remember(month) {
+        derivedStateOf {
+            month.format()
+        }
+    }
+
+    Surface(
+        modifier = modifier,
+        color = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(horizontal = Dimens.spaceMedium, vertical = Dimens.spaceExtraSmall)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            IconButton(
+                onClick = onPreviousClicked
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.ChevronLeft,
+                    contentDescription = null
+                )
+            }
+
+            AnimatedContent(formattedMonth) {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+
+
+            IconButton(
+                onClick = onNextClicked
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.ChevronRight,
+                    contentDescription = null
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun DayView(
     modifier: Modifier = Modifier,
+    itemModifier: Modifier = remember {
+        Modifier
+            .fillMaxWidth()
+            .padding(Dimens.spaceExtraSmall)
+    },
     date: LocalDate,
     enabled: Boolean,
     selected: Boolean,
@@ -293,12 +387,10 @@ private fun DayView(
             width = 2.dp,
             color = MaterialTheme.colorScheme.primary
         ) else null,
-        shape = MaterialTheme.shapes.large
+        shape = MaterialTheme.shapes.medium
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(Dimens.spaceExtraSmall),
+            modifier = itemModifier,
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -310,11 +402,11 @@ private fun DayView(
             Spacer(Dimens.spaceExtraSmall)
 
             Row(
-                modifier = Modifier.height(IconSize.Small),
+                modifier = Modifier.height(IconSize.ExtraSmall),
             ) {
                 if (locked) {
                     Icon(
-                        modifier = Modifier.size(IconSize.Small),
+                        modifier = Modifier.size(IconSize.ExtraSmall),
                         imageVector = Icons.Rounded.Lock,
                         tint = CustomTheme.colors.error,
                         contentDescription = null
@@ -325,7 +417,7 @@ private fun DayView(
 
                 if (edited) {
                     Icon(
-                        modifier = Modifier.size(IconSize.Small),
+                        modifier = Modifier.size(IconSize.ExtraSmall),
                         imageVector = Icons.Rounded.Edit,
                         tint = CustomTheme.colors.warning,
                         contentDescription = null
@@ -335,5 +427,3 @@ private fun DayView(
         }
     }
 }
-
-

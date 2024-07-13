@@ -11,9 +11,9 @@
 
 package skdev.omsrings.mobile.utils.datetime
 
+import io.github.aakira.napier.Napier
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.format
 
 
 /**
@@ -25,7 +25,7 @@ import kotlinx.datetime.format
 expect fun LocalDateTime.format(pattern: String, default: String = ""): String
 
 fun LocalDateTime.format(pattern: DateTimePattern, default: String = ""): String =
-    format(pattern.petternValue, default)
+    format(pattern.patternValue, default)
 
 /**
  * Приведение местной даты в нужный формат
@@ -35,8 +35,11 @@ fun LocalDateTime.format(pattern: DateTimePattern, default: String = ""): String
  */
 expect fun LocalDate.format(pattern: String, default: String = ""): String
 
-fun LocalDate.format(pattern: DateTimePattern, default: String = ""): String =
-    format(pattern.petternValue, default)
+fun LocalDate.format(pattern: DateTimePattern, default: String = ""): String {
+    val r = format(pattern.patternValue, default)
+    Napier.d { "LocalDateFormat: $pattern and ${this.toString()} <-> $r" }
+    return r
+}
 
 /**
  * Шаблоны для приведения дат в строку
@@ -46,8 +49,8 @@ fun LocalDate.format(pattern: DateTimePattern, default: String = ""): String =
  * SIMPLE_DATE – день, месяц и год, пример: "12.03.2024"
  * FULL_DATE_TIME – день, месяц, год, часы, минуты и секунды, пример: "12.03.2024 12:30:45"
  */
-enum class DateTimePattern(val petternValue: String) {
-    CALENDAR_MONTH_YEAR("MMMM yyyy"),
+enum class DateTimePattern(val patternValue: String) {
+    CALENDAR_MONTH_YEAR("LLLL, yyyy"),
     DAY_MONTH_YEAR("dd MMMM yyyy"),
     SIMPLE_DATE("dd.MM.yyyy"),
     FULL_DATE_TIME("dd.MM.yyyy HH:mm:ss"),

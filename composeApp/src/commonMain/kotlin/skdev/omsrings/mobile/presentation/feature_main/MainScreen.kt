@@ -6,10 +6,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,6 +32,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import io.github.aakira.napier.Napier
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.app_name
+import omsringsmobile.composeapp.generated.resources.edit_content
 import omsringsmobile.composeapp.generated.resources.user_profile_title
 import omsringsmobile.composeapp.generated.resources.user_settings_title
 import org.jetbrains.compose.resources.stringResource
@@ -38,6 +42,8 @@ import skdev.omsrings.mobile.presentation.feature_main.components.rememberCalend
 import skdev.omsrings.mobile.presentation.feature_user_settings.UserSettingsScreen
 import skdev.omsrings.mobile.ui.components.fields.PhoneField
 import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
+import skdev.omsrings.mobile.ui.components.helpers.Spacer
+import skdev.omsrings.mobile.ui.theme.values.Dimens
 
 object MainScreen : BaseScreen("main_screen") {
 
@@ -71,6 +77,23 @@ object MainScreen : BaseScreen("main_screen") {
                         }
                     },
                 )
+            },
+            floatingActionButton = {
+                ExtendedFloatingActionButton(
+                    onClick = { /* TODO */ }
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Edit,
+                        contentDescription = stringResource(Res.string.edit_content)
+                    )
+
+                    Spacer(Dimens.spaceMedium)
+
+                    Text(
+                        text = stringResource(Res.string.edit_content),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
             }
         ) { paddingValues ->
             MainScreenContent(

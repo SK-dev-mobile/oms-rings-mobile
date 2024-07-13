@@ -37,6 +37,7 @@ private val LightColors = lightColorScheme(
     inversePrimary = md_theme_light_inversePrimary,
     surfaceTint = md_theme_light_surfaceTint,
     outlineVariant = md_theme_light_outlineVariant,
+    surfaceContainer = md_theme_light_surfaceContainer,
     scrim = md_theme_light_scrim,
 )
 
@@ -70,6 +71,7 @@ private val DarkColors = darkColorScheme(
     inversePrimary = md_theme_dark_inversePrimary,
     surfaceTint = md_theme_dark_surfaceTint,
     outlineVariant = md_theme_dark_outlineVariant,
+    surfaceContainer = md_theme_dark_surfaceContainer,
     scrim = md_theme_dark_scrim,
 )
 
