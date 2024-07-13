@@ -24,6 +24,20 @@ import kotlinx.datetime.format
  */
 expect fun LocalDateTime.format(pattern: String, default: String = ""): String
 
+fun LocalDateTime.format(pattern: DateTimePattern, default: String = ""): String =
+    format(pattern.petternValue, default)
+
+/**
+ * Приведение местной даты в нужный формат
+ *
+ * @param pattern шаблон формата даты, смотри [DateTimePattern]
+ * @param default значение по умолчанию
+ */
+expect fun LocalDate.format(pattern: String, default: String = ""): String
+
+fun LocalDate.format(pattern: DateTimePattern, default: String = ""): String =
+    format(pattern.petternValue, default)
+
 /**
  * Шаблоны для приведения дат в строку
  *

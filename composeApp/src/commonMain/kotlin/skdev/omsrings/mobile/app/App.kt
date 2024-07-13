@@ -30,7 +30,7 @@ internal fun App() = AppTheme(
 
     Box {
         Navigator(
-            AuthScreen
+            MainScreen
         ) { navigator ->
             SlideTransition(
                 navigator = navigator,
