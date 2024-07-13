@@ -35,6 +35,7 @@ import org.jetbrains.compose.resources.stringResource
 import skdev.omsrings.mobile.presentation.base.BaseScreen
 import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
 import skdev.omsrings.mobile.ui.components.helpers.Spacer
+import skdev.omsrings.mobile.ui.theme.CustomTheme
 import skdev.omsrings.mobile.ui.theme.values.Dimens
 
 @OptIn(ExperimentalResourceApi::class)
@@ -53,19 +54,19 @@ private fun FAQScreenContent() {
         FAQItem(
             title = stringResource(Res.string.faq_new_order),
             description = stringResource(Res.string.faq_new_order_description),
-            color = MaterialTheme.colorScheme.primary,
+            color = CustomTheme.colors.success,
             icon = Icons.Rounded.LocalShipping
         ),
         FAQItem(
             title = stringResource(Res.string.faq_completed_order),
             description = stringResource(Res.string.faq_completed_order_description),
-            color = MaterialTheme.colorScheme.secondary,
+            color = CustomTheme.colors.warning,
             icon = Icons.Rounded.LocalShipping
         ),
         FAQItem(
             title = stringResource(Res.string.faq_cancelled_order),
             description = stringResource(Res.string.faq_cancelled_order_description),
-            color = MaterialTheme.colorScheme.error,
+            color = CustomTheme.colors.error,
             icon = Icons.Rounded.LocalShipping
         ),
         FAQItem(

@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import skdev.omsrings.mobile.ui.theme.CustomTheme
 import skdev.omsrings.mobile.ui.theme.values.Dimens
 import skdev.omsrings.mobile.ui.theme.values.Elevation
 import skdev.omsrings.mobile.utils.notification.NotificationModel
@@ -100,23 +101,21 @@ fun NotificationItem(
                 shape = MaterialTheme.shapes.large,
                 colors = CardDefaults.elevatedCardColors(
                     containerColor = when (notification) {
-                        is NotificationModel.Error -> MaterialTheme.colorScheme.errorContainer
+                        is NotificationModel.Error -> CustomTheme.colors.errorContainer
                         is NotificationModel.Toast -> when (notification.type) {
-                            ToastType.Success -> MaterialTheme.colorScheme.errorContainer
-                            ToastType.Warning -> MaterialTheme.colorScheme.errorContainer
-                            ToastType.Info -> MaterialTheme.colorScheme.errorContainer
+                            ToastType.Success -> CustomTheme.colors.successContainer
+                            ToastType.Warning -> CustomTheme.colors.warningContainer
+                            ToastType.Info -> MaterialTheme.colorScheme.surfaceContainer
                         }
-
                         else -> MaterialTheme.colorScheme.surfaceContainer
                     },
                     contentColor = when (notification) {
-                        is NotificationModel.Error -> MaterialTheme.colorScheme.onErrorContainer
+                        is NotificationModel.Error -> CustomTheme.colors.onErrorContainer
                         is NotificationModel.Toast -> when (notification.type) {
-                            ToastType.Success -> MaterialTheme.colorScheme.onErrorContainer
-                            ToastType.Warning -> MaterialTheme.colorScheme.onErrorContainer
-                            ToastType.Info -> MaterialTheme.colorScheme.onErrorContainer
+                            ToastType.Success -> CustomTheme.colors.onSuccessContainer
+                            ToastType.Warning -> CustomTheme.colors.onWarningContainer
+                            ToastType.Info -> MaterialTheme.colorScheme.onSurface
                         }
-
                         else -> MaterialTheme.colorScheme.onSurface
                     },
                 )

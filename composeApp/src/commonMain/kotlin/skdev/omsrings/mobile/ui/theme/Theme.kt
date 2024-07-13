@@ -80,11 +80,15 @@ internal fun AppTheme(
 ) {
     SystemAppearance(isDark)
 
-    MaterialTheme(
-        shapes = shapes,
-        colorScheme = if (isDark) DarkColors else LightColors,
-        content = { Surface(content = content) }
-    )
+    CompositionLocalProvider(
+        LocalCustomColors provides if (isDark) darkCustomThemeColors else lightCustomThemeColors
+    ) {
+        MaterialTheme(
+            shapes = shapes,
+            colorScheme = if (isDark) DarkColors else LightColors,
+            content = { Surface(content = content) }
+        )
+    }
 }
 
 @Composable

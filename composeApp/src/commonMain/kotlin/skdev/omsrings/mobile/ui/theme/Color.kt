@@ -64,3 +64,26 @@ val md_theme_dark_surfaceTint = Color(0xFFADFFC6)
 val md_theme_dark_outlineVariant = Color(0xFF444F47)
 val md_theme_dark_scrim = Color(0xFF000000)
 
+// Light Theme Colors
+val custom_theme_light_success = Color(0xFF00C057) // Green
+val custom_theme_light_error = Color(0xFFF44336) // Red
+val custom_theme_light_warning = Color(0xFFFFC107) // Amber
+val custom_theme_light_successContainer = Color(0xFFE8F5E9) // Lighter Green
+val custom_theme_light_onSuccessContainer = Color(0xFF2E7D32) // Darker Green for contrast
+val custom_theme_light_errorContainer = Color(0xFFFFEBEE) // Lighter Red
+val custom_theme_light_onErrorContainer = Color(0xFFC62828) // Darker Red for contrast
+val custom_theme_light_warningContainer = Color(0xFFFFF3E0) // Lighter Amber
+val custom_theme_light_onWarningContainer = Color(0xFFF57C00) // Darker Orange for contrast
+
+
+// Dark Theme Colors
+val custom_theme_dark_success = Color(0xFF00C057) // Green
+val custom_theme_dark_error = Color(0xFFE57373) // Red
+val custom_theme_dark_warning = Color(0xFFFFD54F) // Amber
+
+val custom_theme_dark_successContainer = Color(0xFF4CAF50) // Lighter Green
+val custom_theme_dark_onSuccessContainer = Color(0xFFE8F5E9) // Light Green for contrast
+val custom_theme_dark_errorContainer = Color(0xFFEF9A9A) // Lighter Red
+val custom_theme_dark_onErrorContainer = Color(0xFFFFEBEE) // Light Red for contrast
+val custom_theme_dark_warningContainer = Color(0xFFFFE082) // Lighter Amber
+val custom_theme_dark_onWarningContainer = Color(0xFFFFF3E0) // Light Amber for contrast
