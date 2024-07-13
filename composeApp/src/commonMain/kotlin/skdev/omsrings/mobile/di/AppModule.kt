@@ -97,9 +97,6 @@ private val viewModels = module {
             clearOldOrdersUseCase = get()
         )
     }
-
-    // Feature Inventory Management
-    factory<InventoryManagementScreenModel> { InventoryManagementScreenModel(notificationManager = get()) }
 }
 
 private val useCases = module {

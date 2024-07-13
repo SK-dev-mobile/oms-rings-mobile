@@ -30,7 +30,6 @@ import omsringsmobile.composeapp.generated.resources.faq_new_order
 import omsringsmobile.composeapp.generated.resources.faq_new_order_description
 import omsringsmobile.composeapp.generated.resources.faq_rescheduled_order
 import omsringsmobile.composeapp.generated.resources.faq_rescheduled_order_description
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import skdev.omsrings.mobile.presentation.base.BaseScreen
 import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
