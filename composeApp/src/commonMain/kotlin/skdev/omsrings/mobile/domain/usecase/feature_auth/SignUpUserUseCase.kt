@@ -13,7 +13,7 @@ class SignUpUserUseCase(
     private val authRepository: AuthRepository,
     private val notificationManager: NotificationManager,
 ) {
-    operator suspend fun invoke(
+    suspend operator fun invoke(
         email: String,
         password: String,
         phone: String,

@@ -54,7 +54,5 @@ object InventoryManagementScreenContract {
 
     }
 
-    sealed interface Effect {
-
-    }
+    sealed interface Effect
 }

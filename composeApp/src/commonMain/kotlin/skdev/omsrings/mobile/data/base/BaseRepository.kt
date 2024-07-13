@@ -5,7 +5,7 @@ import io.github.aakira.napier.Napier
 import skdev.omsrings.mobile.utils.error.DataError
 import skdev.omsrings.mobile.utils.result.DataResult
 
-abstract interface BaseRepository {
+interface BaseRepository {
     val TAG: String
         get() = this::class.simpleName ?: "BaseRepository"
 

@@ -14,6 +14,5 @@ class UserSettingsContract {
         data object LoadSettings : Event
     }
 
-    sealed interface Effect {
-    }
+    sealed interface Effect
 }

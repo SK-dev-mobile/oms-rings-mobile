@@ -78,7 +78,7 @@
     <string name="inventory_management_header">Учет товара</string>
     <string name="inventory_management_add_item">Добавить товар</string>
     <string name="inventory_management_emptry_items_message">В данный момент товаров нет.\nНажмите '+', чтобы добавить новый товар.</string>
-<plurals name="item_count">
+    <plurals name="item_count">
         <item quantity="zero">$1$d товаров</item>
         <item quantity="one">%1$d товар</item>
         <item quantity="few">%1$d товара</item>

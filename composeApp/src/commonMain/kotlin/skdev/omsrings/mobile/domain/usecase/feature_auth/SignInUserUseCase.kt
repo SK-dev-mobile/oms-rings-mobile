@@ -13,7 +13,7 @@ class SignInUserUseCase(
     private val authRepository: AuthRepository,
     private val notificationManager: NotificationManager,
 ) {
-    operator suspend fun invoke(email: String, password: String): DataResult<Unit, DataError> {
+    suspend operator fun invoke(email: String, password: String): DataResult<Unit, DataError> {
         return authRepository.signIn(email, password).notifyError(
             notificationManager
         )
