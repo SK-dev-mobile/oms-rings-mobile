@@ -12,7 +12,8 @@ class OrderFormScreenContract {
         val isLoading: Boolean,
         val phoneField: FormField<String, StringResource>,
         val deliveryMethod: DeliveryMethod,
-        val addressField: FormField<String, StringResource>
+        val addressField: FormField<String, StringResource>,
+        val commentField: FormField<String, StringResource>
     )
 
     sealed interface Event {
@@ -22,6 +23,8 @@ class OrderFormScreenContract {
         data class PhoneChanged(val phone: String) : Event
         data class DeliveryMethodChanged(val method: DeliveryMethod) : Event
         data class AddressChanged(val address: String) : Event
+
+        data class CommentChanged(val comment: String) : Event
 
     }
 

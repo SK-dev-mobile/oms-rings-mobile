@@ -17,6 +17,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.koin.koinScreenModel
+import org.jetbrains.compose.resources.stringResource
 import skdev.omsrings.mobile.domain.model.DeliveryMethod
 import skdev.omsrings.mobile.presentation.base.BaseScreen
 import skdev.omsrings.mobile.presentation.feature_order_form.OrderFormScreenContract.Event
@@ -77,6 +78,35 @@ private fun OrderFormContent(
                 AddressInput(state, onEvent)
                 Spacer(16.dp)
             }
+            TimePickerField(
+                value = state.timeField.data,
+                onValueChange = { onEvent(OrderFormScreenContract.Event.TimeChanged(it)) },
+                label = {
+                    Text(
+                        if (state.deliveryMethod == DeliveryMethod.DELIVERY)
+                            "Время доставки"
+                        else
+                            "Время самовывоза"
+                    )
+                },
+                isError = state.timeField.error != null,
+                supportingText = state.timeField.error?.let { stringResource(it) },
+                enabled = !state.isLoading
+            )
+            Spacer(16.dp)
+            DatePickerField(
+                value = state.dateField.data,
+                onValueChange = { onEvent(OrderFormScreenContract.Event.DateChanged(it)) },
+                label = { Text("Дата") },
+                isError = state.dateField.error != null,
+                supportingText = state.dateField.error?.let { stringResource(it) },
+                enabled = !state.isLoading
+            )
+            Spacer(16.dp)
+            CommentField(
+
+            )
+            Spacer(16.dp)
             Button(
                 onClick = { /* onEvent(OrderFormScreenContract.Event.SubmitOrder) */ },
                 modifier = Modifier.fillMaxWidth(),
@@ -171,6 +201,7 @@ private fun AddressInput(state: OrderFormScreenContract.State, onEvent: (Event) 
             onEvent(Event.AddressChanged(it))
         },
         leadingIcon = { Icon(imageVector = Icons.Rounded.Home, contentDescription = "address") },
+        // TODO: заменить на ресурс и изменить на реальный текст
         placeholder = { Text("Адрес доставки") },
         isError = addressError != null,
         supportingText = SupportingText(addressError),
@@ -182,5 +213,27 @@ private fun AddressInput(state: OrderFormScreenContract.State, onEvent: (Event) 
             imeAction = ImeAction.Done
         ),
         modifier = Modifier.fillMaxWidth()
+    )
+}
+
+@Composable
+private fun CommentField(
+    state: OrderFormScreenContract.State,
+    onEvent: (Event) -> Unit
+) {
+    val (commentValue, commentValueSetter) = state.commentField.data.collectAsMutableState()
+    val commentError by state.commentField.error.collectAsState()
+
+
+    TextField(
+        value = commentValue,
+        onValueChange = {
+            commentValueSetter(it)
+            onEvent(Event.CommentChanged(it))
+        },
+        label = { Text("Комментарий к заказу") },
+        isError = commentError != null,
+        supportingText = SupportingText(commentError),
+        enabled = !state.isLoading
     )
 }
