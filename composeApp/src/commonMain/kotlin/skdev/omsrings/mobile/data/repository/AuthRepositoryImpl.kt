@@ -51,7 +51,7 @@ class AuthRepositoryImpl(
     ): DataResult<Unit, DataError> = withCathing {
         val user = firebaseAuth.currentUser ?: return@withCathing DataResult.Error(DataError.Network.UNKNOWN)
         val document = userInfoDocument ?: userInfoCollection.add(user.uid)
-        setUserInfo(document, UserInfo(phoneNumber, fullName, isEmployer))
+        setUserInfo(document, UserInfo(fullName, phoneNumber, isEmployer))
     }
 
     private suspend fun setUserInfo(

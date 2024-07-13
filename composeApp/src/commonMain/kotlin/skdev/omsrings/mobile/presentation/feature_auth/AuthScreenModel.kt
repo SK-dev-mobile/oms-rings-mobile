@@ -126,7 +126,7 @@ class AuthScreenModel(
                 signUpUserUseCase(
                     email = emailField.value(),
                     password = passwordField.value(),
-                    phone = phoneField.value(),
+                    phone = if (role == UserRole.CONTRAGENT) phoneField.value() else "",
                     fullName = fullNameField.value(),
                     isEmployer = role == UserRole.EMPLOYER
                 ).ifSuccess {

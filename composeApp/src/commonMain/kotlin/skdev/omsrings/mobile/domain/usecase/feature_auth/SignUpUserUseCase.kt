@@ -24,7 +24,11 @@ class SignUpUserUseCase(
             notificationManager
         ).also {
             it.ifSuccess {
-                authRepository.addUserInfo(phone, fullName, isEmployer).notifyError(
+                authRepository.addUserInfo(
+                    phone,
+                    fullName,
+                    isEmployer
+                ).notifyError(
                     notificationManager
                 )
             }
