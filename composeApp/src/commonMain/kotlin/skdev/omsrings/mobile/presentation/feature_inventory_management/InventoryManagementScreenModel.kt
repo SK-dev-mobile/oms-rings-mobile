@@ -113,21 +113,15 @@ class InventoryManagementScreenModel(
             val currentState = _state.value
             if (validateAll(currentState.folderField)) {
                 val folderName = currentState.folderField.data.value
-                _state.update { state ->
-                    val updatedFolders = if (state.folderToEdit != null) {
-                        state.folders.map { folder ->
-                            if (folder.id == state.folderToEdit.id) folder.setName(folderName) else folder
-                        }
-                    } else {
-                        state.folders + Folder(name = folderName)
-                    }
-                    state.copy(
-                        folders = updatedFolders
-                    )
+                val folder = currentState.folderToEdit?.copy(name = folderName) ?: Folder(name = folderName)
+                if (currentState.folderToEdit != null) {
+                    inventoryRepository.updateFolder(folder)
+                } else {
+                    inventoryRepository.addFolder(folder)
                 }
+                closeFolderDialog()
             }
         }
-        closeFolderDialog()
     }
 
     private fun displayFolderDialog(folder: Folder?) {
@@ -151,11 +145,9 @@ class InventoryManagementScreenModel(
     }
 
     private fun removeInventoryFolder(folder: Folder) {
-        _state.update { state ->
-            state.copy(
-                folders = state.folders - folder,
-                selectedFolderId = if (state.selectedFolderId == folder.id) null else state.selectedFolderId
-            )
+        screenModelScope.launch {
+            inventoryRepository.deleteFolder(folder.id)
+            _state.update { it.copy(selectedFolderId = if (it.selectedFolderId == folder.id) null else it.selectedFolderId) }
         }
     }
 
