@@ -31,8 +31,6 @@ fun GenericRow(
 ) {
     Surface(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = Dimens.spaceMedium, vertical = Dimens.spaceSmall)
             .clip(MaterialTheme.shapes.medium)
             .then(if (onRowClick != null) Modifier.clickable(onClick = onRowClick) else Modifier),
         tonalElevation = 1.dp

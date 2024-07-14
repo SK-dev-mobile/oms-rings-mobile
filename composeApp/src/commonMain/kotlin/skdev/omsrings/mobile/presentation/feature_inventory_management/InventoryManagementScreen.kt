@@ -97,6 +97,7 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
             Column(modifier = Modifier.padding(paddingValues)) {
                 if (state.selectedFolderId == null) {
                     FolderList(
+                        modifier = Modifier.fillMaxSize(),
                         folders = state.folders,
                         onCreateFolderClick = { screenModel.onEvent(Event.DisplayFolderDialog()) },
                         onFolderClick = { folder -> screenModel.onEvent(Event.SetSelectedInventoryFolder(folder.id)) },
@@ -159,6 +160,7 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
 
 @Composable
 private fun FolderList(
+    modifier: Modifier,
     folders: List<Folder>,
     onCreateFolderClick: () -> Unit,
     onFolderClick: (Folder) -> Unit,
@@ -168,7 +170,10 @@ private fun FolderList(
     if (folders.isEmpty()) {
         EmptyFoldersMessage(onAddFolderClick = onCreateFolderClick)
     } else {
-        LazyColumn {
+        LazyColumn(
+            modifier = modifier,
+            contentPadding = PaddingValues(vertical = Dimens.spaceSmall)
+        ) {
             items(
                 items = folders,
                 key = { it.id } // Используем key для оптимизации обновлений списка
@@ -318,6 +323,7 @@ fun FolderRow(
     onDelete: () -> Unit
 ) {
     GenericRow(
+        modifier = Modifier.padding(horizontal = Dimens.spaceMedium, vertical = Dimens.spaceSmall),
         icon = Icons.Rounded.Folder,
         iconTint = MaterialTheme.colorScheme.primary,
         title = folder.name,
@@ -352,6 +358,7 @@ fun InventoryItemRow(
     onDeleteClick: () -> Unit
 ) {
     GenericRow(
+        modifier = Modifier.padding(horizontal = Dimens.spaceMedium, vertical = Dimens.spaceSmall),
         icon = Icons.Rounded.Inventory,
         iconTint = MaterialTheme.colorScheme.secondary,
         title = item.name,
