@@ -28,6 +28,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -69,8 +70,10 @@ import omsringsmobile.composeapp.generated.resources.day_of_week_tuesday
 import omsringsmobile.composeapp.generated.resources.day_of_week_wednesday
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
+import skdev.omsrings.mobile.presentation.feature_main.components.CalendarState.Companion.MAX_MONTH_BUFFER
 import skdev.omsrings.mobile.ui.components.helpers.Spacer
 import skdev.omsrings.mobile.ui.theme.CustomTheme
+import skdev.omsrings.mobile.ui.theme.values.AnimationSpec
 import skdev.omsrings.mobile.ui.theme.values.Dimens
 import skdev.omsrings.mobile.ui.theme.values.IconSize
 import skdev.omsrings.mobile.utils.datetime.DateTimePattern
@@ -121,6 +124,13 @@ fun DayOfWeek.getStringResource(): StringResource = when (this) {
 }
 
 
+@Immutable
+data class DateAdditionalInfo(
+    val edited: Boolean,
+    val locked: Boolean,
+)
+
+
 @Stable
 class CalendarState(
     initialDate: LocalDate,
@@ -152,7 +162,9 @@ class CalendarState(
         _startDayOfWeek.value = dayOfWeek
     }
 
-
+    companion object {
+        const val MAX_MONTH_BUFFER = 500
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -161,41 +173,53 @@ fun CalendarView(
     modifier: Modifier = Modifier,
     state: CalendarState,
     showWeekBar: Boolean = true,
+    showMonthBar: Boolean = true,
+    updating: Boolean = false,
+    dateAddionalInfo: ((LocalDate) -> DateAdditionalInfo)? = null,
 ) {
-    val initialPage = 500
+    val initialPage = CalendarState.MAX_MONTH_BUFFER
     val pagerState = rememberPagerState(
         initialPage = initialPage,
-        pageCount = { initialPage * 2 + 1 }
+        pageCount = { MAX_MONTH_BUFFER * 2 + 1 }
     )
 
     val currentDate = remember { Clock.System.todayIn(TimeZone.currentSystemDefault()) }
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(pagerState) {
-        snapshotFlow { pagerState.currentPage }
-            .distinctUntilChanged()
-            .collect { page ->
-                val monthDiff = page - initialPage
-                val newMonth = currentDate.yearMonth.plus(monthDiff, DateTimeUnit.MONTH)
-                state.updateCurrentMonth(newMonth)
-            }
+    LaunchedEffect(pagerState.settledPage) {
+        scope.launch {
+            state.updateCurrentMonth(
+                currentDate.yearMonth.plus(pagerState.settledPage - initialPage, DateTimeUnit.MONTH)
+            )
+        }
     }
 
     Column {
-        MonthBarView(
-            modifier = Modifier.fillMaxWidth(),
-            month = state.currentMonth.value,
-            onNextClicked = {
-                scope.launch {
-                    pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                }
-            },
-            onPreviousClicked ={
-                scope.launch {
-                    pagerState.animateScrollToPage(pagerState.currentPage - 1)
-                }
-            },
-        )
+        if (showMonthBar) {
+            MonthBarView(
+                modifier = Modifier.fillMaxWidth(),
+                month = state.currentMonth.value,
+                onNextClicked = {
+                    scope.launch {
+                        pagerState.scrollToPage(pagerState.currentPage + 1)
+                    }
+                },
+                onPreviousClicked ={
+                    scope.launch {
+                        pagerState.scrollToPage(pagerState.currentPage - 1)
+                    }
+                },
+            )
+        }
+
+        if (updating) {
+            LinearProgressIndicator(
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.outline,
+            )
+        }
+
         Column(
             modifier = modifier
         ) {
@@ -213,20 +237,26 @@ fun CalendarView(
                 modifier = Modifier.fillMaxWidth(),
                 state = pagerState,
                 key = { it },
-                beyondBoundsPageCount = 4,
+                beyondBoundsPageCount = 2,
             ) { page ->
-                val monthDiff = page - initialPage
                 val month = remember(page) {
-                    currentDate.yearMonth.plus(monthDiff, DateTimeUnit.MONTH)
+                    currentDate.yearMonth.plus(page - initialPage, DateTimeUnit.MONTH)
+                }
+
+                val startDay = remember(month, state.startDayOfWeek.value) {
+                    val firstDayOfMonth = month.firstDayOfMonth
+                    val offset = (firstDayOfMonth.dayOfWeek.ordinal - state.startDayOfWeek.value.ordinal + 7) % 7
+                    firstDayOfMonth.minus(offset, DateTimeUnit.DAY)
                 }
 
                 CalendarMonthView(
                     modifier = Modifier.fillMaxWidth(),
                     month = month,
+                    startDay = startDay,
                     currentDate = currentDate,
                     selectedDate = state.selectedDate.value,
-                    startDayOfWeek = state.startDayOfWeek.value,
-                    onDateClick = state::selectDate
+                    onDateClick = state::selectDate,
+                    dateAddionalInfo = dateAddionalInfo,
                 )
             }
         }
@@ -237,16 +267,12 @@ fun CalendarView(
 private fun CalendarMonthView(
     modifier: Modifier = Modifier,
     month: YearMonth,
+    startDay: LocalDate,
     currentDate: LocalDate,
     selectedDate: LocalDate?,
-    startDayOfWeek: DayOfWeek,
     onDateClick: (LocalDate) -> Unit,
+    dateAddionalInfo: ((LocalDate) -> DateAdditionalInfo)?,
 ) {
-    val startDay = remember(month, startDayOfWeek) {
-        val firstDayOfMonth = month.firstDayOfMonth
-        val offset = (firstDayOfMonth.dayOfWeek.ordinal - startDayOfWeek.ordinal + 7) % 7
-        firstDayOfMonth.minus(offset, DateTimeUnit.DAY)
-    }
 
     val itemModifier: Modifier = remember {
         Modifier
@@ -264,6 +290,7 @@ private fun CalendarMonthView(
     ) {
         items(35) { dayOffset ->
             val date = startDay.plus(dayOffset, DateTimeUnit.DAY)
+            val addionalInfo = remember(date) { if (dateAddionalInfo != null) dateAddionalInfo(date) else DateAdditionalInfo(false, false) }
             DayView(
                 modifier = Modifier.fillMaxWidth(),
                 itemModifier = itemModifier,
@@ -271,8 +298,8 @@ private fun CalendarMonthView(
                 enabled = date.month == month.month,
                 selected = date == selectedDate,
                 currentDate = date == currentDate,
-                locked = true,
-                edited = true,
+                locked = addionalInfo.locked,
+                edited = addionalInfo.edited,
                 onClick = { onDateClick(date) },
             )
         }
