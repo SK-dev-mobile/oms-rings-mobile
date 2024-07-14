@@ -29,8 +29,7 @@ fun DeliveryMethodSelector(
 ) {
     Row(
         modifier = modifier
-            .selectableGroup()
-            .padding(horizontal = 16.dp),
+            .selectableGroup(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         DeliveryOption.entries.forEach { option ->

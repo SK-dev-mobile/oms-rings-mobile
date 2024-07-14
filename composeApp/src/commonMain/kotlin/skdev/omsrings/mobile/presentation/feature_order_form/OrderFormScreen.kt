@@ -13,14 +13,13 @@ import skdev.omsrings.mobile.domain.model.DeliveryMethod
 import skdev.omsrings.mobile.presentation.base.BaseScreen
 import skdev.omsrings.mobile.presentation.feature_order_form.OrderFormContract.Event
 import skdev.omsrings.mobile.presentation.feature_order_form.components.AddressInput
+import skdev.omsrings.mobile.presentation.feature_order_form.components.CommentField
+import skdev.omsrings.mobile.presentation.feature_order_form.components.ConfirmOrderButton
 import skdev.omsrings.mobile.presentation.feature_order_form.components.DeliveryDateTimeField
 import skdev.omsrings.mobile.presentation.feature_order_form.components.DeliveryMethodSelector
 import skdev.omsrings.mobile.presentation.feature_order_form.components.PhoneInput
-import skdev.omsrings.mobile.ui.components.fields.SupportingText
-import skdev.omsrings.mobile.ui.components.fields.TextField
 import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
 import skdev.omsrings.mobile.ui.components.helpers.Spacer
-import skdev.omsrings.mobile.utils.fields.collectAsMutableState
 
 
 // TODO: добавить валидацию полей
@@ -73,62 +72,44 @@ private fun OrderFormContent(
         ) {
             PhoneInput(
                 phoneField = state.phoneField,
-                onPhoneChanged = { onEvent(Event.OnPhoneChanged(it)) }
+                onPhoneChanged = { onEvent(Event.OnPhoneChanged(it)) },
+                modifier = Modifier.fillMaxWidth().padding(top = 16.dp, start = 16.dp, end = 16.dp)
             )
             Spacer(16.dp)
             DeliveryMethodSelector(
                 selectedMethod = state.deliveryMethod,
                 onMethodSelected = { onEvent(Event.OnDeliveryMethodChanged(it)) },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
             )
             Spacer(16.dp)
             if (state.deliveryMethod == DeliveryMethod.DELIVERY) {
                 AddressInput(
                     addressField = state.addressField,
-                    onAddressChanged = { onEvent(Event.OnAddressChanged(it)) }
+                    onAddressChanged = { onEvent(Event.OnAddressChanged(it)) },
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
                 )
                 Spacer(16.dp)
             }
-            Spacer(16.dp)
             DeliveryDateTimeField(
                 initialDateTime = if (state.dateTimeField.data.value.isNotBlank()) Instant.parse(state.dateTimeField.data.value) else null,
                 onDateTimeSelected = { onEvent(Event.OnDateTimeChanged(it)) },
                 deliveryMethod = state.deliveryMethod,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
             )
             Spacer(16.dp)
-            CommentField(state, onEvent)
+            CommentField(
+                commentField = state.commentField,
+                onCommentChanged = { onEvent(Event.OnCommentChanged(it)) },
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+            )
             Spacer(16.dp)
-            Button(
-                onClick = { /* onEvent(OrderFormScreenContract.Event.SubmitOrder) */ },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !state.isLoading
-            ) {
-                Text("Оформить заказ")
-            }
+            ConfirmOrderButton(
+                onClick = { onEvent(Event.OnSubmitClicked) },
+                enabled = !state.isLoading,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+            )
         }
     }
 }
 
 
-@Composable
-private fun CommentField(
-    state: OrderFormContract.State,
-    onEvent: (Event) -> Unit
-) {
-    val (commentValue, commentValueSetter) = state.commentField.data.collectAsMutableState()
-    val commentError by state.commentField.error.collectAsState()
-
-
-    TextField(
-        value = commentValue,
-        onValueChange = {
-            commentValueSetter(it)
-            onEvent(Event.OnCommentChanged(it))
-        },
-        label = { Text("Комментарий к заказу") },
-        isError = commentError != null,
-        supportingText = SupportingText(commentError),
-        enabled = !state.isLoading
-    )
-}

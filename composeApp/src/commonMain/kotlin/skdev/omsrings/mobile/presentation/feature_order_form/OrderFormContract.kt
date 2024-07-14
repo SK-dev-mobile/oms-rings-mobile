@@ -30,6 +30,8 @@ class OrderFormContract {
 
         data class OnDateTimeChanged(val dateTime: Instant) : Event
 
+        // Submit
+        object OnSubmitClicked : Event
 
     }
 

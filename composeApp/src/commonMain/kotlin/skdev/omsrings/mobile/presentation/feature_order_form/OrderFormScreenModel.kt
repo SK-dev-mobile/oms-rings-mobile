@@ -92,6 +92,7 @@ class OrderFormScreenModel(
             is OrderFormContract.Event.OnBackClicked -> TODO()
 
             is OrderFormContract.Event.OnDateTimeChanged -> updateDateTime(event.dateTime)
+            OrderFormContract.Event.OnSubmitClicked -> TODO()
         }
     }
 
