@@ -4,21 +4,12 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.rounded.DirectionsCar
-import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.koin.koinScreenModel
 import kotlinx.datetime.Instant
@@ -28,8 +19,11 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import skdev.omsrings.mobile.domain.model.DeliveryMethod
 import skdev.omsrings.mobile.presentation.base.BaseScreen
-import skdev.omsrings.mobile.presentation.feature_order_form.OrderFormScreenContract.Event
-import skdev.omsrings.mobile.ui.components.fields.PhoneField
+import skdev.omsrings.mobile.presentation.feature_order_form.OrderFormContract.Event
+import skdev.omsrings.mobile.presentation.feature_order_form.components.AddressInput
+import skdev.omsrings.mobile.presentation.feature_order_form.components.DeliveryDateTimeField
+import skdev.omsrings.mobile.presentation.feature_order_form.components.DeliveryMethodSelector
+import skdev.omsrings.mobile.presentation.feature_order_form.components.PhoneInput
 import skdev.omsrings.mobile.ui.components.fields.SupportingText
 import skdev.omsrings.mobile.ui.components.fields.TextField
 import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
@@ -63,9 +57,11 @@ object OrderFormScreen : BaseScreen("order_form_screen") {
 
 @Composable
 private fun OrderFormContent(
-    state: OrderFormScreenContract.State,
+    state: OrderFormContract.State,
     onEvent: (Event) -> Unit
 ) {
+    val scrollState = rememberScrollState()
+
     Scaffold(
         topBar = {
             RingsTopAppBar(
@@ -80,25 +76,36 @@ private fun OrderFormContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(scrollState)
                 .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
         ) {
-            PhoneInput(state, onEvent)
+            PhoneInput(
+                phoneField = state.phoneField,
+                onPhoneChanged = { onEvent(Event.OnPhoneChanged(it)) }
+            )
             Spacer(16.dp)
             DeliveryMethodSelector(
                 selectedMethod = state.deliveryMethod,
-                onMethodSelected = { onEvent(Event.DeliveryMethodChanged(it)) },
-                enabled = !state.isLoading
+                onMethodSelected = { onEvent(Event.OnDeliveryMethodChanged(it)) },
+                modifier = Modifier.fillMaxWidth()
             )
             Spacer(16.dp)
             if (state.deliveryMethod == DeliveryMethod.DELIVERY) {
-                AddressInput(state, onEvent)
+                AddressInput(
+                    addressField = state.addressField,
+                    onAddressChanged = { onEvent(Event.OnAddressChanged(it)) }
+                )
                 Spacer(16.dp)
             }
             Spacer(16.dp)
             DeliveryDateTimeField(
-                state = state,
-                onEvent = onEvent
+                dateTime = Instant.parse(state.dateTimeField.data.value),
+                onEvent = { dateTimeEvent ->
+                    onEvent(Event.DateTimeEvent(dateTimeEvent))
+                },
+                deliveryMethod = state.deliveryMethod,
+                dateTimeSelectionState = state.dateTimeSelectionState,
+                modifier = Modifier.fillMaxWidth()
             )
             Spacer(16.dp)
             CommentField(state, onEvent)
@@ -112,134 +119,6 @@ private fun OrderFormContent(
             }
         }
     }
-}
-
-
-@Composable
-private fun PhoneInput(state: OrderFormScreenContract.State, onEvent: (Event) -> Unit) {
-    val (phoneValue, phoneValueSetter) = state.phoneField.data.collectAsMutableState()
-    val phoneError by state.phoneField.error.collectAsState()
-
-    PhoneField(
-        modifier = Modifier.fillMaxWidth(),
-        value = phoneValue,
-        onValueChange = {
-            phoneValueSetter(it)
-            onEvent(Event.PhoneChanged(it))
-        },
-        isError = phoneError != null,
-        supportingText = SupportingText(phoneError),
-        enabled = !state.isLoading,
-        keyboardOptions = KeyboardOptions(
-            capitalization = KeyboardCapitalization.None,
-            autoCorrect = false,
-            keyboardType = KeyboardType.Phone,
-            imeAction = ImeAction.Done
-        ),
-    )
-}
-
-@Composable
-fun DeliveryMethodSelector(
-    selectedMethod: DeliveryMethod,
-    onMethodSelected: (DeliveryMethod) -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .selectableGroup()
-            .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        DeliveryOption.entries.forEach { option ->
-            DeliveryMethodOption(
-                option = option,
-                selected = selectedMethod == option.method,
-                onSelected = { onMethodSelected(option.method) },
-                enabled = enabled,
-                modifier = Modifier.weight(1f)
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun DeliveryMethodOption(
-    option: DeliveryOption,
-    selected: Boolean,
-    onSelected: () -> Unit,
-    enabled: Boolean,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier,
-        colors = CardDefaults.cardColors(
-            containerColor = if (selected) MaterialTheme.colorScheme.primaryContainer
-            else MaterialTheme.colorScheme.surfaceVariant
-        ),
-        onClick = onSelected,
-        enabled = enabled
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(12.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Icon(
-                imageVector = option.icon,
-                contentDescription = null,
-                tint = if (selected) MaterialTheme.colorScheme.onPrimaryContainer
-                else MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Text(
-                text = option.label,
-                style = MaterialTheme.typography.bodyMedium,
-                color = if (selected) MaterialTheme.colorScheme.onPrimaryContainer
-                else MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-    }
-}
-
-private enum class DeliveryOption(
-    val method: DeliveryMethod,
-    val label: String,
-    val icon: ImageVector
-) {
-    PICKUP(DeliveryMethod.PICKUP, "Самовывоз", Icons.Rounded.DirectionsCar),
-    DELIVERY(DeliveryMethod.DELIVERY, "Доставка", Icons.Rounded.Home)
-}
-
-@Composable
-private fun AddressInput(state: OrderFormScreenContract.State, onEvent: (Event) -> Unit) {
-    val (addressValue, addressValueSetter) = state.addressField.data.collectAsMutableState()
-    val addressError by state.addressField.error.collectAsState()
-
-    TextField(
-        value = addressValue,
-        onValueChange = {
-            addressValueSetter(it)
-            onEvent(Event.AddressChanged(it))
-        },
-        leadingIcon = { Icon(imageVector = Icons.Rounded.Home, contentDescription = "address") },
-        // TODO: заменить на ресурс и изменить на реальный текст
-        placeholder = { Text("Адрес доставки") },
-        isError = addressError != null,
-        supportingText = SupportingText(addressError),
-        enabled = !state.isLoading,
-        keyboardOptions = KeyboardOptions(
-            capitalization = KeyboardCapitalization.Sentences,
-            autoCorrect = false,
-            keyboardType = KeyboardType.Text,
-            imeAction = ImeAction.Done
-        ),
-        modifier = Modifier.fillMaxWidth()
-    )
 }
 
 
@@ -260,7 +139,7 @@ fun formatDateTime(dateTime: LocalDateTime): String {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeliveryDateTimeField(
-    state: OrderFormScreenContract.State,
+    state: OrderFormContract.State,
     onEvent: (Event) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -299,7 +178,7 @@ fun DeliveryDateTimeField(
                 LaunchedEffect(interactionSource) {
                     interactionSource.interactions.collect {
                         if (it is PressInteraction.Release && !state.isLoading) {
-                            onEvent(Event.DateTimeFieldClicked)
+//                            onEvent(Event.DateTimeFieldClicked)
                         }
                     }
                 }
@@ -308,34 +187,34 @@ fun DeliveryDateTimeField(
 
         )
 
-        if (state.showDatePicker) {
-            DatePickerDialogSK(
-                initialDate = dateTime,
-                onDateSelected = { selectedDate ->
-                    onEvent(Event.DateSelected(selectedDate))
-                },
-                onDismiss = { onEvent(Event.DismissDatePicker) }
-            )
-        }
-
-        if (state.showTimePicker) {
-            TimePickerDialog(
-                initialTime = LocalTime(
-                    dateTime.toLocalDateTime(TimeZone.currentSystemDefault()).hour,
-                    dateTime.toLocalDateTime(TimeZone.currentSystemDefault()).minute
-                ),
-                onTimeSelected = { selectedTime ->
-                    onEvent(Event.TimeSelected(selectedTime))
-                },
-                onDismiss = { onEvent(Event.DismissTimePicker) }
-            )
-        }
+//        if (state.showDatePicker) {
+//            DatePickerDialogSK(
+//                initialDate = dateTime,
+//                onDateSelected = { selectedDate ->
+//                    onEvent(Event.DateSelected(selectedDate))
+//                },
+//                onDismiss = { onEvent(Event.DismissDatePicker) }
+//            )
+//        }
+//
+//        if (state.showTimePicker) {
+//            TimePickerDialog(
+//                initialTime = LocalTime(
+//                    dateTime.toLocalDateTime(TimeZone.currentSystemDefault()).hour,
+//                    dateTime.toLocalDateTime(TimeZone.currentSystemDefault()).minute
+//                ),
+//                onTimeSelected = { selectedTime ->
+//                    onEvent(Event.TimeSelected(selectedTime))
+//                },
+//                onDismiss = { onEvent(Event.DismissTimePicker) }
+//            )
+//        }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DatePickerDialogSK(
+private fun DatePickerDialogSK(
     initialDate: Instant,
     onDateSelected: (Instant) -> Unit,
     onDismiss: () -> Unit
@@ -375,7 +254,7 @@ fun DatePickerDialogSK(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TimePickerDialog(
+private fun TimePickerDialog(
     initialTime: LocalTime,
     onTimeSelected: (LocalTime) -> Unit,
     onDismiss: () -> Unit
@@ -413,7 +292,7 @@ fun TimePickerDialog(
 
 @Composable
 private fun CommentField(
-    state: OrderFormScreenContract.State,
+    state: OrderFormContract.State,
     onEvent: (Event) -> Unit
 ) {
     val (commentValue, commentValueSetter) = state.commentField.data.collectAsMutableState()
@@ -424,7 +303,7 @@ private fun CommentField(
         value = commentValue,
         onValueChange = {
             commentValueSetter(it)
-            onEvent(Event.CommentChanged(it))
+            onEvent(Event.OnCommentChanged(it))
         },
         label = { Text("Комментарий к заказу") },
         isError = commentError != null,

@@ -15,6 +15,7 @@ import omsringsmobile.composeapp.generated.resources.cant_be_blank
 import org.jetbrains.compose.resources.StringResource
 import skdev.omsrings.mobile.domain.model.DeliveryMethod
 import skdev.omsrings.mobile.presentation.base.BaseScreenModel
+import skdev.omsrings.mobile.presentation.feature_order_form.components.DateTimeEvent
 import skdev.omsrings.mobile.utils.fields.FormField
 import skdev.omsrings.mobile.utils.fields.flowBlock
 import skdev.omsrings.mobile.utils.fields.validators.ValidationResult
@@ -24,15 +25,15 @@ import skdev.omsrings.mobile.utils.notification.NotificationManager
 
 class OrderFormScreenModel(
     notificationManager: NotificationManager
-) : BaseScreenModel<OrderFormScreenContract.Event, OrderFormScreenContract.Effect>(
+) : BaseScreenModel<OrderFormContract.Event, OrderFormContract.Effect>(
     notificationManager
 ) {
 
     private val _state = MutableStateFlow(
-        OrderFormScreenContract.State(
+        OrderFormContract.State(
             isLoading = false,
-            showDatePicker = false,
-            showTimePicker = false,
+//            showDatePicker = false,
+//            showTimePicker = false,
             phoneField = createPhoneField(),
             deliveryMethod = DeliveryMethod.PICKUP,
             dateTimeField = createDateTimeField(),
@@ -83,21 +84,27 @@ class OrderFormScreenModel(
         }
     )
 
-    override fun onEvent(event: OrderFormScreenContract.Event) {
+    override fun onEvent(event: OrderFormContract.Event) {
         when (event) {
-            is OrderFormScreenContract.Event.PhoneChanged -> updatePhone(event.phone)
-            is OrderFormScreenContract.Event.DeliveryMethodChanged -> updateDeliveryMethod(event.method)
-            is OrderFormScreenContract.Event.AddressChanged -> updateAddress(event.address)
-            is OrderFormScreenContract.Event.CommentChanged -> TODO()
+            is OrderFormContract.Event.OnPhoneChanged -> updatePhone(event.phone)
+            is OrderFormContract.Event.OnDeliveryMethodChanged -> updateDeliveryMethod(event.method)
+            is OrderFormContract.Event.OnAddressChanged -> updateAddress(event.address)
+            is OrderFormContract.Event.OnCommentChanged -> TODO()
+            is OrderFormContract.Event.OnBackClicked -> TODO()
 
-       
-            is OrderFormScreenContract.Event.DateTimeFieldClicked -> showDatePicker()
-            is OrderFormScreenContract.Event.DismissDatePicker -> hideDatePicker()
-            is OrderFormScreenContract.Event.OnBackClicked -> TODO()
-            is OrderFormScreenContract.Event.DismissTimePicker -> hideTimePicker()
+            is OrderFormContract.Event.DateTimeEvent -> handleDateTimeEvent(event.event)
+        }
+    }
 
-            is OrderFormScreenContract.Event.DateSelected -> handleDateSelected(event.date)
-            is OrderFormScreenContract.Event.TimeSelected -> handleTimeSelected(event.time)
+
+    private fun handleDateTimeEvent(event: DateTimeEvent) {
+        when (event) {
+            is DateTimeEvent.OnDateTimeFieldClicked -> showDatePicker()
+            is DateTimeEvent.OnDismissDatePicker -> hideDatePicker()
+            is DateTimeEvent.OnDismissTimePicker -> hideTimePicker()
+            is DateTimeEvent.OnDateSelected -> TODO() // handleDateSelected(event.date)
+            is DateTimeEvent.OnTimeSelected -> handleTimeSelected(event.time)
+            is DateTimeEvent.OnConfirmDateTime -> TODO() // confirmDateTime()
         }
     }
 
@@ -114,19 +121,19 @@ class OrderFormScreenModel(
     }
 
     private fun showDatePicker() {
-        _state.update { it.copy(showDatePicker = true) }
+        _state.update { it.copy(dateTimeSelectionState = it.dateTimeSelectionState.copy(showDatePicker = true)) }
     }
 
     private fun hideDatePicker() {
-        _state.update { it.copy(showDatePicker = false) }
+        _state.update { it.copy(dateTimeSelectionState = it.dateTimeSelectionState.copy(showDatePicker = false)) }
     }
 
     private fun showTimePicker() {
-        _state.update { it.copy(showTimePicker = true) }
+        _state.update { it.copy(dateTimeSelectionState = it.dateTimeSelectionState.copy(showTimePicker = true)) }
     }
 
     private fun hideTimePicker() {
-        _state.update { it.copy(showTimePicker = false) }
+        _state.update { it.copy(dateTimeSelectionState = it.dateTimeSelectionState.copy(showTimePicker = false)) }
     }
 
     private fun updateDateTime(dateTime: Instant) {

@@ -5,10 +5,11 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalTime
 import org.jetbrains.compose.resources.StringResource
 import skdev.omsrings.mobile.domain.model.DeliveryMethod
+import skdev.omsrings.mobile.presentation.feature_order_form.components.DateTimeSelectionState
 import skdev.omsrings.mobile.utils.fields.FormField
 
 
-class OrderFormScreenContract {
+class OrderFormContract {
     @Immutable
     data class State(
         val isLoading: Boolean,
@@ -18,29 +19,26 @@ class OrderFormScreenContract {
         val dateTimeField: FormField<String, StringResource>,
         val commentField: FormField<String, StringResource>,
 
-        // Dialog
-        val showDatePicker: Boolean,
-        val showTimePicker: Boolean,
+        // DateTimeSelectionState
+        val dateTimeSelectionState: DateTimeSelectionState = DateTimeSelectionState()
+
     )
+
 
     sealed interface Event {
         data object OnBackClicked : Event
 
         // Form
-        data class PhoneChanged(val phone: String) : Event
-        data class DeliveryMethodChanged(val method: DeliveryMethod) : Event
-        data class AddressChanged(val address: String) : Event
-        data class CommentChanged(val comment: String) : Event
+        data class OnPhoneChanged(val phone: String) : Event
+        data class OnDeliveryMethodChanged(val method: DeliveryMethod) : Event
+        data class OnAddressChanged(val address: String) : Event
+        data class OnCommentChanged(val comment: String) : Event
+        
 
-        // Date Picker
-        data object DateTimeFieldClicked : Event
-        data object DismissDatePicker : Event
-        data class DateSelected(val date: Instant) : Event
+        data class DateTimeEvent(val event: skdev.omsrings.mobile.presentation.feature_order_form.components.DateTimeEvent) :
+            Event
 
 
-        // Time Picker
-        data object DismissTimePicker : Event
-        data class TimeSelected(val time: LocalTime) : Event
     }
 
     sealed interface Effect {
