@@ -33,6 +33,7 @@ fun AddressInput(
         placeholder = { Text("Enter your address") },
         isError = addressError != null,
         supportingText = SupportingText(addressError),
-        modifier = modifier
+        modifier = modifier,
+        singleLine = true
     )
 }
