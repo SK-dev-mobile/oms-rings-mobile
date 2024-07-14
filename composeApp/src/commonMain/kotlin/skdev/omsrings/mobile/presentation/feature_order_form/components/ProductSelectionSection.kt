@@ -13,6 +13,7 @@ import androidx.compose.material.icons.rounded.Inventory
 import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import omsringsmobile.composeapp.generated.resources.Res
@@ -20,7 +21,6 @@ import omsringsmobile.composeapp.generated.resources.back_to_folders
 import omsringsmobile.composeapp.generated.resources.decrease_quantity
 import omsringsmobile.composeapp.generated.resources.increase_quantity
 import omsringsmobile.composeapp.generated.resources.item_count
-import omsringsmobile.composeapp.generated.resources.item_stock
 import omsringsmobile.composeapp.generated.resources.no_products_available
 import omsringsmobile.composeapp.generated.resources.select_products
 import org.jetbrains.compose.resources.pluralStringResource
@@ -64,7 +64,6 @@ fun ProductSelectionSection(
                 onFolderClick = { folder -> onEvent(ProductSelectionEvent.OnFolderSelected(folder.id)) }
             )
         } else {
-
             val selectedFolder = state.folders.find { folder -> folder.id == state.selectedFolderId }
             selectedFolder?.let { folder ->
                 InventoryItemList(
@@ -155,32 +154,47 @@ private fun InventoryItemRow(
     onQuantityChanged: (Int) -> Unit
 ) {
     GenericRow(
+        modifier = Modifier.padding(vertical = 8.dp).fillMaxWidth(),
         icon = Icons.Rounded.Inventory,
         iconTint = MaterialTheme.colorScheme.secondary,
         title = item.name,
-        subtitle = stringResource(Res.string.item_stock, item.stockQuantity),
         actions = {
-            Row {
-                IconButton(
-                    onClick = { if (quantity > 0) onQuantityChanged(quantity - 1) },
-                    enabled = quantity > 0
-                ) {
-                    Icon(Icons.Rounded.Remove, contentDescription = stringResource(Res.string.decrease_quantity))
-                }
-                Text(
-                    text = quantity.toString(),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(horizontal = 8.dp)
-                )
-                IconButton(
-                    onClick = { if (quantity < item.stockQuantity) onQuantityChanged(quantity + 1) },
-                    enabled = quantity < item.stockQuantity
-                ) {
-                    Icon(Icons.Rounded.Add, contentDescription = stringResource(Res.string.increase_quantity))
-                }
-            }
+            QuantityControlRow(
+                quantity = quantity,
+                onQuantityChanged = onQuantityChanged
+            )
         }
     )
+}
+
+@Composable
+private fun QuantityControlRow(
+    quantity: Int,
+    onQuantityChanged: (Int) -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(start = 16.dp)
+    ) {
+        IconButton(
+            onClick = { if (quantity > 0) onQuantityChanged(quantity - 1) },
+            enabled = quantity > 0
+        ) {
+            Icon(Icons.Rounded.Remove, contentDescription = stringResource(Res.string.decrease_quantity))
+        }
+        Text(
+            text = quantity.toString(),
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .align(Alignment.CenterVertically)
+        )
+        IconButton(
+            onClick = { onQuantityChanged(quantity + 1) }
+        ) {
+            Icon(Icons.Rounded.Add, contentDescription = stringResource(Res.string.increase_quantity))
+        }
+    }
 }
 
 @Composable
