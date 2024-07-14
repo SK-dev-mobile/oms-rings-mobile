@@ -1,7 +1,7 @@
 package skdev.omsrings.mobile.presentation.feature_order_form
 
 import androidx.compose.runtime.Immutable
-import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalTime
 import org.jetbrains.compose.resources.StringResource
 import skdev.omsrings.mobile.domain.model.DeliveryMethod
@@ -30,13 +30,12 @@ class OrderFormScreenContract {
         data class PhoneChanged(val phone: String) : Event
         data class DeliveryMethodChanged(val method: DeliveryMethod) : Event
         data class AddressChanged(val address: String) : Event
-        data class DateTimeChanged(val date: String) : Event
         data class CommentChanged(val comment: String) : Event
 
         // Date Picker
         data object DateTimeFieldClicked : Event
         data object DismissDatePicker : Event
-        data class DateSelected(val date: LocalDate) : Event
+        data class DateSelected(val date: Instant) : Event
 
 
         // Time Picker

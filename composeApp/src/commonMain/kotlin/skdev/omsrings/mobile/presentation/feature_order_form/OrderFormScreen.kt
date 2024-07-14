@@ -19,11 +19,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.koin.koinScreenModel
 import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime
 import skdev.omsrings.mobile.domain.model.DeliveryMethod
 import skdev.omsrings.mobile.presentation.base.BaseScreen
@@ -36,8 +34,6 @@ import skdev.omsrings.mobile.ui.components.helpers.Spacer
 import skdev.omsrings.mobile.utils.fields.collectAsMutableState
 
 
-// TODO: реализовать выбор даты в диалоге DatePickerDialog и отображение выбранной даты в поле ввода
-// TODO: реализовать выбор времени в диалоге TimePickerDialog и отображение выбранного времени в поле ввода
 // TODO: добавить валидацию полей
 // TODO: сделать часть в форме с выбором количества товаров
 // TODO: сделать функцию переноса заказа на другой день
@@ -238,11 +234,11 @@ fun DeliveryDateTimeField(
 ) {
 
     val dateTime = remember(state.dateTimeField.data.value) {
-        LocalDateTime.parse(state.dateTimeField.data.value)
+        Instant.parse(state.dateTimeField.data.value)
     }
 
     val dateTimeFormatted = remember(dateTime) {
-        formatDateTime(dateTime)
+        formatDateTime(dateTime.toLocalDateTime(TimeZone.currentSystemDefault()))
     }
 
 
@@ -275,7 +271,7 @@ fun DeliveryDateTimeField(
 
         if (state.showDatePicker) {
             DatePickerDialogSK(
-                initialDate = dateTime.date,
+                initialDate = dateTime,
                 onDateSelected = { selectedDate ->
                     onEvent(Event.DateSelected(selectedDate))
                 },
@@ -285,7 +281,10 @@ fun DeliveryDateTimeField(
 
         if (state.showTimePicker) {
             TimePickerDialog(
-                initialTime = LocalTime(dateTime.hour, dateTime.minute),
+                initialTime = LocalTime(
+                    dateTime.toLocalDateTime(TimeZone.currentSystemDefault()).hour,
+                    dateTime.toLocalDateTime(TimeZone.currentSystemDefault()).minute
+                ),
                 onTimeSelected = { selectedTime ->
                     onEvent(Event.TimeSelected(selectedTime))
                 },
@@ -298,12 +297,13 @@ fun DeliveryDateTimeField(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerDialogSK(
-    initialDate: LocalDate,
-    onDateSelected: (LocalDate) -> Unit,
+    initialDate: Instant,
+    onDateSelected: (Instant) -> Unit,
     onDismiss: () -> Unit
 ) {
+
     val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = initialDate.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+        initialSelectedDateMillis = initialDate.toEpochMilliseconds()
     )
 
     DatePickerDialog(
@@ -312,7 +312,6 @@ fun DatePickerDialogSK(
             TextButton(onClick = {
                 datePickerState.selectedDateMillis?.let {
                     val selectedDate = Instant.fromEpochMilliseconds(it)
-                        .toLocalDateTime(TimeZone.currentSystemDefault()).date
                     onDateSelected(selectedDate)
                 }
                 onDismiss()

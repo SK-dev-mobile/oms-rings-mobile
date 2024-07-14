@@ -4,9 +4,12 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atTime
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.cant_be_blank
 import org.jetbrains.compose.resources.StringResource
@@ -62,7 +65,7 @@ class OrderFormScreenModel(
 
     private fun createDateTimeField() = FormField<String, StringResource>(
         scope = screenModelScope,
-        initialValue = "2023-01-02T23:40:57.120",
+        initialValue = "2024-07-12T12:00:00.0Z",
         validation = flowBlock {
             ValidationResult.of(it) {
                 notBlank(Res.string.cant_be_blank)
@@ -86,9 +89,8 @@ class OrderFormScreenModel(
             is OrderFormScreenContract.Event.DeliveryMethodChanged -> updateDeliveryMethod(event.method)
             is OrderFormScreenContract.Event.AddressChanged -> updateAddress(event.address)
             is OrderFormScreenContract.Event.CommentChanged -> TODO()
-            is OrderFormScreenContract.Event.DateTimeChanged -> updateDateTime(event.date)
 
-
+       
             is OrderFormScreenContract.Event.DateTimeFieldClicked -> showDatePicker()
             is OrderFormScreenContract.Event.DismissDatePicker -> hideDatePicker()
             is OrderFormScreenContract.Event.OnBackClicked -> TODO()
@@ -127,28 +129,21 @@ class OrderFormScreenModel(
         _state.update { it.copy(showTimePicker = false) }
     }
 
-    private fun updateDateTime(dateTime: String) {
-        _state.update { it.copy(dateTimeField = it.dateTimeField.apply { setValue(dateTime) }) }
+    private fun updateDateTime(dateTime: Instant) {
+        _state.update { it.copy(dateTimeField = it.dateTimeField.apply { setValue(dateTime.toString()) }) }
     }
 
-    private fun handleDateSelected(selectedDate: LocalDate) {
-        val currentDateTime = LocalDateTime.parse(_state.value.dateTimeField.data.value)
-        val newDateTime = LocalDateTime(
-            selectedDate.year, selectedDate.monthNumber, selectedDate.dayOfMonth,
-            currentDateTime.hour, currentDateTime.minute
-        )
-        updateDateTime(newDateTime.toString())
+    private fun handleDateSelected(selectedDate: Instant) {
+        updateDateTime(selectedDate)
         hideDatePicker()
         showTimePicker()
     }
 
     private fun handleTimeSelected(selectedTime: LocalTime) {
-        val currentDateTime = LocalDateTime.parse(_state.value.dateTimeField.data.value)
-        val newDateTime = LocalDateTime(
-            currentDateTime.year, currentDateTime.month, currentDateTime.dayOfMonth,
-            selectedTime.hour, selectedTime.minute
-        )
-        updateDateTime(newDateTime.toString())
+        val currentDateTime = Instant.parse(state.value.dateTimeField.data.value)
+        val newDateTime = currentDateTime.toLocalDateTime(TimeZone.currentSystemDefault()).date.atTime(selectedTime)
+            .toInstant(TimeZone.currentSystemDefault())
+        updateDateTime(newDateTime)
         hideTimePicker()
     }
 
