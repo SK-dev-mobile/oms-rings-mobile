@@ -1,15 +1,16 @@
 package skdev.omsrings.mobile.presentation.feature_order_form
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.koin.koinScreenModel
-import kotlinx.datetime.Instant
+import kotlinx.coroutines.launch
 import skdev.omsrings.mobile.domain.model.DeliveryMethod
+import skdev.omsrings.mobile.domain.model.Folder
 import skdev.omsrings.mobile.presentation.base.BaseScreen
 import skdev.omsrings.mobile.presentation.feature_order_form.OrderFormContract.Event
 import skdev.omsrings.mobile.presentation.feature_order_form.components.AddressInput
@@ -18,8 +19,8 @@ import skdev.omsrings.mobile.presentation.feature_order_form.components.ConfirmO
 import skdev.omsrings.mobile.presentation.feature_order_form.components.DeliveryDateTimeField
 import skdev.omsrings.mobile.presentation.feature_order_form.components.DeliveryMethodSelector
 import skdev.omsrings.mobile.presentation.feature_order_form.components.PhoneInput
+import skdev.omsrings.mobile.presentation.feature_order_form.components.ProductSelectionSection
 import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
-import skdev.omsrings.mobile.ui.components.helpers.Spacer
 
 
 // TODO: добавить валидацию полей
@@ -46,12 +47,18 @@ object OrderFormScreen : BaseScreen("order_form_screen") {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun OrderFormContent(
     state: OrderFormContract.State,
     onEvent: (Event) -> Unit
 ) {
-    val scrollState = rememberScrollState()
+
+    val bottomSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
+    val coroutineScope = rememberCoroutineScope()
+    var isBottomSheetVisible by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -62,53 +69,115 @@ private fun OrderFormContent(
                 }
             )
         },
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = {
+                    isBottomSheetVisible = true
+                    coroutineScope.launch { bottomSheetState.show() }
+                },
+                icon = { Icon(Icons.Rounded.ShoppingCart, contentDescription = "Order Details") },
+                text = { Text("Order Details") },
+            )
+        },
         contentWindowInsets = WindowInsets.safeContent,
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(scrollState)
-                .padding(paddingValues)
-        ) {
-            PhoneInput(
-                phoneField = state.phoneField,
-                onPhoneChanged = { onEvent(Event.OnPhoneChanged(it)) },
-                modifier = Modifier.fillMaxWidth().padding(top = 16.dp, start = 16.dp, end = 16.dp)
-            )
-            Spacer(16.dp)
-            DeliveryMethodSelector(
-                selectedMethod = state.deliveryMethod,
-                onMethodSelected = { onEvent(Event.OnDeliveryMethodChanged(it)) },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
-            )
-            Spacer(16.dp)
-            if (state.deliveryMethod == DeliveryMethod.DELIVERY) {
-                AddressInput(
-                    addressField = state.addressField,
-                    onAddressChanged = { onEvent(Event.OnAddressChanged(it)) },
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
-                )
-                Spacer(16.dp)
+        ProductSelectionSection(
+            modifier = Modifier.padding(paddingValues),
+            folders = listOf(
+                Folder(
+                    id = "1",
+                    name = "Folder 1",
+                    inventoryItems = emptyList()
+                ),
+                Folder(
+                    id = "2",
+                    name = "Folder 2",
+                    inventoryItems = emptyList()
+                ),
+            ),
+            selectedFolderId = null,
+            selectedItems = emptyMap(),
+            onFolderSelected = { /* onEvent(Event.OnFolderSelected(it)) */ },
+            onItemQuantityChanged = { item, quantity -> /* onEvent(Event.OnItemQuantityChanged(item, quantity))*/ }
+        )
+        if (isBottomSheetVisible) {
+            ModalBottomSheet(
+                onDismissRequest = { isBottomSheetVisible = false },
+                sheetState = bottomSheetState
+            ) {
+                OrderDetailsBottomSheet(state, onEvent)
             }
-            DeliveryDateTimeField(
-                initialDateTime = if (state.dateTimeField.data.value.isNotBlank()) Instant.parse(state.dateTimeField.data.value) else null,
-                onDateTimeSelected = { onEvent(Event.OnDateTimeChanged(it)) },
-                deliveryMethod = state.deliveryMethod,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
-            )
-            Spacer(16.dp)
-            CommentField(
-                commentField = state.commentField,
-                onCommentChanged = { onEvent(Event.OnCommentChanged(it)) },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
-            )
-            Spacer(16.dp)
-            ConfirmOrderButton(
-                onClick = { onEvent(Event.OnSubmitClicked) },
-                enabled = !state.isLoading,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
-            )
         }
+    }
+
+}
+
+
+@Composable
+private fun OrderDetailsBottomSheet(
+    state: OrderFormContract.State,
+    onEvent: (Event) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Order Details",
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        PhoneInput(
+            phoneField = state.phoneField,
+            onPhoneChanged = { onEvent(Event.OnPhoneChanged(it)) },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        DeliveryMethodSelector(
+            selectedMethod = state.deliveryMethod,
+            onMethodSelected = { onEvent(Event.OnDeliveryMethodChanged(it)) },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        if (state.deliveryMethod == DeliveryMethod.DELIVERY) {
+            AddressInput(
+                addressField = state.addressField,
+                onAddressChanged = { onEvent(Event.OnAddressChanged(it)) },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        DeliveryDateTimeField(
+            initialDateTime = state.dateTimeField.data.value.takeIf { it.isNotBlank() }
+                ?.let { kotlinx.datetime.Instant.parse(it) },
+            onDateTimeSelected = { onEvent(Event.OnDateTimeChanged(it)) },
+            deliveryMethod = state.deliveryMethod,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        CommentField(
+            commentField = state.commentField,
+            onCommentChanged = { onEvent(Event.OnCommentChanged(it)) },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        ConfirmOrderButton(
+            onClick = { onEvent(Event.OnSubmitClicked) },
+            enabled = !state.isLoading,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 

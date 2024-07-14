@@ -88,7 +88,7 @@ private val viewModels = module {
         )
     }
 
-    //
+    // Feature User Settings
     factory<UserSettingsModel> {
         UserSettingsModel(
             notificationManager = get(),

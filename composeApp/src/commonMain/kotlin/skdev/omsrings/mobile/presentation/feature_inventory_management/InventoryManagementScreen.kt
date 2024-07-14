@@ -157,7 +157,7 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
 
 
 @Composable
-fun FolderList(
+private fun FolderList(
     folders: List<Folder>,
     onCreateFolderClick: () -> Unit,
     onFolderClick: (Folder) -> Unit,
@@ -190,7 +190,7 @@ fun FolderList(
 
 
 @Composable
-fun InventoryItemList(
+private fun InventoryItemList(
     items: List<InventoryItem>,
     onIncrementQuantity: (InventoryItem) -> Unit,
     onEditItem: (InventoryItem) -> Unit,

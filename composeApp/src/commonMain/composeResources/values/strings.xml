@@ -114,4 +114,10 @@
     <string name="empty_folders_description">Создайте новую папку, чтобы начать учет товаров</string>
     <string name="add_folder">Создать папку</string>
 
+    <!--    -->
+    <string name="increase_quantity">Увеличить количество</string>
+    <string name="decrease_quantity">Уменьшить количество</string>
+    <string name="select_products">Выберите товары</string>
+    <string name="back_to_folders">Назад к папкам</string>
+    <string name="no_products_available">Нет доступных товаров</string>
 </resources>
