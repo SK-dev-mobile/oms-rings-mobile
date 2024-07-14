@@ -37,7 +37,7 @@ class OrderFormScreenModel(
             deliveryMethod = DeliveryMethod.PICKUP,
             commentField = createCommentField(),
             addressField = createAddressField(),
-            timeField = createTimeField(),
+            deliveryTime = null,
             productSelectionState = ProductSelectionState(
                 folders = listOf(
                     Folder(
@@ -82,16 +82,6 @@ class OrderFormScreenModel(
     val state = _state.asStateFlow()
 
     private fun createPhoneField() = FormField<String, StringResource>(
-        scope = screenModelScope,
-        initialValue = "",
-        validation = flowBlock {
-            ValidationResult.of(it) {
-                notBlank(Res.string.cant_be_blank)
-            }
-        }
-    )
-
-    private fun createTimeField() = FormField<String, StringResource>(
         scope = screenModelScope,
         initialValue = "",
         validation = flowBlock {
@@ -183,7 +173,7 @@ class OrderFormScreenModel(
     }
 
     private fun updateTime(time: String) {
-        _state.update { it.copy(timeField = it.timeField.apply { setValue(time) }) }
+        _state.update { it.copy(deliveryTime = time) }
     }
 
 

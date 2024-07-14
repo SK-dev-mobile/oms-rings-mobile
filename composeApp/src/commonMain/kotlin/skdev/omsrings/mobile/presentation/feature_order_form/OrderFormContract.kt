@@ -2,7 +2,6 @@ package skdev.omsrings.mobile.presentation.feature_order_form
 
 import androidx.compose.runtime.Immutable
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalTime
 import org.jetbrains.compose.resources.StringResource
 import skdev.omsrings.mobile.domain.model.DeliveryMethod
 import skdev.omsrings.mobile.presentation.feature_order_form.components.ProductSelectionEvent
@@ -15,7 +14,7 @@ class OrderFormContract {
     data class State(
         val isLoading: Boolean,
         val date: LocalDate,
-        val timeField: FormField<String, StringResource>,
+        val deliveryTime: String?,
         val phoneField: FormField<String, StringResource>,
         val deliveryMethod: DeliveryMethod,
         val addressField: FormField<String, StringResource>,

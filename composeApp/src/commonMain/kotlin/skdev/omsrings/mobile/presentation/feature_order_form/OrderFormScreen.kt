@@ -133,11 +133,11 @@ private fun OrderDetailsBottomSheet(
             Spacer(modifier = Modifier.height(16.dp))
         }
 
-        DeliveryTimeWithTimePickerField(
-            timeField = state.timeField,
+        DeliveryTimeSelector(
+            modifier = Modifier.fillMaxWidth(),
+            initialTime = state.deliveryTime,
             onTimeSelected = { onEvent(Event.OnTimeChanged(it)) },
-            deliveryMethod = state.deliveryMethod,
-            modifier = Modifier.fillMaxWidth()
+            deliveryMethod = state.deliveryMethod
         )
         Spacer(modifier = Modifier.height(16.dp))
 
