@@ -30,6 +30,7 @@ import skdev.omsrings.mobile.domain.model.InventoryItem
 import skdev.omsrings.mobile.presentation.feature_inventory_management.components.EmptyStateMessage
 import skdev.omsrings.mobile.presentation.feature_inventory_management.components.GenericRow
 import skdev.omsrings.mobile.ui.components.helpers.Spacer
+import skdev.omsrings.mobile.ui.theme.values.Dimens
 
 data class ProductSelectionState(
     val folders: List<Folder>,
@@ -110,6 +111,7 @@ private fun FolderRow(
     onClick: () -> Unit
 ) {
     GenericRow(
+        modifier = Modifier.padding(horizontal = Dimens.spaceMedium, vertical = Dimens.spaceSmall),
         icon = Icons.Rounded.Folder,
         iconTint = MaterialTheme.colorScheme.primary,
         title = folder.name,
@@ -154,7 +156,7 @@ private fun InventoryItemRow(
     onQuantityChanged: (Int) -> Unit
 ) {
     GenericRow(
-        modifier = Modifier.padding(vertical = 8.dp).fillMaxWidth(),
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
         icon = Icons.Rounded.Inventory,
         iconTint = MaterialTheme.colorScheme.secondary,
         title = item.name,
@@ -174,7 +176,7 @@ private fun QuantityControlRow(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(start = 16.dp)
+        modifier = Modifier.padding(start = Dimens.spaceMedium)
     ) {
         IconButton(
             onClick = { if (quantity > 0) onQuantityChanged(quantity - 1) },
@@ -186,7 +188,7 @@ private fun QuantityControlRow(
             text = quantity.toString(),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier
-                .padding(horizontal = 8.dp)
+                .padding(horizontal = Dimens.spaceSmall)
                 .align(Alignment.CenterVertically)
         )
         IconButton(
