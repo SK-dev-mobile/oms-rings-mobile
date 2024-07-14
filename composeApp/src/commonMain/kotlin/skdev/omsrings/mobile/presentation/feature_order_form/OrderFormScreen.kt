@@ -99,12 +99,9 @@ private fun OrderFormContent(
             }
             Spacer(16.dp)
             DeliveryDateTimeField(
-                dateTime = Instant.parse(state.dateTimeField.data.value),
-                onEvent = { dateTimeEvent ->
-                    onEvent(Event.DateTimeEvent(dateTimeEvent))
-                },
+                initialDateTime = Instant.parse(state.dateTimeField.data.value),
+                onDateTimeSelected = { onEvent(Event.OnDateTimeChanged(it)) },
                 deliveryMethod = state.deliveryMethod,
-                dateTimeSelectionState = state.dateTimeSelectionState,
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(16.dp)

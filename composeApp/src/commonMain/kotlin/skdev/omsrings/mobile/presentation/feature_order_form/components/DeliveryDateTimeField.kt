@@ -25,6 +25,7 @@ import skdev.omsrings.mobile.domain.model.DeliveryMethod
 import skdev.omsrings.mobile.ui.components.fields.TextField
 
 data class DateTimeSelectionState(
+    val initialDateTime: Instant? = null,
     val showDatePicker: Boolean = false,
     val showTimePicker: Boolean = false,
     val tempSelectedDate: LocalDate? = null,
@@ -42,15 +43,13 @@ sealed interface DateTimeEvent {
 
 @Composable
 fun DeliveryDateTimeField(
-    dateTime: Instant,
-    onEvent: (DateTimeEvent) -> Unit,
+    initialDateTime: Instant?,
+    onDateTimeSelected: (Instant) -> Unit,
     deliveryMethod: DeliveryMethod,
-    dateTimeSelectionState: DateTimeSelectionState,
     modifier: Modifier = Modifier
 ) {
-    val formattedDateTime by remember(dateTime) {
-        derivedStateOf { formatDateTime(dateTime) }
-    }
+    var state by remember { mutableStateOf(DateTimeSelectionState(initialDateTime)) }
+
 
     val label by remember(deliveryMethod) {
         derivedStateOf {
@@ -61,7 +60,7 @@ fun DeliveryDateTimeField(
         }
     }
     TextField(
-        value = formattedDateTime,
+        value = formatDateTime(state.initialDateTime),
         onValueChange = {},
         label = { Text(label) },
         leadingIcon = { Icon(Icons.Rounded.DateRange, contentDescription = "Date and Time") },
@@ -72,7 +71,7 @@ fun DeliveryDateTimeField(
             LaunchedEffect(interactionSource) {
                 interactionSource.interactions.collect { interaction ->
                     if (interaction is PressInteraction.Release) {
-                        onEvent(DateTimeEvent.OnDateTimeFieldClicked)
+                        state = state.copy(showDatePicker = true)
                     }
                 }
             }
@@ -80,8 +79,10 @@ fun DeliveryDateTimeField(
     )
 
     DateTimePickerDialog(
-        dateTimeSelectionState = dateTimeSelectionState,
-        onEvent = onEvent
+        state = state,
+        onDateTimeChange = { newState ->
+            state = newState
+        }
     )
 
 }
@@ -89,16 +90,24 @@ fun DeliveryDateTimeField(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DateTimePickerDialog(
-    dateTimeSelectionState: DateTimeSelectionState,
-    onEvent: (DateTimeEvent) -> Unit
+    state: DateTimeSelectionState,
+    onDateTimeChange: (DateTimeSelectionState) -> Unit
 ) {
-    if (dateTimeSelectionState.showDatePicker) {
+    if (state.showDatePicker) {
+        
         DatePickerDialog(
-            onDismissRequest = { onEvent(DateTimeEvent.OnDismissDatePicker) },
+            onDismissRequest = {
+                val newState = state.copy(showDatePicker = false)
+                onDateTimeChange(newState)
+            },
             confirmButton = {
                 TextButton(onClick = {
-                    dateTimeSelectionState.tempSelectedDate?.let {
-                        onEvent(DateTimeEvent.OnDateSelected(it))
+                    state.tempSelectedDate?.let {
+                        val newState = state.copy(
+                            showDatePicker = false,
+                            showTimePicker = true,
+                        )
+                        onDateTimeChange(newState)
                     }
                 }) {
                     Text("Next")
@@ -111,13 +120,21 @@ private fun DateTimePickerDialog(
         }
     }
 
-    if (dateTimeSelectionState.showTimePicker) {
+    if (state.showTimePicker) {
         TimePickerDialog(
-            onDismissRequest = { onEvent(DateTimeEvent.OnDismissTimePicker) },
+            onDismissRequest = {
+                val newState = state.copy(showTimePicker = false)
+                onDateTimeChange(newState)
+            },
             confirmButton = {
                 TextButton(onClick = {
-                    dateTimeSelectionState.tempSelectedTime?.let {
-                        onEvent(DateTimeEvent.OnTimeSelected(it))
+                    state.tempSelectedTime?.let {
+                        val newState = state.copy(
+                            showTimePicker = false,
+                            initialDateTime = state.initialDateTime,
+                            tempSelectedTime = null
+                        )
+                        onDateTimeChange(newState)
                     }
                 }) {
                     Text("Confirm")
@@ -138,6 +155,9 @@ private fun TimePickerDialog(
     confirmButton: @Composable () -> Unit,
     content: @Composable () -> Unit
 ) {
+
+    val state = rememberTimePickerState()
+
     AlertDialog(
         onDismissRequest = onDismissRequest,
         title = { Text("Select time") },
@@ -152,7 +172,8 @@ private fun TimePickerDialog(
 }
 
 
-private fun formatDateTime(instant: Instant): String {
+private fun formatDateTime(instant: Instant?): String {
+    if (instant == null) return ""
     val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
     val year = localDateTime.year.toString()
     val month = localDateTime.monthNumber.toString().padStart(2, '0')
@@ -161,3 +182,9 @@ private fun formatDateTime(instant: Instant): String {
     val minute = localDateTime.minute.toString().padStart(2, '0')
     return "$day.$month.$year $hour:$minute"
 }
+
+private fun getLabelText(deliveryMethod: DeliveryMethod): String =
+    when (deliveryMethod) {
+        DeliveryMethod.DELIVERY -> "Delivery Date and Time"
+        DeliveryMethod.PICKUP -> "Pickup Date and Time"
+    }

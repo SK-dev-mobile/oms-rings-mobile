@@ -15,7 +15,6 @@ import omsringsmobile.composeapp.generated.resources.cant_be_blank
 import org.jetbrains.compose.resources.StringResource
 import skdev.omsrings.mobile.domain.model.DeliveryMethod
 import skdev.omsrings.mobile.presentation.base.BaseScreenModel
-import skdev.omsrings.mobile.presentation.feature_order_form.components.DateTimeEvent
 import skdev.omsrings.mobile.utils.fields.FormField
 import skdev.omsrings.mobile.utils.fields.flowBlock
 import skdev.omsrings.mobile.utils.fields.validators.ValidationResult
@@ -92,19 +91,7 @@ class OrderFormScreenModel(
             is OrderFormContract.Event.OnCommentChanged -> TODO()
             is OrderFormContract.Event.OnBackClicked -> TODO()
 
-            is OrderFormContract.Event.DateTimeEvent -> handleDateTimeEvent(event.event)
-        }
-    }
-
-
-    private fun handleDateTimeEvent(event: DateTimeEvent) {
-        when (event) {
-            is DateTimeEvent.OnDateTimeFieldClicked -> showDatePicker()
-            is DateTimeEvent.OnDismissDatePicker -> hideDatePicker()
-            is DateTimeEvent.OnDismissTimePicker -> hideTimePicker()
-            is DateTimeEvent.OnDateSelected -> TODO() // handleDateSelected(event.date)
-            is DateTimeEvent.OnTimeSelected -> handleTimeSelected(event.time)
-            is DateTimeEvent.OnConfirmDateTime -> TODO() // confirmDateTime()
+            is OrderFormContract.Event.OnDateTimeChanged -> TODO()
         }
     }
 
@@ -120,30 +107,13 @@ class OrderFormScreenModel(
         _state.update { it.copy(addressField = it.addressField.apply { setValue(newAddress) }) }
     }
 
-    private fun showDatePicker() {
-        _state.update { it.copy(dateTimeSelectionState = it.dateTimeSelectionState.copy(showDatePicker = true)) }
-    }
-
-    private fun hideDatePicker() {
-        _state.update { it.copy(dateTimeSelectionState = it.dateTimeSelectionState.copy(showDatePicker = false)) }
-    }
-
-    private fun showTimePicker() {
-        _state.update { it.copy(dateTimeSelectionState = it.dateTimeSelectionState.copy(showTimePicker = true)) }
-    }
-
-    private fun hideTimePicker() {
-        _state.update { it.copy(dateTimeSelectionState = it.dateTimeSelectionState.copy(showTimePicker = false)) }
-    }
-
     private fun updateDateTime(dateTime: Instant) {
         _state.update { it.copy(dateTimeField = it.dateTimeField.apply { setValue(dateTime.toString()) }) }
     }
 
     private fun handleDateSelected(selectedDate: Instant) {
         updateDateTime(selectedDate)
-        hideDatePicker()
-        showTimePicker()
+
     }
 
     private fun handleTimeSelected(selectedTime: LocalTime) {
@@ -151,7 +121,7 @@ class OrderFormScreenModel(
         val newDateTime = currentDateTime.toLocalDateTime(TimeZone.currentSystemDefault()).date.atTime(selectedTime)
             .toInstant(TimeZone.currentSystemDefault())
         updateDateTime(newDateTime)
-        hideTimePicker()
+
     }
 
 
