@@ -16,6 +16,7 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import io.github.aakira.napier.Napier
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -127,8 +128,11 @@ private fun DateTimePickerDialog(
 ) {
     if (state.showDatePicker) {
         val datePickerState = rememberDatePickerState(
-            initialSelectedDateMillis = state.selectedDateTime?.toEpochMilliseconds()
+            initialSelectedDateMillis = state.selectedDateTime?.toLocalDateTime(TimeZone.currentSystemDefault())?.date?.toEpochDays()
+                ?.times(86400000L)
+
         )
+        Napier.d("Selected EpochMillis: ${datePickerState.selectedDateMillis}")
 
         DatePickerDialog(
             onDismissRequest = { onEvent(DateTimeEvent.OnDismissDatePicker) },
@@ -208,5 +212,7 @@ private fun formatDateTime(instant: Instant?): String {
 
 private fun combineDateTime(date: LocalDate?, time: LocalTime?): Instant? {
     if (date == null || time == null) return null
+    Napier.d("Selected LocalDateTime: $date, time: $time")
+    Napier.d("Selected Instant: ${LocalDateTime(date, time).toInstant(TimeZone.currentSystemDefault())}")
     return LocalDateTime(date, time).toInstant(TimeZone.currentSystemDefault())
 }

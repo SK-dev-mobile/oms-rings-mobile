@@ -65,7 +65,7 @@ class OrderFormScreenModel(
 
     private fun createDateTimeField() = FormField<String, StringResource>(
         scope = screenModelScope,
-        initialValue = "2024-07-12T12:00:00.0Z",
+        initialValue = "",
         validation = flowBlock {
             ValidationResult.of(it) {
                 notBlank(Res.string.cant_be_blank)

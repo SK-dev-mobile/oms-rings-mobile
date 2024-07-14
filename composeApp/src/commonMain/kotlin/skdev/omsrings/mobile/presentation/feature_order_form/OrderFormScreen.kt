@@ -1,22 +1,14 @@
 package skdev.omsrings.mobile.presentation.feature_order_form
 
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.koin.koinScreenModel
 import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.LocalTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import skdev.omsrings.mobile.domain.model.DeliveryMethod
 import skdev.omsrings.mobile.presentation.base.BaseScreen
 import skdev.omsrings.mobile.presentation.feature_order_form.OrderFormContract.Event
@@ -99,7 +91,7 @@ private fun OrderFormContent(
             }
             Spacer(16.dp)
             DeliveryDateTimeField(
-                initialDateTime = Instant.parse(state.dateTimeField.data.value),
+                initialDateTime = if (state.dateTimeField.data.value.isNotBlank()) Instant.parse(state.dateTimeField.data.value) else null,
                 onDateTimeSelected = { onEvent(Event.OnDateTimeChanged(it)) },
                 deliveryMethod = state.deliveryMethod,
                 modifier = Modifier.fillMaxWidth()
@@ -116,174 +108,6 @@ private fun OrderFormContent(
             }
         }
     }
-}
-
-
-fun formatDateTime(dateTime: LocalDateTime): String {
-    return buildString {
-        append(dateTime.dayOfMonth.toString().padStart(2, '0'))
-        append(".")
-        append(dateTime.monthNumber.toString().padStart(2, '0'))
-        append(".")
-        append(dateTime.year)
-        append(" ")
-        append(dateTime.hour.toString().padStart(2, '0'))
-        append(":")
-        append(dateTime.minute.toString().padStart(2, '0'))
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DeliveryDateTimeField(
-    state: OrderFormContract.State,
-    onEvent: (Event) -> Unit,
-    modifier: Modifier = Modifier
-) {
-
-    val dateTime = remember(state.dateTimeField.data.value) {
-        Instant.parse(state.dateTimeField.data.value)
-    }
-
-    val dateTimeFormatted = remember(dateTime) {
-        formatDateTime(dateTime.toLocalDateTime(TimeZone.currentSystemDefault()))
-    }
-
-    val labelText = remember(state.deliveryMethod) {
-        when (state.deliveryMethod) {
-            DeliveryMethod.DELIVERY -> "Дата и время доставки"
-            DeliveryMethod.PICKUP -> "Дата и время самовывоза"
-        }
-    }
-
-
-    Column(modifier = modifier) {
-        TextField(
-            value = dateTimeFormatted,
-            onValueChange = { },
-            label = { Text(labelText) },
-            readOnly = true,
-            enabled = !state.isLoading,
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.DateRange,
-                    contentDescription = "Select date and time"
-                )
-            },
-            modifier = Modifier.fillMaxWidth(),
-            interactionSource = remember { MutableInteractionSource() }.also { interactionSource ->
-                LaunchedEffect(interactionSource) {
-                    interactionSource.interactions.collect {
-                        if (it is PressInteraction.Release && !state.isLoading) {
-//                            onEvent(Event.DateTimeFieldClicked)
-                        }
-                    }
-                }
-            }
-
-
-        )
-
-//        if (state.showDatePicker) {
-//            DatePickerDialogSK(
-//                initialDate = dateTime,
-//                onDateSelected = { selectedDate ->
-//                    onEvent(Event.DateSelected(selectedDate))
-//                },
-//                onDismiss = { onEvent(Event.DismissDatePicker) }
-//            )
-//        }
-//
-//        if (state.showTimePicker) {
-//            TimePickerDialog(
-//                initialTime = LocalTime(
-//                    dateTime.toLocalDateTime(TimeZone.currentSystemDefault()).hour,
-//                    dateTime.toLocalDateTime(TimeZone.currentSystemDefault()).minute
-//                ),
-//                onTimeSelected = { selectedTime ->
-//                    onEvent(Event.TimeSelected(selectedTime))
-//                },
-//                onDismiss = { onEvent(Event.DismissTimePicker) }
-//            )
-//        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun DatePickerDialogSK(
-    initialDate: Instant,
-    onDateSelected: (Instant) -> Unit,
-    onDismiss: () -> Unit
-) {
-
-    val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = initialDate.toEpochMilliseconds()
-    )
-
-    DatePickerDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            TextButton(onClick = {
-                datePickerState.selectedDateMillis?.let {
-                    val selectedDate = Instant.fromEpochMilliseconds(it)
-                    onDateSelected(selectedDate)
-                }
-                onDismiss()
-            }) {
-                Text("OK")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Отмена")
-            }
-        },
-        content = {
-            DatePicker(
-                state = datePickerState
-            )
-        }
-    )
-
-
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun TimePickerDialog(
-    initialTime: LocalTime,
-    onTimeSelected: (LocalTime) -> Unit,
-    onDismiss: () -> Unit
-) {
-    val timePickerState = rememberTimePickerState(
-        initialHour = initialTime.hour,
-        initialMinute = initialTime.minute
-    )
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Выберите время") },
-        text = {
-            TimePicker(
-                state = timePickerState
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = {
-                val selectedTime = LocalTime(timePickerState.hour, timePickerState.minute)
-                onTimeSelected(selectedTime)
-                onDismiss()
-            }) {
-                Text("OK")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Отмена")
-            }
-        }
-    )
 }
 
 
