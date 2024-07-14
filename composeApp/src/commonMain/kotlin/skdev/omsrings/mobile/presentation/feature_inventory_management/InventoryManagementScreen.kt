@@ -63,7 +63,7 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
                     title = title,
                     onNavigationClicked = {
                         if (state.selectedFolderId == null) {
-                            /* handle pop */
+                            screenModel.onEvent(Event.OnBackClicked)
                         } else {
                             screenModel.onEvent(Event.SetSelectedInventoryFolder(null))
                         }

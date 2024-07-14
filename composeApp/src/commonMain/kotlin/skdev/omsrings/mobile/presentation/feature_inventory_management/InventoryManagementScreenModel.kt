@@ -90,7 +90,7 @@ class InventoryManagementScreenModel(
         when (event) {
             // Transition between folder
             is Event.SetSelectedInventoryFolder -> setSelectedInventoryFolder(event.folderId)
-            
+
             // Folder
             is Event.CreateOrUpdateFolder -> createOrUpdateFolder()
             is Event.RemoveInventoryFolder -> removeInventoryFolder(event.folder)
@@ -111,6 +111,7 @@ class InventoryManagementScreenModel(
 
             is Event.DisplayIncrementQuantityDialog -> displayIncrementQuantityDialog(event.item)
             Event.CloseIncrementQuantityDialog -> closeIncrementQuantityDialog()
+            Event.OnBackClicked -> TODO()
         }
     }
 
