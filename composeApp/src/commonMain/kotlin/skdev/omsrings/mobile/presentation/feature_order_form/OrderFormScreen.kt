@@ -10,7 +10,6 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.koin.koinScreenModel
 import kotlinx.coroutines.launch
 import skdev.omsrings.mobile.domain.model.DeliveryMethod
-import skdev.omsrings.mobile.domain.model.Folder
 import skdev.omsrings.mobile.presentation.base.BaseScreen
 import skdev.omsrings.mobile.presentation.feature_order_form.OrderFormContract.Event
 import skdev.omsrings.mobile.presentation.feature_order_form.components.AddressInput
@@ -25,7 +24,6 @@ import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
 
 // TODO: добавить валидацию полей
 // TODO: сделать часть в форме с выбором количества товаров
-// TODO: сделать функцию переноса заказа на другой день
 // TODO: сделать редактирование заказа
 // TODO: сделать отправку заказа на сервер
 // TODO: сделать отображение ошибок
@@ -43,7 +41,6 @@ object OrderFormScreen : BaseScreen("order_form_screen") {
             onEvent = screenModel::onEvent
         )
     }
-
 }
 
 
@@ -83,22 +80,10 @@ private fun OrderFormContent(
     ) { paddingValues ->
         ProductSelectionSection(
             modifier = Modifier.padding(paddingValues),
-            folders = listOf(
-                Folder(
-                    id = "1",
-                    name = "Folder 1",
-                    inventoryItems = emptyList()
-                ),
-                Folder(
-                    id = "2",
-                    name = "Folder 2",
-                    inventoryItems = emptyList()
-                ),
-            ),
-            selectedFolderId = null,
-            selectedItems = emptyMap(),
-            onFolderSelected = { /* onEvent(Event.OnFolderSelected(it)) */ },
-            onItemQuantityChanged = { item, quantity -> /* onEvent(Event.OnItemQuantityChanged(item, quantity))*/ }
+            state = state.productSelectionState,
+            onEvent = { productSelectionEvent ->
+                onEvent(Event.OnProductSelectionEvent(productSelectionEvent))
+            }
         )
         if (isBottomSheetVisible) {
             ModalBottomSheet(

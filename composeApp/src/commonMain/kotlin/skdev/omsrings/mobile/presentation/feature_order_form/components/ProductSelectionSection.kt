@@ -11,12 +11,8 @@ import androidx.compose.material.icons.rounded.ChevronLeft
 import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.Inventory
 import androidx.compose.material.icons.rounded.Remove
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import omsringsmobile.composeapp.generated.resources.Res
@@ -35,14 +31,23 @@ import skdev.omsrings.mobile.presentation.feature_inventory_management.component
 import skdev.omsrings.mobile.presentation.feature_inventory_management.components.GenericRow
 import skdev.omsrings.mobile.ui.components.helpers.Spacer
 
+data class ProductSelectionState(
+    val folders: List<Folder>,
+    val selectedFolderId: String?,
+    val selectedItemId: String?,
+    val selectedItems: Map<InventoryItem, Int>
+)
+
+sealed interface ProductSelectionEvent {
+    data class OnFolderSelected(val folderId: String? = null) : ProductSelectionEvent
+    data class OnItemQuantityChanged(val item: InventoryItem, val quantity: Int) : ProductSelectionEvent
+}
+
 @Composable
 fun ProductSelectionSection(
     modifier: Modifier = Modifier,
-    folders: List<Folder>,
-    selectedFolderId: String?,
-    selectedItems: Map<InventoryItem, Int>,
-    onFolderSelected: (String?) -> Unit,
-    onItemQuantityChanged: (InventoryItem, Int) -> Unit
+    state: ProductSelectionState,
+    onEvent: (ProductSelectionEvent) -> Unit
 ) {
     Column(
         modifier = modifier.fillMaxWidth()
@@ -53,26 +58,31 @@ fun ProductSelectionSection(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
 
-        if (selectedFolderId == null) {
+        if (state.selectedFolderId == null) {
             FolderList(
-                folders = folders,
-                onFolderClick = { folder -> onFolderSelected(folder.id) }
+                folders = state.folders,
+                onFolderClick = { folder -> onEvent(ProductSelectionEvent.OnFolderSelected(folder.id)) }
             )
         } else {
 
-            val selectedFolder = folders.find { folder -> folder.id == selectedFolderId }
+            val selectedFolder = state.folders.find { folder -> folder.id == state.selectedFolderId }
             selectedFolder?.let { folder ->
                 InventoryItemList(
                     items = folder.inventoryItems,
-                    selectedItems = selectedItems,
-                    onItemQuantityChanged = onItemQuantityChanged,
-                    onBackToFolders = { onFolderSelected(null) }
+                    selectedItems = state.selectedItems,
+                    onItemQuantityChanged = { item, quantity ->
+                        onEvent(
+                            ProductSelectionEvent.OnItemQuantityChanged(
+                                item,
+                                quantity
+                            )
+                        )
+                    },
+                    onBackToFolders = { onEvent(ProductSelectionEvent.OnFolderSelected(null)) }
                 )
 
             }
         }
-
-
     }
 }
 
@@ -149,7 +159,7 @@ private fun InventoryItemRow(
         iconTint = MaterialTheme.colorScheme.secondary,
         title = item.name,
         subtitle = stringResource(Res.string.item_stock, item.stockQuantity),
-        primaryAction = {
+        actions = {
             Row {
                 IconButton(
                     onClick = { if (quantity > 0) onQuantityChanged(quantity - 1) },

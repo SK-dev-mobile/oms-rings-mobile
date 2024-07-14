@@ -2,6 +2,7 @@ package skdev.omsrings.mobile.presentation.feature_inventory_management
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -322,22 +323,22 @@ fun FolderRow(
         title = folder.name,
         subtitle = pluralStringResource(Res.plurals.item_count, folder.inventoryItems.size, folder.inventoryItems.size),
         onRowClick = onClick,
-        primaryAction = {
-            IconButton(onClick = onEdit) {
-                Icon(
-                    Icons.Rounded.Edit,
-                    tint = MaterialTheme.colorScheme.secondary,
-                    contentDescription = "test"
-                )
-            }
-        },
-        secondaryAction = {
-            IconButton(onClick = onDelete) {
-                Icon(
-                    Icons.Rounded.Delete,
-                    tint = MaterialTheme.colorScheme.error,
-                    contentDescription = stringResource(Res.string.delete)
-                )
+        actions = {
+            Row {
+                IconButton(onClick = onEdit) {
+                    Icon(
+                        Icons.Rounded.Edit,
+                        tint = MaterialTheme.colorScheme.secondary,
+                        contentDescription = "test"
+                    )
+                }
+                IconButton(onClick = onDelete) {
+                    Icon(
+                        Icons.Rounded.Delete,
+                        tint = MaterialTheme.colorScheme.error,
+                        contentDescription = stringResource(Res.string.delete)
+                    )
+                }
             }
         }
     )
@@ -355,31 +356,29 @@ fun InventoryItemRow(
         iconTint = MaterialTheme.colorScheme.secondary,
         title = item.name,
         subtitle = stringResource(Res.string.item_stock, item.stockQuantity),
-        primaryAction = {
-            IconButton(onClick = onIncrementQuantity) {
-                Icon(
-                    Icons.Rounded.Add,
-                    tint = MaterialTheme.colorScheme.primary,
-                    contentDescription = stringResource(Res.string.increment_quantity_label)
-                )
-            }
-        },
-        secondaryAction = {
-            IconButton(onClick = onEditClick) {
-                Icon(
-                    Icons.Rounded.Edit,
-                    tint = MaterialTheme.colorScheme.secondary,
-                    contentDescription = ""
-                )
-            }
-        },
-        tertiaryAction = {
-            IconButton(onClick = onDeleteClick) {
-                Icon(
-                    Icons.Rounded.Delete,
-                    tint = MaterialTheme.colorScheme.error,
-                    contentDescription = stringResource(Res.string.delete)
-                )
+        actions = {
+            Row {
+                IconButton(onClick = onIncrementQuantity) {
+                    Icon(
+                        Icons.Rounded.Add,
+                        tint = MaterialTheme.colorScheme.primary,
+                        contentDescription = stringResource(Res.string.increment_quantity_label)
+                    )
+                }
+                IconButton(onClick = onEditClick) {
+                    Icon(
+                        Icons.Rounded.Edit,
+                        tint = MaterialTheme.colorScheme.secondary,
+                        contentDescription = ""
+                    )
+                }
+                IconButton(onClick = onDeleteClick) {
+                    Icon(
+                        Icons.Rounded.Delete,
+                        tint = MaterialTheme.colorScheme.error,
+                        contentDescription = stringResource(Res.string.delete)
+                    )
+                }
             }
         }
     )
