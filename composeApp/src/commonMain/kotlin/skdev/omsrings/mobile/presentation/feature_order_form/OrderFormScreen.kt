@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.koin.koinScreenModel
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalDateTime.Formats
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.format
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import skdev.omsrings.mobile.domain.model.DeliveryMethod
@@ -33,7 +33,8 @@ import skdev.omsrings.mobile.ui.components.fields.TextField
 import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
 import skdev.omsrings.mobile.ui.components.helpers.Spacer
 import skdev.omsrings.mobile.utils.fields.collectAsMutableState
-// TODO: сделать отображение даты и времени в поле ввода в формате "дд.мм.гггг чч:мм"
+
+
 // TODO: реализовать выбор даты в диалоге DatePickerDialog и отображение выбранной даты в поле ввода
 // TODO: реализовать выбор времени в диалоге TimePickerDialog и отображение выбранного времени в поле ввода
 // TODO: добавить валидацию полей
@@ -212,6 +213,20 @@ private fun AddressInput(state: OrderFormScreenContract.State, onEvent: (Event) 
 }
 
 
+fun formatDateTime(dateTime: LocalDateTime): String {
+    return buildString {
+        append(dateTime.dayOfMonth.toString().padStart(2, '0'))
+        append(".")
+        append(dateTime.monthNumber.toString().padStart(2, '0'))
+        append(".")
+        append(dateTime.year)
+        append(" ")
+        append(dateTime.hour.toString().padStart(2, '0'))
+        append(":")
+        append(dateTime.minute.toString().padStart(2, '0'))
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeliveryDateTimeField(
@@ -220,13 +235,13 @@ fun DeliveryDateTimeField(
     modifier: Modifier = Modifier
 ) {
 
-    val dateTime = remember(state.dateTimeField.data.value) {
-        Instant.parse(state.dateTimeField.data.value).toLocalDateTime(TimeZone.currentSystemDefault())
-    }
+    val dateTime = LocalDateTime.parse(state.dateTimeField.data.value, format = Formats.ISO)
+
+    val dateTimeFormatted = formatDateTime(dateTime)
 
     Column(modifier = modifier) {
         TextField(
-            value = dateTime.format(LocalDateTime.Formats.ISO),
+            value = dateTimeFormatted,
             onValueChange = { },
             label = { Text("Дата и время доставки") },
             readOnly = true,
@@ -251,14 +266,28 @@ fun DeliveryDateTimeField(
             }
         )
 
-        
+
 
         if (state.showDatePicker) {
+            val datePickerState = rememberDatePickerState(
+                initialSelectedDateMillis = dateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+            )
             DatePickerDialog(
                 onDismissRequest = { onEvent(Event.DismissDatePicker) },
                 confirmButton = {
                     TextButton(onClick = {
-                        onEvent(Event.TransitionToTimePicker)
+                        datePickerState.selectedDateMillis?.let { millis ->
+                            val newDate = Instant.fromEpochMilliseconds(millis)
+                                .toLocalDateTime(TimeZone.currentSystemDefault())
+                                .date
+                            val newDateTime = LocalDateTime(
+                                newDate.year, newDate.month, newDate.dayOfMonth,
+                                dateTime.hour, dateTime.minute, dateTime.second, dateTime.nanosecond
+                            )
+                            onEvent(Event.DateTimeChanged(newDateTime.toString()))
+                            onEvent(Event.TransitionToTimePicker)
+
+                        }
                     }) { Text("OK") }
                 },
                 dismissButton = {
@@ -281,7 +310,18 @@ fun DeliveryDateTimeField(
             TimePickerDialog(
                 onDismissRequest = { onEvent(Event.DismissTimePicker) },
                 onTimeSelected = { hour, minute ->
-                    onEvent(Event.ConfirmTime(hour, minute))
+                    onEvent(
+                        Event.DateTimeChanged(
+                            LocalDateTime(
+                                dateTime.year,
+                                dateTime.month,
+                                dateTime.dayOfMonth,
+                                hour,
+                                minute
+                            ).toString()
+                        )
+                    )
+                    onEvent(Event.DismissTimePicker)
                 },
                 initialHour = dateTime.hour,
                 initialMinute = dateTime.minute

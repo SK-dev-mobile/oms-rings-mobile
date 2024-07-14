@@ -59,7 +59,7 @@ class OrderFormScreenModel(
 
     private fun createDateTimeField() = FormField<String, StringResource>(
         scope = screenModelScope,
-        initialValue = "2023-01-02T23:40:57.120Z",
+        initialValue = "2023-01-02T23:40:57.120",
         validation = flowBlock {
             ValidationResult.of(it) {
                 notBlank(Res.string.cant_be_blank)
@@ -83,7 +83,7 @@ class OrderFormScreenModel(
             is OrderFormScreenContract.Event.DeliveryMethodChanged -> updateDeliveryMethod(event.method)
             is OrderFormScreenContract.Event.AddressChanged -> updateAddress(event.address)
             is OrderFormScreenContract.Event.CommentChanged -> TODO()
-            is OrderFormScreenContract.Event.DateChanged -> TODO()
+            is OrderFormScreenContract.Event.DateTimeChanged -> updateDateTime(event.date)
 
 
             is OrderFormScreenContract.Event.DateTimeFieldClicked -> showDatePicker()
@@ -131,7 +131,8 @@ class OrderFormScreenModel(
     }
 
     private fun updateDateTime(dateTime: String) {
-        _state.update { it.copy() }
+        _state.update { it.copy(dateTimeField = it.dateTimeField.apply { setValue(dateTime) }) }
     }
+
 
 }

@@ -28,7 +28,7 @@ class OrderFormScreenContract {
         data class PhoneChanged(val phone: String) : Event
         data class DeliveryMethodChanged(val method: DeliveryMethod) : Event
         data class AddressChanged(val address: String) : Event
-        data class DateChanged(val date: String) : Event
+        data class DateTimeChanged(val date: String) : Event
         data class CommentChanged(val comment: String) : Event
 
         // Date Picker
