@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.datetime.Clock
-import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import omsringsmobile.composeapp.generated.resources.Res
@@ -183,8 +182,8 @@ class OrderFormScreenModel(
         _state.update { it.copy(addressField = it.addressField.apply { setValue(newAddress) }) }
     }
 
-    private fun updateTime(time: LocalTime) {
-        _state.update { it.copy(timeField = it.timeField.apply { setValue(time.toString()) }) }
+    private fun updateTime(time: String) {
+        _state.update { it.copy(timeField = it.timeField.apply { setValue(time) }) }
     }
 
 

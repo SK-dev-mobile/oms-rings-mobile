@@ -133,9 +133,10 @@ private fun OrderDetailsBottomSheet(
             Spacer(modifier = Modifier.height(16.dp))
         }
 
-        TimePickerField(
-            initialTime = kotlinx.datetime.LocalTime(12, 0),
+        DeliveryTimeWithTimePickerField(
+            timeField = state.timeField,
             onTimeSelected = { onEvent(Event.OnTimeChanged(it)) },
+            deliveryMethod = state.deliveryMethod,
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(16.dp))

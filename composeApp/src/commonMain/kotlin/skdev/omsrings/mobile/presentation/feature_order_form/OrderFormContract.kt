@@ -34,7 +34,7 @@ class OrderFormContract {
         data class OnDeliveryMethodChanged(val method: DeliveryMethod) : Event
         data class OnAddressChanged(val address: String) : Event
         data class OnCommentChanged(val comment: String) : Event
-        data class OnTimeChanged(val time: LocalTime) : Event
+        data class OnTimeChanged(val time: String) : Event
 
         // Submit
         object OnSubmitClicked : Event
