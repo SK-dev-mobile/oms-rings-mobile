@@ -1,6 +1,8 @@
 package skdev.omsrings.mobile.presentation.feature_order_form
 
 import androidx.compose.runtime.Immutable
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 import org.jetbrains.compose.resources.StringResource
 import skdev.omsrings.mobile.domain.model.DeliveryMethod
 import skdev.omsrings.mobile.utils.fields.FormField
@@ -32,13 +34,14 @@ class OrderFormScreenContract {
         data class CommentChanged(val comment: String) : Event
 
         // Date Picker
-        data class DateTimeFieldClicked(val dateTime: String) : Event
+        data object DateTimeFieldClicked : Event
         data object DismissDatePicker : Event
-        data object TransitionToTimePicker : Event
+        data class DateSelected(val date: LocalDate) : Event
+
 
         // Time Picker
-        data class ConfirmTime(val hour: Int, val minute: Int) : Event
         data object DismissTimePicker : Event
+        data class TimeSelected(val time: LocalTime) : Event
     }
 
     sealed interface Effect {

@@ -4,6 +4,9 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.cant_be_blank
 import org.jetbrains.compose.resources.StringResource
@@ -87,14 +90,12 @@ class OrderFormScreenModel(
 
 
             is OrderFormScreenContract.Event.DateTimeFieldClicked -> showDatePicker()
-            OrderFormScreenContract.Event.DismissDatePicker -> hideDatePicker()
-            OrderFormScreenContract.Event.OnBackClicked -> TODO()
-            is OrderFormScreenContract.Event.ConfirmTime -> updateTime(event.hour, event.minute)
-            OrderFormScreenContract.Event.DismissTimePicker -> hideTimePicker()
-            OrderFormScreenContract.Event.TransitionToTimePicker -> {
-                hideDatePicker()
-                showTimePicker()
-            }
+            is OrderFormScreenContract.Event.DismissDatePicker -> hideDatePicker()
+            is OrderFormScreenContract.Event.OnBackClicked -> TODO()
+            is OrderFormScreenContract.Event.DismissTimePicker -> hideTimePicker()
+
+            is OrderFormScreenContract.Event.DateSelected -> handleDateSelected(event.date)
+            is OrderFormScreenContract.Event.TimeSelected -> handleTimeSelected(event.time)
         }
     }
 
@@ -126,12 +127,29 @@ class OrderFormScreenModel(
         _state.update { it.copy(showTimePicker = false) }
     }
 
-    private fun updateTime(hour: Int, minute: Int) {
-        _state.update { it.copy(dateTimeField = it.dateTimeField.apply { setValue("$hour:$minute") }) }
-    }
-
     private fun updateDateTime(dateTime: String) {
         _state.update { it.copy(dateTimeField = it.dateTimeField.apply { setValue(dateTime) }) }
+    }
+
+    private fun handleDateSelected(selectedDate: LocalDate) {
+        val currentDateTime = LocalDateTime.parse(_state.value.dateTimeField.data.value)
+        val newDateTime = LocalDateTime(
+            selectedDate.year, selectedDate.monthNumber, selectedDate.dayOfMonth,
+            currentDateTime.hour, currentDateTime.minute
+        )
+        updateDateTime(newDateTime.toString())
+        hideDatePicker()
+        showTimePicker()
+    }
+
+    private fun handleTimeSelected(selectedTime: LocalTime) {
+        val currentDateTime = LocalDateTime.parse(_state.value.dateTimeField.data.value)
+        val newDateTime = LocalDateTime(
+            currentDateTime.year, currentDateTime.month, currentDateTime.dayOfMonth,
+            selectedTime.hour, selectedTime.minute
+        )
+        updateDateTime(newDateTime.toString())
+        hideTimePicker()
     }
 
 
