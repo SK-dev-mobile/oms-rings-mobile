@@ -4,11 +4,9 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.datetime.Instant
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atTime
-import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.cant_be_blank
@@ -35,13 +33,12 @@ class OrderFormScreenModel(
     private val _state = MutableStateFlow(
         OrderFormContract.State(
             isLoading = false,
-//            showDatePicker = false,
-//            showTimePicker = false,
             phoneField = createPhoneField(),
+            date = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
             deliveryMethod = DeliveryMethod.PICKUP,
-            dateTimeField = createDateTimeField(),
             commentField = createCommentField(),
             addressField = createAddressField(),
+            timeField = createTimeField(),
             productSelectionState = ProductSelectionState(
                 folders = listOf(
                     Folder(
@@ -63,7 +60,18 @@ class OrderFormScreenModel(
                     Folder(
                         id = "2",
                         name = "Folder 2",
-                        inventoryItems = emptyList()
+                        inventoryItems = listOf(
+                            InventoryItem(
+                                id = "3",
+                                name = "Item 3",
+                                stockQuantity = 30
+                            ),
+                            InventoryItem(
+                                id = "4",
+                                name = "Item 4",
+                                stockQuantity = 40
+                            ),
+                        )
                     ),
                 ),
                 selectedFolderId = null,
@@ -75,6 +83,16 @@ class OrderFormScreenModel(
     val state = _state.asStateFlow()
 
     private fun createPhoneField() = FormField<String, StringResource>(
+        scope = screenModelScope,
+        initialValue = "",
+        validation = flowBlock {
+            ValidationResult.of(it) {
+                notBlank(Res.string.cant_be_blank)
+            }
+        }
+    )
+
+    private fun createTimeField() = FormField<String, StringResource>(
         scope = screenModelScope,
         initialValue = "",
         validation = flowBlock {
@@ -123,21 +141,33 @@ class OrderFormScreenModel(
             is OrderFormContract.Event.OnCommentChanged -> TODO()
             is OrderFormContract.Event.OnBackClicked -> TODO()
 
-            is OrderFormContract.Event.OnDateTimeChanged -> updateDateTime(event.dateTime)
             OrderFormContract.Event.OnSubmitClicked -> TODO()
             is OrderFormContract.Event.OnProductSelectionEvent -> handleProductSelectionEvent(event.event)
+            is OrderFormContract.Event.OnTimeChanged -> updateTime(event.time)
         }
     }
 
     private fun handleProductSelectionEvent(event: ProductSelectionEvent) {
         when (event) {
             is ProductSelectionEvent.OnFolderSelected -> updateSelectedFolder(event.folderId)
-            is ProductSelectionEvent.OnItemQuantityChanged -> TODO()// updateItemQuantity(event.item, event.quantity)
+            is ProductSelectionEvent.OnItemQuantityChanged -> updateItemQuantity(event.item, event.quantity)
         }
     }
 
     private fun updateSelectedFolder(folderId: String?) {
         _state.update { it.copy(productSelectionState = it.productSelectionState.copy(selectedFolderId = folderId)) }
+    }
+
+    private fun updateItemQuantity(item: InventoryItem, quantity: Int) {
+        _state.update {
+            it.copy(
+                productSelectionState = it.productSelectionState.copy(
+                    selectedItems = it.productSelectionState.selectedItems.toMutableMap().apply {
+                        put(item, quantity)
+                    }
+                )
+            )
+        }
     }
 
 
@@ -153,21 +183,8 @@ class OrderFormScreenModel(
         _state.update { it.copy(addressField = it.addressField.apply { setValue(newAddress) }) }
     }
 
-    private fun updateDateTime(dateTime: Instant) {
-        _state.update { it.copy(dateTimeField = it.dateTimeField.apply { setValue(dateTime.toString()) }) }
-    }
-
-    private fun handleDateSelected(selectedDate: Instant) {
-        updateDateTime(selectedDate)
-
-    }
-
-    private fun handleTimeSelected(selectedTime: LocalTime) {
-        val currentDateTime = Instant.parse(state.value.dateTimeField.data.value)
-        val newDateTime = currentDateTime.toLocalDateTime(TimeZone.currentSystemDefault()).date.atTime(selectedTime)
-            .toInstant(TimeZone.currentSystemDefault())
-        updateDateTime(newDateTime)
-
+    private fun updateTime(time: LocalTime) {
+        _state.update { it.copy(timeField = it.timeField.apply { setValue(time.toString()) }) }
     }
 
 

@@ -12,18 +12,11 @@ import kotlinx.coroutines.launch
 import skdev.omsrings.mobile.domain.model.DeliveryMethod
 import skdev.omsrings.mobile.presentation.base.BaseScreen
 import skdev.omsrings.mobile.presentation.feature_order_form.OrderFormContract.Event
-import skdev.omsrings.mobile.presentation.feature_order_form.components.AddressInput
-import skdev.omsrings.mobile.presentation.feature_order_form.components.CommentField
-import skdev.omsrings.mobile.presentation.feature_order_form.components.ConfirmOrderButton
-import skdev.omsrings.mobile.presentation.feature_order_form.components.DeliveryDateTimeField
-import skdev.omsrings.mobile.presentation.feature_order_form.components.DeliveryMethodSelector
-import skdev.omsrings.mobile.presentation.feature_order_form.components.PhoneInput
-import skdev.omsrings.mobile.presentation.feature_order_form.components.ProductSelectionSection
+import skdev.omsrings.mobile.presentation.feature_order_form.components.*
 import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
 
 
 // TODO: добавить валидацию полей
-// TODO: сделать часть в форме с выбором количества товаров
 // TODO: сделать редактирование заказа
 // TODO: сделать отправку заказа на сервер
 // TODO: сделать отображение ошибок
@@ -140,14 +133,11 @@ private fun OrderDetailsBottomSheet(
             Spacer(modifier = Modifier.height(16.dp))
         }
 
-        DeliveryDateTimeField(
-            initialDateTime = state.dateTimeField.data.value.takeIf { it.isNotBlank() }
-                ?.let { kotlinx.datetime.Instant.parse(it) },
-            onDateTimeSelected = { onEvent(Event.OnDateTimeChanged(it)) },
-            deliveryMethod = state.deliveryMethod,
+        TimePickerField(
+            initialTime = kotlinx.datetime.LocalTime(12, 0),
+            onTimeSelected = { onEvent(Event.OnTimeChanged(it)) },
             modifier = Modifier.fillMaxWidth()
         )
-
         Spacer(modifier = Modifier.height(16.dp))
 
         CommentField(
