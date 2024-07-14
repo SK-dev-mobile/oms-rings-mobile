@@ -4,15 +4,18 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.rounded.DirectionsCar
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -82,7 +85,7 @@ private fun OrderFormContent(
         ) {
             PhoneInput(state, onEvent)
             Spacer(16.dp)
-            DeliveryMethodField(
+            DeliveryMethodSelector(
                 selectedMethod = state.deliveryMethod,
                 onMethodSelected = { onEvent(Event.DeliveryMethodChanged(it)) },
                 enabled = !state.isLoading
@@ -137,50 +140,79 @@ private fun PhoneInput(state: OrderFormScreenContract.State, onEvent: (Event) ->
 }
 
 @Composable
-private fun DeliveryMethodField(
+fun DeliveryMethodSelector(
     selectedMethod: DeliveryMethod,
     onMethodSelected: (DeliveryMethod) -> Unit,
-    enabled: Boolean
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
-    Column(
-        modifier = Modifier
+    Row(
+        modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .selectableGroup()
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Text(
-            text = "Способ доставки",
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        DeliveryMethod.entries.forEach { method ->
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .selectable(
-                        selected = selectedMethod == method,
-                        onClick = { onMethodSelected(method) },
-                        enabled = enabled
-                    )
-                    .padding(horizontal = 16.dp),
-                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
-            ) {
-                RadioButton(
-                    selected = selectedMethod == method,
-                    onClick = null,
-                    enabled = enabled
-                )
-                Text(
-                    text = when (method) {
-                        DeliveryMethod.PICKUP -> "Самовывоз"
-                        DeliveryMethod.DELIVERY -> "Доставка"
-                    },
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(start = 16.dp)
-                )
-            }
+        DeliveryOption.entries.forEach { option ->
+            DeliveryMethodOption(
+                option = option,
+                selected = selectedMethod == option.method,
+                onSelected = { onMethodSelected(option.method) },
+                enabled = enabled,
+                modifier = Modifier.weight(1f)
+            )
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DeliveryMethodOption(
+    option: DeliveryOption,
+    selected: Boolean,
+    onSelected: () -> Unit,
+    enabled: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(
+            containerColor = if (selected) MaterialTheme.colorScheme.primaryContainer
+            else MaterialTheme.colorScheme.surfaceVariant
+        ),
+        onClick = onSelected,
+        enabled = enabled
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(12.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Icon(
+                imageVector = option.icon,
+                contentDescription = null,
+                tint = if (selected) MaterialTheme.colorScheme.onPrimaryContainer
+                else MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = option.label,
+                style = MaterialTheme.typography.bodyMedium,
+                color = if (selected) MaterialTheme.colorScheme.onPrimaryContainer
+                else MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+private enum class DeliveryOption(
+    val method: DeliveryMethod,
+    val label: String,
+    val icon: ImageVector
+) {
+    PICKUP(DeliveryMethod.PICKUP, "Самовывоз", Icons.Rounded.DirectionsCar),
+    DELIVERY(DeliveryMethod.DELIVERY, "Доставка", Icons.Rounded.Home)
 }
 
 @Composable
@@ -241,12 +273,19 @@ fun DeliveryDateTimeField(
         formatDateTime(dateTime.toLocalDateTime(TimeZone.currentSystemDefault()))
     }
 
+    val labelText = remember(state.deliveryMethod) {
+        when (state.deliveryMethod) {
+            DeliveryMethod.DELIVERY -> "Дата и время доставки"
+            DeliveryMethod.PICKUP -> "Дата и время самовывоза"
+        }
+    }
+
 
     Column(modifier = modifier) {
         TextField(
             value = dateTimeFormatted,
             onValueChange = { },
-            label = { Text("Дата и время доставки") },
+            label = { Text(labelText) },
             readOnly = true,
             enabled = !state.isLoading,
             leadingIcon = {
