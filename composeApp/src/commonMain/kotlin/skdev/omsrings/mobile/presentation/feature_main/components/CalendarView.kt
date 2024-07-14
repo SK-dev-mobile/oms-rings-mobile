@@ -140,8 +140,8 @@ class CalendarState(
     private val _currentMonth = mutableStateOf(YearMonth(initialDate.month, initialDate.year))
     val currentMonth: State<YearMonth> = _currentMonth
 
-    private val _selectedDate = mutableStateOf<LocalDate?>(null)
-    val selectedDate: State<LocalDate?> = _selectedDate
+    private val _selectedDate = mutableStateOf<LocalDate>(initialDate)
+    val selectedDate: State<LocalDate> = _selectedDate
 
     private val _startDayOfWeek = mutableStateOf(initialStartDayOfWeek)
     val startDayOfWeek: State<DayOfWeek> = _startDayOfWeek
@@ -269,7 +269,7 @@ private fun CalendarMonthView(
     month: YearMonth,
     startDay: LocalDate,
     currentDate: LocalDate,
-    selectedDate: LocalDate?,
+    selectedDate: LocalDate,
     onDateClick: (LocalDate) -> Unit,
     dateAddionalInfo: ((LocalDate) -> DateAdditionalInfo)?,
 ) {
