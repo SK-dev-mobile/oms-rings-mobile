@@ -1,10 +1,6 @@
 <resources>
-    <string name="cyclone">Cyclone</string>
-    <string name="open_github">Open github</string>
-    <string name="run">Run</string>
-    <string name="stop">Stop</string>
-    <string name="theme">Theme</string>
     <string name="back">Назад</string>
+    <string name="quantity_must_be_positive_number">Количество должно быть положительным числом</string>
 
     <!-- in-app notifications -->
     <string name="error">Ошибка</string>
@@ -42,7 +38,7 @@
     <string name="faq_rescheduled_order_description">• Выберите заказ и удерживайте для вызова меню\n• Доступно для статусов "НОВЫЙ" и "ВЫПОЛНЕННЫЙ"\n• При переносе исходный заказ получает статус "СПИСАННЫЙ"\n• В описание добавляется пометка о переносе и новая дата</string>
     <string name="faq_expand">Развёрнуто</string>
     <string name="faq_collapse">Свёрнуто</string>
-    
+
     <!-- UserSettingsScreen -->
     <string name="user_settings_title">Настройки</string>
     <string name="user_settings_receive_notifications">Получать уведомления</string>
@@ -73,4 +69,49 @@
     <string name="continue_process">Продолжить</string>
     <string name="dont_have_account">У вас нет аккаунта?</string>
     <string name="create_account">Создать</string>
+    <!-- Inventory Management Screen -->
+    <string name="inventory_management_header">Учет товара</string>
+    <string name="inventory_management_add_item">Добавить товар</string>
+    <string name="inventory_management_emptry_items_message">В данный момент товаров нет.\nНажмите '+', чтобы добавить новый товар.</string>
+    <plurals name="item_count">
+        <item quantity="zero">$1$d товаров</item>
+        <item quantity="one">%1$d товар</item>
+        <item quantity="few">%1$d товара</item>
+        <item quantity="other">%1$d товаров</item>
+    </plurals>
+    <string name="item_stock">Остаток: %1$d</string>
+    <string name="delete">Удалить</string>
+
+    <!--InventoryItemDialog -->
+    <string name="add_item_dialog_title">Добавить новый товар</string>
+    <string name="add_item_dialog_item_name">Название товара</string>
+    <string name="add_item_dialog_add_button">Добавить</string>
+    <string name="add_item_dialog_cancel_button">Отмена</string>
+    <string name="update_item_dialog_title">Изменить товар</string>
+
+    <!-- FolderDialog -->
+    <string name="create_folder_dialog_title">Добавить папку</string>
+    <string name="folder_name_label">Название папки</string>
+    <string name="create_button_text">Создать</string>
+    <string name="cancel_button_text">Отмена</string>
+    <string name="update_folder_dialog_title">Изменить папку</string>
+    <string name="update_button_text">Изменить</string>
+
+    <!-- IncrementQuantity -->
+    <string name="increment_quantity_dialog_title">Увеличение количества</string>
+    <string name="current_quantity">Текущее количество: %1$d</string>
+    <string name="increment_quantity_label">Добавить количество</string>
+    <string name="new_quantity_preview">Новое количество: %1$d</string>
+    <string name="confirm_increment">Подтвердить</string>
+
+    <!-- Empty Inventory Message -->
+    <string name="empty_inventory_items_title">В этой папке пока нет товаров</string>
+    <string name="empty_inventory_items_description">Добавьте новый товар, чтобы начать учет</string>
+    <string name="add_inventory_item">Добавить товар</string>
+
+    <!-- Empty Folder Message -->
+    <string name="empty_folders_title">У вас пока нет папок</string>
+    <string name="empty_folders_description">Создайте новую папку, чтобы начать учет товаров</string>
+    <string name="add_folder">Создать папку</string>
+
 </resources>

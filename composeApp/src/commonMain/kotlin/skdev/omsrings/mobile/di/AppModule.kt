@@ -8,8 +8,10 @@ import org.koin.core.module.Module
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 import skdev.omsrings.mobile.data.repository.AuthRepositoryImpl
+import skdev.omsrings.mobile.data.repository.FirebaseInventoryRepository
 import skdev.omsrings.mobile.data.repository.FirebaseUserSettingsRepository
 import skdev.omsrings.mobile.domain.repository.AuthRepository
+import skdev.omsrings.mobile.domain.repository.InventoryRepository
 import skdev.omsrings.mobile.domain.repository.UserSettingsRepository
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SendResetPasswordEmailUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignInUserUseCase
@@ -19,6 +21,7 @@ import skdev.omsrings.mobile.domain.usecase.feature_user_settings.GetUserSetting
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.UpdateNotificationSettingsUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.UpdateShowClearedOrdersSettingsUseCase
 import skdev.omsrings.mobile.presentation.feature_auth.AuthScreenModel
+import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenModel
 import skdev.omsrings.mobile.presentation.feature_main.MainScreenModel
 import skdev.omsrings.mobile.presentation.feature_order_form.OrderFormScreenModel
 import skdev.omsrings.mobile.presentation.feature_user_settings.UserSettingsModel
@@ -39,6 +42,12 @@ private val data = module {
     single<UserSettingsRepository> {
         FirebaseUserSettingsRepository(
             userId = "1",
+            firestore = Firebase.firestore
+        )
+    }
+
+    single<InventoryRepository> {
+        FirebaseInventoryRepository(
             firestore = Firebase.firestore
         )
     }
@@ -71,6 +80,15 @@ private val viewModels = module {
         )
     }
 
+    // Feature Inventory Management
+    factory<InventoryManagementScreenModel> {
+        InventoryManagementScreenModel(
+            inventoryRepository = get(),
+            notificationManager = get()
+        )
+    }
+
+    //
     factory<UserSettingsModel> {
         UserSettingsModel(
             notificationManager = get(),
