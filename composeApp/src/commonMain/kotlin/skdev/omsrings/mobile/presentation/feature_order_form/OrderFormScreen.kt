@@ -6,22 +6,26 @@ import androidx.compose.material.icons.rounded.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.koin.koinScreenModel
 import dev.gitlive.firebase.firestore.Timestamp
 import kotlinx.coroutines.launch
+import omsringsmobile.composeapp.generated.resources.Res
+import omsringsmobile.composeapp.generated.resources.create_order
+import omsringsmobile.composeapp.generated.resources.order_details
+import omsringsmobile.composeapp.generated.resources.place_order
+import omsringsmobile.composeapp.generated.resources.tap_to_place_order
+import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 import skdev.omsrings.mobile.domain.model.DeliveryMethod
 import skdev.omsrings.mobile.presentation.base.BaseScreen
 import skdev.omsrings.mobile.presentation.feature_order_form.OrderFormContract.Event
 import skdev.omsrings.mobile.presentation.feature_order_form.components.*
 import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
+import skdev.omsrings.mobile.ui.components.helpers.Spacer
+import skdev.omsrings.mobile.ui.theme.values.Dimens
 
 
-// TODO: добавить валидацию полей
 // TODO: сделать редактирование заказа
-// TODO: сделать отправку заказа на сервер
-// TODO: сделать отображение ошибок
 // TODO: сделать отображение загрузки
 // TODO: привести в порядок строковые ресурсы
 
@@ -59,7 +63,7 @@ private fun OrderFormContent(
     Scaffold(
         topBar = {
             RingsTopAppBar(
-                title = "Создать заказ",
+                title = stringResource(Res.string.create_order),
                 onNavigationClicked = {
                     onEvent(Event.OnBackClicked)
                 }
@@ -71,8 +75,13 @@ private fun OrderFormContent(
                     isBottomSheetVisible = true
                     coroutineScope.launch { bottomSheetState.show() }
                 },
-                icon = { Icon(Icons.Rounded.ShoppingCart, contentDescription = "Order Details") },
-                text = { Text("Оформить заказ") }
+                icon = {
+                    Icon(
+                        Icons.Rounded.ShoppingCart,
+                        contentDescription = stringResource(Res.string.tap_to_place_order)
+                    )
+                },
+                text = { Text(stringResource(Res.string.place_order)) }
             )
         },
         contentWindowInsets = WindowInsets.safeContent,
@@ -105,12 +114,12 @@ private fun OrderDetailsBottomSheet(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(Dimens.spaceMedium)
     ) {
         Text(
-            text = "Детали заказа",
+            text = stringResource(Res.string.order_details),
             style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.padding(bottom = Dimens.spaceMedium)
         )
 
         DeliveryPhoneField(
@@ -118,7 +127,7 @@ private fun OrderDetailsBottomSheet(
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(Dimens.spaceMedium)
 
         DeliveryMethodSelector(
             selectedMethod = state.deliveryMethod,
@@ -126,7 +135,7 @@ private fun OrderDetailsBottomSheet(
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(Dimens.spaceMedium)
 
         if (state.deliveryMethod == DeliveryMethod.DELIVERY) {
             DeliveryAddressField(
@@ -134,7 +143,7 @@ private fun OrderDetailsBottomSheet(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(Dimens.spaceMedium)
         }
 
         DeliveryTimeSelector(
@@ -142,14 +151,14 @@ private fun OrderDetailsBottomSheet(
             timeField = state.deliveryTimeField,
             deliveryMethod = state.deliveryMethod
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(Dimens.spaceMedium)
 
         CommentField(
             commentField = state.deliveryCommentField,
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(Dimens.spaceLarge)
 
         EnhancedConfirmOrderButton(
             onClick = { onEvent(Event.OnSubmitClicked) },

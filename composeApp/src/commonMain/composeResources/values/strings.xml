@@ -119,18 +119,43 @@
     <string name="no_items_available">Нет доступных товаров</string>
 
 
-    <!--    -->
+    <!-- Order Form -->
+    <!-- Количество -->
     <string name="increase_quantity">Увеличить количество</string>
     <string name="decrease_quantity">Уменьшить количество</string>
-    <string name="select_products">Выберите товары</string>
-    <string name="back_to_folders">Назад к разделам</string>
-    <string name="no_products_available">Нет доступных товаров</string>
 
+    <!-- Выбор товаров -->
+    <string name="select_products">Выберите товары</string>
+    <string name="back_to_categories">Назад к категориям</string>
+    <string name="no_products_available">Товары отсутствуют</string>
+
+    <!-- Создание заказа -->
     <string name="order_created">Заказ создан</string>
     <string name="order_created_message">Заказ успешно создан и отправлен на обработку</string>
-
+    <string name="create_order">Создать заказ</string>
     <string name="confirm_order">Подтвердить заказ</string>
+    <string name="place_order">Оформить заказ</string>
+    <string name="tap_to_place_order">Нажмите, чтобы оформить заказ</string>
+
+    <!-- Детали заказа -->
+    <string name="order_details">Детали заказа</string>
     <string name="delivery_address">Адрес доставки</string>
-    <string name="delivery_address_content_description">Введите адрес доставки</string>
+    <string name="delivery_address_hint">Введите адрес доставки</string>
+    <string name="comment">Комментарий</string>
+
+    <!-- Способ получения -->
+    <string name="pickup">Самовывоз</string>
+    <string name="delivery">Доставка</string>
+
+    <!-- Время -->
+    <string name="choose_delivery_time">Выберите время доставки</string>
+    <string name="i_will_pickup_order_at">Я заберу заказ в </string>
+    <string name="please_deliver_order_at">Пожалуйста, доставьте заказ в </string>
+    <string name="choose_time">выберите время</string>
+    <string name="choose_time_capitalized">Выберите время</string>
+
+    <!-- Общие -->
+    <string name="ok">OK</string>
+    <string name="cancel">Отмена</string>
 
 </resources>

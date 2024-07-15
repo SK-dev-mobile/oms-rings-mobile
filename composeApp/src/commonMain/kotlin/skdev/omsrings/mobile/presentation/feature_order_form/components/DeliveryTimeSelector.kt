@@ -22,6 +22,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
+import omsringsmobile.composeapp.generated.resources.Res
+import omsringsmobile.composeapp.generated.resources.cancel
+import omsringsmobile.composeapp.generated.resources.choose_delivery_time
+import omsringsmobile.composeapp.generated.resources.choose_time
+import omsringsmobile.composeapp.generated.resources.choose_time_capitalized
+import omsringsmobile.composeapp.generated.resources.i_will_pickup_order_at
+import omsringsmobile.composeapp.generated.resources.ok
+import omsringsmobile.composeapp.generated.resources.please_deliver_order_at
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import skdev.omsrings.mobile.domain.model.DeliveryMethod
@@ -90,7 +98,7 @@ private fun TimeSelector(
         ) {
             Icon(
                 imageVector = Icons.Rounded.AccessTime,
-                contentDescription = "Время доставки"
+                contentDescription = stringResource(Res.string.choose_delivery_time)
             )
             Spacer(Dimens.spaceSmall)
             Text(
@@ -118,13 +126,13 @@ private fun TimeSelector(
 private fun buildTimeSelectorText(deliveryMethod: DeliveryMethod, timeValue: String) = buildAnnotatedString {
     append(
         when (deliveryMethod) {
-            DeliveryMethod.PICKUP -> "Я заберу заказ в "
-            DeliveryMethod.DELIVERY -> "Пожалуйста, доставьте заказ в "
+            DeliveryMethod.PICKUP -> stringResource(Res.string.i_will_pickup_order_at)
+            DeliveryMethod.DELIVERY -> stringResource(Res.string.please_deliver_order_at)
         }
     )
 
     withStyle(SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-        append(timeValue.ifBlank { "выбрать время" })
+        append(timeValue.ifBlank { stringResource(Res.string.choose_time) })
     }
 }
 
@@ -137,16 +145,16 @@ private fun TimePickerDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        title = { Text("Выбрать время") },
+        title = { Text(stringResource(Res.string.choose_time_capitalized)) },
         text = { TimePicker(state = timePickerState) },
         confirmButton = {
             TextButton(onClick = { onTimeSelected(timePickerState.hour, timePickerState.minute) }) {
-                Text("Хорошо")
+                Text(stringResource(Res.string.ok))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismissRequest) {
-                Text("Отмена")
+                Text(stringResource(Res.string.cancel))
             }
         }
     )

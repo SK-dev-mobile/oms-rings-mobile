@@ -6,7 +6,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import omsringsmobile.composeapp.generated.resources.Res
+import omsringsmobile.composeapp.generated.resources.comment
 import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 import skdev.omsrings.mobile.ui.components.fields.SupportingText
 import skdev.omsrings.mobile.ui.components.fields.TextField
 import skdev.omsrings.mobile.utils.fields.FormField
@@ -23,9 +26,14 @@ fun CommentField(
 
     TextField(
         value = commentValue,
-        leadingIcon = { Icon(imageVector = Icons.Rounded.Comment, contentDescription = "Комментарий") },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Rounded.Comment,
+                contentDescription = stringResource(Res.string.comment)
+            )
+        },
         onValueChange = { commentValueSetter(it) },
-        placeholder = { Text("Комментарий") },
+        placeholder = { Text(stringResource(Res.string.comment)) },
         isError = commentError != null,
         supportingText = SupportingText(commentError),
         modifier = modifier

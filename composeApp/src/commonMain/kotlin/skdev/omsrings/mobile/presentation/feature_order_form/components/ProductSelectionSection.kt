@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
 import cafe.adriel.voyager.navigator.internal.BackHandler
 import omsringsmobile.composeapp.generated.resources.Res
-import omsringsmobile.composeapp.generated.resources.back_to_folders
+import omsringsmobile.composeapp.generated.resources.back_to_categories
 import omsringsmobile.composeapp.generated.resources.decrease_quantity
 import omsringsmobile.composeapp.generated.resources.increase_quantity
 import omsringsmobile.composeapp.generated.resources.item_count
@@ -138,11 +138,11 @@ private fun InventoryItemList(
     Column {
         TextButton(
             onClick = onBackToFolders,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            modifier = Modifier.padding(horizontal = Dimens.spaceMedium, vertical = Dimens.spaceSmall)
         ) {
             Icon(Icons.Rounded.ChevronLeft, contentDescription = null)
-            Spacer(4.dp)
-            Text(stringResource(Res.string.back_to_folders))
+            Spacer(Dimens.spaceExtraSmall)
+            Text(stringResource(Res.string.back_to_categories))
         }
         LazyColumn {
             items(items, key = { it.id }) { item ->
@@ -164,7 +164,7 @@ private fun InventoryItemRow(
     onQuantityChanged: (Int) -> Unit
 ) {
     GenericRow(
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier = Modifier.padding(horizontal = Dimens.spaceMedium, vertical = Dimens.spaceSmall),
         icon = Icons.Rounded.Inventory,
         iconTint = MaterialTheme.colorScheme.secondary,
         title = item.name,

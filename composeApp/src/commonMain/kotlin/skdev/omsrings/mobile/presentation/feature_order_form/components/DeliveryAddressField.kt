@@ -8,7 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.delivery_address
-import omsringsmobile.composeapp.generated.resources.delivery_address_content_description
+import omsringsmobile.composeapp.generated.resources.delivery_address_hint
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import skdev.omsrings.mobile.ui.components.fields.SupportingText
@@ -31,7 +31,7 @@ fun DeliveryAddressField(
         leadingIcon = {
             Icon(
                 Icons.Rounded.Home,
-                contentDescription = stringResource(Res.string.delivery_address_content_description)
+                contentDescription = stringResource(Res.string.delivery_address_hint)
             )
         },
         placeholder = { Text(stringResource(Res.string.delivery_address)) },
