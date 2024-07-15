@@ -56,8 +56,8 @@ fun ProductSelectionSection(
     BackHandler(enabled = state.selectedFolderId != null) {
         onEvent(ProductSelectionEvent.OnFolderSelected(null))
     }
-    
-    
+
+
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
