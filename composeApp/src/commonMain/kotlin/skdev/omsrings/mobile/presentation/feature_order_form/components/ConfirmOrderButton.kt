@@ -16,6 +16,6 @@ fun ConfirmOrderButton(
         modifier = modifier,
         enabled = enabled
     ) {
-        Text("Confirm Order")
+        Text("Подтвердить заказ")
     }
 }

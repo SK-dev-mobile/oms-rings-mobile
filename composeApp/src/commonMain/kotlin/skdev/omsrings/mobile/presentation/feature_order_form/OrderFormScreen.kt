@@ -53,7 +53,7 @@ private fun OrderFormContent(
     Scaffold(
         topBar = {
             RingsTopAppBar(
-                title = "Order Form",
+                title = "Создать заказ",
                 onNavigationClicked = {
                     onEvent(Event.OnBackClicked)
                 }
@@ -66,7 +66,7 @@ private fun OrderFormContent(
                     coroutineScope.launch { bottomSheetState.show() }
                 },
                 icon = { Icon(Icons.Rounded.ShoppingCart, contentDescription = "Order Details") },
-                text = { Text("Order Details") },
+                text = { Text("Оформить заказ") }
             )
         },
         contentWindowInsets = WindowInsets.safeContent,
@@ -102,7 +102,7 @@ private fun OrderDetailsBottomSheet(
             .padding(16.dp)
     ) {
         Text(
-            text = "Order Details",
+            text = "Детали заказа",
             style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier.padding(bottom = 16.dp)
         )

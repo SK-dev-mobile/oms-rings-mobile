@@ -21,7 +21,7 @@ fun CommentField(
     TextField(
         value = commentValue,
         onValueChange = { commentValueSetter(it) },
-        placeholder = { Text("Comment") },
+        placeholder = { Text("Комментарий") },
         isError = commentError != null,
         supportingText = SupportingText(commentError),
         modifier = modifier
