@@ -1,5 +1,8 @@
 package skdev.omsrings.mobile.presentation.feature_order_form.components
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Comment
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -20,6 +23,7 @@ fun CommentField(
 
     TextField(
         value = commentValue,
+        leadingIcon = { Icon(imageVector = Icons.Rounded.Comment, contentDescription = "Комментарий") },
         onValueChange = { commentValueSetter(it) },
         placeholder = { Text("Комментарий") },
         isError = commentError != null,
