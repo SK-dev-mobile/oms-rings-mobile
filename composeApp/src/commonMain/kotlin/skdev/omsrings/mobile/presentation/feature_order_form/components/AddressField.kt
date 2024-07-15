@@ -24,7 +24,6 @@ fun AddressInput(
     TextField(
         value = addressValue,
         onValueChange = { address -> addressValueSetter(address) },
-        label = { Text("Delivery Address") },
         leadingIcon = { Icon(Icons.Rounded.Home, contentDescription = "Address") },
         placeholder = { Text("Enter your address") },
         isError = addressError != null,

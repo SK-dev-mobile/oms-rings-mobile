@@ -18,6 +18,7 @@ import skdev.omsrings.mobile.presentation.feature_order_form.components.ProductS
 import skdev.omsrings.mobile.presentation.feature_order_form.components.ProductSelectionState
 import skdev.omsrings.mobile.utils.fields.FormField
 import skdev.omsrings.mobile.utils.fields.flowBlock
+import skdev.omsrings.mobile.utils.fields.validateAll
 import skdev.omsrings.mobile.utils.fields.validators.ValidationResult
 import skdev.omsrings.mobile.utils.fields.validators.notBlank
 import skdev.omsrings.mobile.utils.fields.validators.notEmpty
@@ -36,9 +37,9 @@ class OrderFormScreenModel(
             contactPhoneField = createPhoneField(),
             deliveryDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
             deliveryMethod = DeliveryMethod.PICKUP,
-            deliveryCommentField = createCommentField(),
             deliveryAddressField = createAddressField(),
             deliveryTimeField = createTimeField(),
+            deliveryCommentField = createCommentField(),
             productSelectionState = ProductSelectionState(
                 folders = listOf(
                     Folder(
@@ -126,10 +127,10 @@ class OrderFormScreenModel(
     override fun onEvent(event: OrderFormContract.Event) {
         when (event) {
             is OrderFormContract.Event.OnDeliveryMethodChanged -> updateDeliveryMethod(event.method)
+            is OrderFormContract.Event.OnProductSelectionEvent -> handleProductSelectionEvent(event.event)
+            OrderFormContract.Event.OnSubmitClicked -> handleSubmit()
             is OrderFormContract.Event.OnBackClicked -> TODO()
 
-            OrderFormContract.Event.OnSubmitClicked -> TODO()
-            is OrderFormContract.Event.OnProductSelectionEvent -> handleProductSelectionEvent(event.event)
         }
     }
 
@@ -153,6 +154,19 @@ class OrderFormScreenModel(
                     }
                 )
             )
+        }
+    }
+
+    private fun handleSubmit() {
+        if (validateAll(
+                _state.value.contactPhoneField,
+                _state.value.deliveryAddressField,
+                _state.value.deliveryTimeField,
+                _state.value.deliveryCommentField
+            )
+        ) {
+            
+
         }
     }
 
