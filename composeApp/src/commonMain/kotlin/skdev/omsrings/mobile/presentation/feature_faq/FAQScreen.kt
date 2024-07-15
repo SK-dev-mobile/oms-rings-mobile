@@ -85,7 +85,7 @@ private fun FAQScreenContent() {
         topBar = {
             RingsTopAppBar(
                 title = stringResource(Res.string.faq_header),
-                onNavigationClicked = { /* TODO: impl back navigation */ }
+                onNavigationClicked = { /* TODO: #18 impl back navigation */ }
             )
         }
     ) { innerPadding ->

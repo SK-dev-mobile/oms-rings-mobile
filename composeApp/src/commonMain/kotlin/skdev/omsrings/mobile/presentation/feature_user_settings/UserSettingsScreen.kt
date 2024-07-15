@@ -33,7 +33,7 @@ object UserSettingsScreen : BaseScreen("user_settings_screen") {
             topBar = {
                 RingsTopAppBar(
                     title = stringResource(Res.string.user_settings_title),
-                    onNavigationClicked = { /* TODO */ },
+                    onNavigationClicked = { /* TODO #21 */ },
                     actions = {
                         Icon(
                             imageVector = Icons.Rounded.Settings,

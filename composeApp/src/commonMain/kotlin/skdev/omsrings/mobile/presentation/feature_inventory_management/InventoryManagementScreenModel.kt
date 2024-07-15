@@ -111,7 +111,7 @@ class InventoryManagementScreenModel(
 
             is Event.DisplayIncrementQuantityDialog -> displayIncrementQuantityDialog(event.item)
             Event.CloseIncrementQuantityDialog -> closeIncrementQuantityDialog()
-            Event.OnBackClicked -> TODO()
+            Event.OnBackClicked -> TODO #19()
         }
     }
 
