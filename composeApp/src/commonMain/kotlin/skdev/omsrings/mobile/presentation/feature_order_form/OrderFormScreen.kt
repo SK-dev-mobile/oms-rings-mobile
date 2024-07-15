@@ -33,9 +33,7 @@ class OrderFormScreen(
 ) : BaseScreen("order_form_screen") {
     @Composable
     override fun MainContent() {
-        val screenModel = koinScreenModel<OrderFormScreenModel> {
-            parametersOf(selectedDate)
-        }
+        val screenModel = koinScreenModel<OrderFormScreenModel> { parametersOf(selectedDate) }
         val state by screenModel.state.collectAsState()
 
         OrderFormContent(
