@@ -160,8 +160,9 @@ class OrderFormScreenModel(
         val addressValid = if (state.value.deliveryMethod == DeliveryMethod.DELIVERY) {
             _state.value.deliveryAddressField.validate()
         } else true
+        val productSelectionValid = _state.value.productSelectionState.selectedItems.isNotEmpty()
 
-        return phoneValid && timeValid && addressValid && commentValid
+        return phoneValid && timeValid && addressValid && commentValid && productSelectionValid
     }
 
     private fun createOrderFromState(): Order {
