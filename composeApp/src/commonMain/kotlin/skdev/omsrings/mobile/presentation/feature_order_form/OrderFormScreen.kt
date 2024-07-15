@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.koin.koinScreenModel
 import dev.gitlive.firebase.firestore.Timestamp
@@ -60,7 +61,7 @@ private fun OrderFormContent(
     Scaffold(
         topBar = {
             RingsTopAppBar(
-                title = stringResource(Res.string.create_order),
+                title = stringResource(Res.string.create_order, state.deliveryDate),
                 onNavigationClicked = {
                     onEvent(Event.OnBackClicked)
                 }
@@ -90,6 +91,7 @@ private fun OrderFormContent(
                 onEvent(Event.OnProductSelectionEvent(productSelectionEvent))
             }
         )
+
         if (isBottomSheetVisible) {
             ModalBottomSheet(
                 onDismissRequest = { isBottomSheetVisible = false },
@@ -115,9 +117,10 @@ private fun OrderDetailsBottomSheet(
     ) {
         Text(
             text = stringResource(Res.string.order_details),
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.padding(bottom = Dimens.spaceMedium)
+            style = MaterialTheme.typography.headlineSmall
         )
+
+        Spacer(Dimens.spaceMedium)
 
         DeliveryPhoneField(
             phoneField = state.contactPhoneField,
@@ -148,6 +151,7 @@ private fun OrderDetailsBottomSheet(
             timeField = state.deliveryTimeField,
             deliveryMethod = state.deliveryMethod
         )
+
         Spacer(Dimens.spaceMedium)
 
         CommentField(

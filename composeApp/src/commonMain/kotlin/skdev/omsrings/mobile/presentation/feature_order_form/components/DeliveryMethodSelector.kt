@@ -76,7 +76,7 @@ private fun DeliveryMethodOption(
         label = "contentColor"
     )
     Card(
-        modifier = modifier.clip(RoundedCornerShape(16.dp)),
+        modifier = modifier.clip(RoundedCornerShape(Dimens.spaceMedium)),
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
         onClick = onSelected
     ) {

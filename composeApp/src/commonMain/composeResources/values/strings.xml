@@ -132,7 +132,7 @@
     <!-- Создание заказа -->
     <string name="order_created">Заказ создан</string>
     <string name="order_created_message">Заказ успешно создан и отправлен на обработку</string>
-    <string name="create_order">Создать заказ</string>
+    <string name="create_order">Создать заказ на %1$s</string>
     <string name="confirm_order">Подтвердить заказ</string>
     <string name="place_order">Оформить заказ</string>
     <string name="tap_to_place_order">Нажмите, чтобы оформить заказ</string>
