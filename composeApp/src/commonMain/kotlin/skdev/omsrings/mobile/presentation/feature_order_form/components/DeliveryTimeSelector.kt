@@ -18,6 +18,7 @@ import kotlinx.datetime.LocalTime
 import org.jetbrains.compose.resources.StringResource
 import skdev.omsrings.mobile.domain.model.DeliveryMethod
 import skdev.omsrings.mobile.utils.fields.FormField
+import skdev.omsrings.mobile.utils.fields.collectAsMutableState
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -27,14 +28,20 @@ fun DeliveryTimeSelector(
     timeField: FormField<String, StringResource>,
     modifier: Modifier = Modifier
 ) {
-    
-    
-    var selectedTime by remember { mutableStateOf(initialTime) }
+    val (phoneValue, phoneValueSetter) = timeField.data.collectAsMutableState()
+    val phoneError by timeField.error.collectAsState()
+
+
     var isTimePickerVisible by remember { mutableStateOf(false) }
+
+
     val timePickerState = rememberTimePickerState(
-        initialHour = selectedTime?.let { parseHour(it) } ?: 12,
-        initialMinute = selectedTime?.let { parseMinute(it) } ?: 0
-    )
+        initialHour = phoneValue.ifBlank { "12:00" }.let(::parseHour),
+        initialMinute = phoneValue.ifBlank { "12:00" }.let(::parseMinute),
+        is24Hour = true,
+
+        )
+
 
     val annotatedString = buildAnnotatedString {
         append(
@@ -45,13 +52,13 @@ fun DeliveryTimeSelector(
         )
 
         withStyle(SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-            append(selectedTime ?: "выбрать время")
+            append(phoneValue.ifBlank { "выбрать время" })
         }
 
         addStringAnnotation(
             tag = "TIME_SELECTOR",
             annotation = "open",
-            start = length - (selectedTime?.length ?: "выбрать время".length),
+            start = length - (phoneValue.ifBlank { "выбрать время" }).length,
             end = length
         )
     }
@@ -73,8 +80,7 @@ fun DeliveryTimeSelector(
             onDismissRequest = { isTimePickerVisible = false },
             onTimeSelected = { hour, minute ->
                 val newTime = formatTime(hour, minute)
-                selectedTime = newTime
-                onTimeSelected(newTime)
+                phoneValueSetter(newTime)
                 isTimePickerVisible = false
             },
             timePickerState = timePickerState
@@ -117,6 +123,7 @@ private fun formatTime(hour: Int, minute: Int): String {
 }
 
 private fun parseHour(time: String): Int {
+    if (time.isEmpty()) return 12
     return time.split(":")[0].toInt()
 }
 
@@ -125,7 +132,6 @@ private fun parseMinute(time: String): Int {
 }
 
 private fun parseTime(time: String): LocalTime {
-    if (time.isEmpty()) return LocalTime(12, 0)
     val (hour, minute) = time.split(":")
     return LocalTime(hour.toInt(), minute.toInt())
 }
