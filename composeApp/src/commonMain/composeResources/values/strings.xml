@@ -129,4 +129,6 @@
     <string name="order_created">Заказ создан</string>
     <string name="order_created_message">Заказ успешно создан и отправлен на обработку</string>
 
+    <string name="confirm_order">Подтвердить заказ</string>
+
 </resources>

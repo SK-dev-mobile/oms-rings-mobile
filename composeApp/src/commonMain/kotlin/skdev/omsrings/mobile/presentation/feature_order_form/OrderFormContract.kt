@@ -24,6 +24,10 @@ class OrderFormContract {
         val productSelectionState: ProductSelectionState
     )
 
+    enum class OrderFormField {
+        PHONE, ADDRESS, TIME, COMMENT
+    }
+
 
     sealed interface Event {
         data object OnBackClicked : Event

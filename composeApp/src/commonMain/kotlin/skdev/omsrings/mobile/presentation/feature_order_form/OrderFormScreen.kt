@@ -145,10 +145,11 @@ private fun OrderDetailsBottomSheet(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        ConfirmOrderButton(
+        EnhancedConfirmOrderButton(
             onClick = { onEvent(Event.OnSubmitClicked) },
-            enabled = !state.isLoading,
+            isEnabled = true,
             modifier = Modifier.fillMaxWidth()
+
         )
     }
 }

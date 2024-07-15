@@ -20,6 +20,7 @@ import skdev.omsrings.mobile.domain.usecase.feature_auth.SendResetPasswordEmailU
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignInUserUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignUpUserUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_order.CreateOrderUseCase
+import skdev.omsrings.mobile.domain.usecase.feature_order.GetFoldersAndItemsInventory
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.ClearOldOrdersUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.GetUserSettingsUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.UpdateNotificationSettingsUseCase
@@ -112,7 +113,8 @@ private val viewModels = module {
     factory<OrderFormScreenModel> {
         OrderFormScreenModel(
             notificationManager = get(),
-            createOrderUseCase = get()
+            createOrderUseCase = get(),
+            getFoldersAndItemsInventory = get()
         )
     }
 
@@ -150,6 +152,7 @@ private val useCases = module {
 
     // Feature Create Order
     factory<CreateOrderUseCase> { CreateOrderUseCase(repository = get(), notificationManager = get()) }
+    factory<GetFoldersAndItemsInventory> { GetFoldersAndItemsInventory(repository = get()) }
 
 }
 
