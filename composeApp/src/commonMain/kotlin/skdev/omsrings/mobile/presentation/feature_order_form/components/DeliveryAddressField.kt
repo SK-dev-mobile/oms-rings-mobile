@@ -1,11 +1,13 @@
 package skdev.omsrings.mobile.presentation.feature_order_form.components
 
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.delivery_address
 import omsringsmobile.composeapp.generated.resources.delivery_address_hint
@@ -38,6 +40,12 @@ fun DeliveryAddressField(
         isError = addressError != null,
         supportingText = SupportingText(addressError),
         modifier = modifier,
-        singleLine = true
+        singleLine = true,
+        keyboardOptions = KeyboardOptions.Default.copy(
+            autoCorrect = true,
+            capitalization = KeyboardCapitalization.Sentences,
+            imeAction = androidx.compose.ui.text.input.ImeAction.Go,
+            keyboardType = androidx.compose.ui.text.input.KeyboardType.Text
+        )
     )
 }

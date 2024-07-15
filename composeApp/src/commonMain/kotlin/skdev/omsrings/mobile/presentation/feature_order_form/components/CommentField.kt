@@ -1,11 +1,14 @@
 package skdev.omsrings.mobile.presentation.feature_order_form.components
 
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Comment
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.comment
 import org.jetbrains.compose.resources.StringResource
@@ -36,7 +39,12 @@ fun CommentField(
         placeholder = { Text(stringResource(Res.string.comment)) },
         isError = commentError != null,
         supportingText = SupportingText(commentError),
-        modifier = modifier
-//        enabled = !state.isLoading
+        modifier = modifier,
+        keyboardOptions = KeyboardOptions.Default.copy(
+            autoCorrect = true,
+            capitalization = KeyboardCapitalization.Sentences,
+            imeAction = androidx.compose.ui.text.input.ImeAction.Done,
+            keyboardType = androidx.compose.ui.text.input.KeyboardType.Text
+        )
     )
 }
