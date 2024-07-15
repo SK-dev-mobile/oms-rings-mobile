@@ -107,7 +107,7 @@ private fun OrderDetailsBottomSheet(
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        PhoneInput(
+        DeliveryPhoneField(
             phoneField = state.contactPhoneField,
             modifier = Modifier.fillMaxWidth()
         )
@@ -123,7 +123,7 @@ private fun OrderDetailsBottomSheet(
         Spacer(modifier = Modifier.height(16.dp))
 
         if (state.deliveryMethod == DeliveryMethod.DELIVERY) {
-            AddressInput(
+            DeliveryAddressField(
                 addressField = state.deliveryAddressField,
                 modifier = Modifier.fillMaxWidth()
             )

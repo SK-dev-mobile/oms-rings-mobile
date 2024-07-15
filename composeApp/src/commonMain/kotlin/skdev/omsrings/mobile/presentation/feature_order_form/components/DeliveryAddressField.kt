@@ -6,7 +6,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import omsringsmobile.composeapp.generated.resources.Res
+import omsringsmobile.composeapp.generated.resources.delivery_address
+import omsringsmobile.composeapp.generated.resources.delivery_address_content_description
 import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 import skdev.omsrings.mobile.ui.components.fields.SupportingText
 import skdev.omsrings.mobile.ui.components.fields.TextField
 import skdev.omsrings.mobile.utils.fields.FormField
@@ -14,7 +18,7 @@ import skdev.omsrings.mobile.utils.fields.collectAsMutableState
 
 
 @Composable
-fun AddressInput(
+fun DeliveryAddressField(
     addressField: FormField<String, StringResource>,
     modifier: Modifier = Modifier
 ) {
@@ -24,8 +28,13 @@ fun AddressInput(
     TextField(
         value = addressValue,
         onValueChange = { address -> addressValueSetter(address) },
-        leadingIcon = { Icon(Icons.Rounded.Home, contentDescription = "Адрес доставки") },
-        placeholder = { Text("Введите адрес") },
+        leadingIcon = {
+            Icon(
+                Icons.Rounded.Home,
+                contentDescription = stringResource(Res.string.delivery_address_content_description)
+            )
+        },
+        placeholder = { Text(stringResource(Res.string.delivery_address)) },
         isError = addressError != null,
         supportingText = SupportingText(addressError),
         modifier = modifier,

@@ -130,5 +130,7 @@
     <string name="order_created_message">Заказ успешно создан и отправлен на обработку</string>
 
     <string name="confirm_order">Подтвердить заказ</string>
+    <string name="delivery_address">Адрес доставки</string>
+    <string name="delivery_address_content_description">Введите адрес доставки</string>
 
 </resources>

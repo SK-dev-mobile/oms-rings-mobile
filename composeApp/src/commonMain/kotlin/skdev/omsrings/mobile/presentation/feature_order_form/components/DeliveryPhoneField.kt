@@ -9,7 +9,7 @@ import skdev.omsrings.mobile.utils.fields.FormField
 import skdev.omsrings.mobile.utils.fields.collectAsMutableState
 
 @Composable
-fun PhoneInput(
+fun DeliveryPhoneField(
     phoneField: FormField<String, StringResource>,
     modifier: Modifier = Modifier
 ) {
