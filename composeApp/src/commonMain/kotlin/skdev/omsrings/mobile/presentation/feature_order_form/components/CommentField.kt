@@ -12,7 +12,6 @@ import skdev.omsrings.mobile.utils.fields.collectAsMutableState
 @Composable
 fun CommentField(
     commentField: FormField<String, StringResource>,
-    onCommentChanged: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val (commentValue, commentValueSetter) = commentField.data.collectAsMutableState()
@@ -21,11 +20,8 @@ fun CommentField(
 
     TextField(
         value = commentValue,
-        onValueChange = {
-            commentValueSetter(it)
-            onCommentChanged(it)
-        },
-        label = { Text("Комментарий к заказу") },
+        onValueChange = { commentValueSetter(it) },
+        placeholder = { Text("Comment") },
         isError = commentError != null,
         supportingText = SupportingText(commentError),
         modifier = modifier

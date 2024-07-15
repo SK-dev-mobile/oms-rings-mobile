@@ -15,17 +15,20 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import kotlinx.datetime.LocalTime
+import org.jetbrains.compose.resources.StringResource
 import skdev.omsrings.mobile.domain.model.DeliveryMethod
+import skdev.omsrings.mobile.utils.fields.FormField
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeliveryTimeSelector(
     deliveryMethod: DeliveryMethod,
-    initialTime: String? = null,
-    onTimeSelected: (String) -> Unit,
+    timeField: FormField<String, StringResource>,
     modifier: Modifier = Modifier
 ) {
+    
+    
     var selectedTime by remember { mutableStateOf(initialTime) }
     var isTimePickerVisible by remember { mutableStateOf(false) }
     val timePickerState = rememberTimePickerState(

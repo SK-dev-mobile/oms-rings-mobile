@@ -16,7 +16,6 @@ import skdev.omsrings.mobile.utils.fields.collectAsMutableState
 @Composable
 fun AddressInput(
     addressField: FormField<String, StringResource>,
-    onAddressChanged: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val (addressValue, addressValueSetter) = addressField.data.collectAsMutableState()
@@ -24,10 +23,7 @@ fun AddressInput(
 
     TextField(
         value = addressValue,
-        onValueChange = { address ->
-            addressValueSetter(address)
-            onAddressChanged(address)
-        },
+        onValueChange = { address -> addressValueSetter(address) },
         label = { Text("Delivery Address") },
         leadingIcon = { Icon(Icons.Rounded.Home, contentDescription = "Address") },
         placeholder = { Text("Enter your address") },

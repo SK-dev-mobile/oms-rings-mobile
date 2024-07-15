@@ -108,8 +108,7 @@ private fun OrderDetailsBottomSheet(
         )
 
         PhoneInput(
-            phoneField = state.phoneField,
-            onPhoneChanged = { onEvent(Event.OnPhoneChanged(it)) },
+            phoneField = state.contactPhoneField,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -125,8 +124,7 @@ private fun OrderDetailsBottomSheet(
 
         if (state.deliveryMethod == DeliveryMethod.DELIVERY) {
             AddressInput(
-                addressField = state.addressField,
-                onAddressChanged = { onEvent(Event.OnAddressChanged(it)) },
+                addressField = state.deliveryAddressField,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -135,15 +133,13 @@ private fun OrderDetailsBottomSheet(
 
         DeliveryTimeSelector(
             modifier = Modifier.fillMaxWidth(),
-            initialTime = state.deliveryTime,
-            onTimeSelected = { onEvent(Event.OnTimeChanged(it)) },
+            timeField = state.deliveryTimeField,
             deliveryMethod = state.deliveryMethod
         )
         Spacer(modifier = Modifier.height(16.dp))
 
         CommentField(
-            commentField = state.commentField,
-            onCommentChanged = { onEvent(Event.OnCommentChanged(it)) },
+            commentField = state.deliveryCommentField,
             modifier = Modifier.fillMaxWidth()
         )
 

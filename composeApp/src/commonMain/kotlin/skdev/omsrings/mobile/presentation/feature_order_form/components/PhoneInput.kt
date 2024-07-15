@@ -11,7 +11,6 @@ import skdev.omsrings.mobile.utils.fields.collectAsMutableState
 @Composable
 fun PhoneInput(
     phoneField: FormField<String, StringResource>,
-    onPhoneChanged: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val (phoneValue, phoneValueSetter) = phoneField.data.collectAsMutableState()
@@ -20,10 +19,7 @@ fun PhoneInput(
     PhoneField(
         modifier = modifier,
         value = phoneValue,
-        onValueChange = {
-            phoneValueSetter(it)
-            onPhoneChanged(it)
-        },
+        onValueChange = { phoneValueSetter(it) },
         isError = phoneError != null,
         supportingText = SupportingText(phoneError)
     )

@@ -20,6 +20,7 @@ import skdev.omsrings.mobile.utils.fields.FormField
 import skdev.omsrings.mobile.utils.fields.flowBlock
 import skdev.omsrings.mobile.utils.fields.validators.ValidationResult
 import skdev.omsrings.mobile.utils.fields.validators.notBlank
+import skdev.omsrings.mobile.utils.fields.validators.notEmpty
 import skdev.omsrings.mobile.utils.notification.NotificationManager
 
 
@@ -32,12 +33,12 @@ class OrderFormScreenModel(
     private val _state = MutableStateFlow(
         OrderFormContract.State(
             isLoading = false,
-            phoneField = createPhoneField(),
-            date = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
+            contactPhoneField = createPhoneField(),
+            deliveryDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
             deliveryMethod = DeliveryMethod.PICKUP,
-            commentField = createCommentField(),
-            addressField = createAddressField(),
-            deliveryTime = null,
+            deliveryCommentField = createCommentField(),
+            deliveryAddressField = createAddressField(),
+            deliveryTimeField = createTimeField(),
             productSelectionState = ProductSelectionState(
                 folders = listOf(
                     Folder(
@@ -102,12 +103,12 @@ class OrderFormScreenModel(
         }
     )
 
-    private fun createDateTimeField() = FormField<String, StringResource>(
+    private fun createTimeField() = FormField<String, StringResource>(
         scope = screenModelScope,
         initialValue = "",
         validation = flowBlock {
             ValidationResult.of(it) {
-                notBlank(Res.string.cant_be_blank)
+                notEmpty(Res.string.cant_be_blank)
             }
         }
     )
@@ -117,22 +118,18 @@ class OrderFormScreenModel(
         initialValue = "",
         validation = flowBlock {
             ValidationResult.of(it) {
-                notBlank(Res.string.cant_be_blank)
+                notEmpty(Res.string.cant_be_blank)
             }
         }
     )
 
     override fun onEvent(event: OrderFormContract.Event) {
         when (event) {
-            is OrderFormContract.Event.OnPhoneChanged -> updatePhone(event.phone)
             is OrderFormContract.Event.OnDeliveryMethodChanged -> updateDeliveryMethod(event.method)
-            is OrderFormContract.Event.OnAddressChanged -> updateAddress(event.address)
-            is OrderFormContract.Event.OnCommentChanged -> TODO()
             is OrderFormContract.Event.OnBackClicked -> TODO()
 
             OrderFormContract.Event.OnSubmitClicked -> TODO()
             is OrderFormContract.Event.OnProductSelectionEvent -> handleProductSelectionEvent(event.event)
-            is OrderFormContract.Event.OnTimeChanged -> updateTime(event.time)
         }
     }
 
@@ -159,21 +156,8 @@ class OrderFormScreenModel(
         }
     }
 
-
-    private fun updatePhone(phone: String) {
-        _state.update { it.copy(phoneField = it.phoneField.apply { setValue(phone) }) }
-    }
-
     private fun updateDeliveryMethod(method: DeliveryMethod) {
         _state.update { it.copy(deliveryMethod = method) }
-    }
-
-    private fun updateAddress(newAddress: String) {
-        _state.update { it.copy(addressField = it.addressField.apply { setValue(newAddress) }) }
-    }
-
-    private fun updateTime(time: String) {
-        _state.update { it.copy(deliveryTime = time) }
     }
 
 

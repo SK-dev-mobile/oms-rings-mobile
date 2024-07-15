@@ -13,12 +13,12 @@ class OrderFormContract {
     @Immutable
     data class State(
         val isLoading: Boolean,
-        val date: LocalDate,
-        val deliveryTime: String?,
-        val phoneField: FormField<String, StringResource>,
+        val deliveryDate: LocalDate,
+        val deliveryTimeField: FormField<String, StringResource>,
+        val contactPhoneField: FormField<String, StringResource>,
         val deliveryMethod: DeliveryMethod,
-        val addressField: FormField<String, StringResource>,
-        val commentField: FormField<String, StringResource>,
+        val deliveryAddressField: FormField<String, StringResource>,
+        val deliveryCommentField: FormField<String, StringResource>,
 
         // Inventory
         val productSelectionState: ProductSelectionState
@@ -29,11 +29,7 @@ class OrderFormContract {
         data object OnBackClicked : Event
 
         // Form
-        data class OnPhoneChanged(val phone: String) : Event
         data class OnDeliveryMethodChanged(val method: DeliveryMethod) : Event
-        data class OnAddressChanged(val address: String) : Event
-        data class OnCommentChanged(val comment: String) : Event
-        data class OnTimeChanged(val time: String) : Event
 
         // Submit
         object OnSubmitClicked : Event
