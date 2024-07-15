@@ -2,6 +2,7 @@ package skdev.omsrings.mobile.di
 
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.auth
+import dev.gitlive.firebase.firestore.FirebaseFirestore
 import dev.gitlive.firebase.firestore.firestore
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -32,31 +33,32 @@ import skdev.omsrings.mobile.utils.notification.NotificationManager
 
 
 private val data = module {
-    // Add there data DI defenitions
-
+    single<FirebaseFirestore> { Firebase.firestore }
 
     single<AuthRepository> {
         AuthRepositoryImpl(
             firebaseAuth = Firebase.auth,
-            firestore = Firebase.firestore,
+            firestore = get()
         )
     }
+
+
     // TODO: Replace userId with real user id
     single<UserSettingsRepository> {
         FirebaseUserSettingsRepository(
             userId = "1",
-            firestore = Firebase.firestore
+            firestore = get()
         )
     }
 
     single<InventoryRepository> {
         FirebaseInventoryRepository(
-            firestore = Firebase.firestore
+            firestore = get()
         )
     }
 
     single<OrderRepository> {
-        FirebaseOrderRepository()
+        FirebaseOrderRepository(firestore = get())
     }
 
 }

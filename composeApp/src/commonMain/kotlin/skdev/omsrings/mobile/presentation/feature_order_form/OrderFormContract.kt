@@ -40,6 +40,7 @@ class OrderFormContract {
     }
 
     sealed interface Effect {
+        data object OrderCreated : Effect
 
     }
 }

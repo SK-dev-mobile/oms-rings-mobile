@@ -16,6 +16,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import kotlinx.datetime.LocalTime
 import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 import skdev.omsrings.mobile.domain.model.DeliveryMethod
 import skdev.omsrings.mobile.utils.fields.FormField
 import skdev.omsrings.mobile.utils.fields.collectAsMutableState
@@ -74,6 +75,15 @@ fun DeliveryTimeSelector(
                 }
         }
     )
+
+    if (timeError != null) {
+        Text(
+            text = stringResource(timeError!!),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.error
+        )
+    }
+
 
     if (isTimePickerVisible) {
         TimePickerDialog(

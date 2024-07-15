@@ -1,6 +1,7 @@
 <resources>
     <string name="back">Назад</string>
     <string name="quantity_must_be_positive_number">Количество должно быть положительным числом</string>
+    <string name="time_cant_be_empty">Время не может быть не указано</string>
 
     <!-- in-app notifications -->
     <string name="error">Ошибка</string>
@@ -19,6 +20,7 @@
     <string name="user_not_loggined_in">Не выполнен вход в систему</string>
     <string name="user_already_exists">Пользователь уже существует</string>
     <string name="incorrect_email_or_password">Неверная почта или пароль</string>
+
 
     <!-- Fields warnings -->
     <string name="cant_be_blank">Поле не может быть пустым</string>
@@ -113,6 +115,9 @@
     <string name="empty_folders_title">У вас пока нет разделов</string>
     <string name="empty_folders_description">Создайте новый раздел, чтобы начать учет товаров</string>
     <string name="add_folder">Создать раздел</string>
+    <string name="no_folders_available">Нет доступных разделов</string>
+    <string name="no_items_available">Нет доступных товаров</string>
+
 
     <!--    -->
     <string name="increase_quantity">Увеличить количество</string>
@@ -120,4 +125,8 @@
     <string name="select_products">Выберите товары</string>
     <string name="back_to_folders">Назад к разделам</string>
     <string name="no_products_available">Нет доступных товаров</string>
+
+    <string name="order_created">Заказ создан</string>
+    <string name="order_created_message">Заказ успешно создан и отправлен на обработку</string>
+
 </resources>

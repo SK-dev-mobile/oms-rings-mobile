@@ -1,5 +1,7 @@
 package skdev.omsrings.mobile.presentation.feature_order_form
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ShoppingCart
 import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -10,6 +12,9 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.cant_be_blank
+import omsringsmobile.composeapp.generated.resources.order_created
+import omsringsmobile.composeapp.generated.resources.order_created_message
+import omsringsmobile.composeapp.generated.resources.time_cant_be_empty
 import org.jetbrains.compose.resources.StringResource
 import skdev.omsrings.mobile.domain.model.DeliveryMethod
 import skdev.omsrings.mobile.domain.model.Folder
@@ -30,12 +35,14 @@ import skdev.omsrings.mobile.utils.fields.validators.ValidationResult
 import skdev.omsrings.mobile.utils.fields.validators.notBlank
 import skdev.omsrings.mobile.utils.fields.validators.notEmpty
 import skdev.omsrings.mobile.utils.notification.NotificationManager
+import skdev.omsrings.mobile.utils.notification.NotificationModel
+import skdev.omsrings.mobile.utils.notification.ToastType
 import skdev.omsrings.mobile.utils.result.ifSuccess
 import skdev.omsrings.mobile.utils.uuid.randomUUID
 
 
 class OrderFormScreenModel(
-    notificationManager: NotificationManager,
+    private val notificationManager: NotificationManager,
     private val createOrderUseCase: CreateOrderUseCase
 ) : BaseScreenModel<OrderFormContract.Event, OrderFormContract.Effect>(
     notificationManager
@@ -119,7 +126,7 @@ class OrderFormScreenModel(
         initialValue = "",
         validation = flowBlock {
             ValidationResult.of(it) {
-                notEmpty(Res.string.cant_be_blank)
+                notEmpty(Res.string.time_cant_be_empty)
             }
         }
     )
@@ -127,11 +134,7 @@ class OrderFormScreenModel(
     private fun createCommentField() = FormField<String, StringResource>(
         scope = screenModelScope,
         initialValue = "",
-        validation = flowBlock {
-            ValidationResult.of(it) {
-                notEmpty(Res.string.cant_be_blank)
-            }
-        }
+        validation = flowBlock { null }
     )
 
     override fun onEvent(event: OrderFormContract.Event) {
@@ -169,13 +172,16 @@ class OrderFormScreenModel(
 
     private fun submitOrder() {
         screenModelScope.launch {
-            if (validateAll(
-                    _state.value.contactPhoneField,
-                    _state.value.deliveryAddressField,
-                    _state.value.deliveryTimeField,
-                    _state.value.deliveryCommentField
-                )
-            ) {
+            val isFormValid = validateAll(
+                _state.value.contactPhoneField,
+                _state.value.deliveryTimeField,
+                _state.value.deliveryCommentField
+            )
+            if (_state.value.deliveryMethod == DeliveryMethod.DELIVERY) {
+                isFormValid.and(_state.value.deliveryAddressField.validate())
+            }
+
+            if (isFormValid) {
                 val order = Order(
                     id = randomUUID(),
                     date = _state.value.deliveryDate.toString(),
@@ -201,7 +207,14 @@ class OrderFormScreenModel(
                     }
                 )
                 createOrderUseCase(order).ifSuccess {
-//                    launchEffect(OrderFormContract.Effect.OrderCreated)
+                    notificationManager.show(
+                        notification = NotificationModel.Toast(
+                            titleRes = Res.string.order_created,
+                            messageRes = Res.string.order_created_message,
+                            icon = Icons.Rounded.ShoppingCart,
+                            type = ToastType.Success
+                        )
+                    )
                 }
 
             }
