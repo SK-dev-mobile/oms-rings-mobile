@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Order(
     val id: String, // UUID
-    val date: LocalDate,
+    val date: String, 
     val address: String?,
     val comment: String?,
     val contactPhone: String?,

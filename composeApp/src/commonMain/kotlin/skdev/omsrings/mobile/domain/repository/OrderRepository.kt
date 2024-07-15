@@ -1,0 +1,14 @@
+package skdev.omsrings.mobile.domain.repository
+
+import kotlinx.coroutines.flow.Flow
+import skdev.omsrings.mobile.domain.model.Order
+import skdev.omsrings.mobile.utils.error.DataError
+import skdev.omsrings.mobile.utils.result.DataResult
+
+interface OrderRepository {
+    suspend fun createOrder(order: Order): DataResult<Order, DataError>
+    fun getOrderById(id: String): Flow<DataResult<Order, DataError>>
+    fun getAllOrders(): Flow<DataResult<List<Order>, DataError>>
+    suspend fun updateOrder(order: Order): DataResult<Order, DataError>
+    suspend fun deleteOrder(order: Order): DataResult<Unit, DataError>
+}
