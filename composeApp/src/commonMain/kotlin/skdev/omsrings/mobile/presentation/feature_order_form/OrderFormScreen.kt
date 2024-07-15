@@ -35,7 +35,7 @@ class OrderFormScreen(
     @Composable
     override fun MainContent() {
         val screenModel = koinScreenModel<OrderFormScreenModel> { parametersOf(selectedDate, orderId) }
-        val state by screenModel.state.collectAsState()
+        val state by screenModel.uiState.collectAsState()
 
         LaunchedEffect(orderId) {
             orderId?.let { screenModel.onEvent(Event.LoadExistingOrder(it)) }

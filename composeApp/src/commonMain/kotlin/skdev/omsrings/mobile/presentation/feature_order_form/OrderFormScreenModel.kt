@@ -41,7 +41,6 @@ import skdev.omsrings.mobile.utils.fields.FormField
 import skdev.omsrings.mobile.utils.fields.flowBlock
 import skdev.omsrings.mobile.utils.fields.validators.ValidationResult
 import skdev.omsrings.mobile.utils.fields.validators.notBlank
-import skdev.omsrings.mobile.utils.fields.validators.notEmpty
 import skdev.omsrings.mobile.utils.notification.NotificationManager
 import skdev.omsrings.mobile.utils.notification.NotificationModel
 import skdev.omsrings.mobile.utils.notification.ToastType
@@ -65,74 +64,47 @@ class OrderFormScreenModel(
 
     private var existingOrder: Order? = null
 
-    private val _state = MutableStateFlow(
-        OrderFormContract.State(
-            // Common
-            isLoading = false,
-            isEditMode = orderId != null,
-            orderId = orderId,
-
-            // Form
-            contactPhoneField = createPhoneField(),
-            // TODO: Replace with actual date
-            deliveryDate = "15.07.2024",
-            deliveryMethod = DeliveryMethod.PICKUP,
-            deliveryAddressField = createAddressField(),
-            deliveryTimeField = createTimeField(),
-            deliveryCommentField = createCommentField(),
-
-            // Inventory selection
-            productSelectionState = ProductSelectionState(
-                folders = emptyList(),
-                selectedFolderId = null,
-                selectedItemId = null,
-                selectedItems = emptyMap()
-            )
-        )
-    )
-    val state = _state.asStateFlow()
-
-    private fun createPhoneField() = FormField<String, StringResource>(
-        scope = screenModelScope,
-        initialValue = "",
-        validation = flowBlock {
-            ValidationResult.of(it) {
-                notBlank(Res.string.cant_be_blank)
-            }
-        }
-    )
-
-
-    private fun createAddressField() = FormField<String, StringResource>(
-        scope = screenModelScope,
-        initialValue = "",
-        validation = flowBlock {
-            ValidationResult.of(it) {
-                notBlank(Res.string.cant_be_blank)
-            }
-        }
-    )
-
-    private fun createTimeField() = FormField<String, StringResource>(
-        scope = screenModelScope,
-        initialValue = "",
-        validation = flowBlock {
-            ValidationResult.of(it) {
-                notEmpty(Res.string.time_cant_be_empty)
-            }
-        }
-    )
-
-    private fun createCommentField() = FormField<String, StringResource>(
-        scope = screenModelScope,
-        initialValue = "",
-        validation = flowBlock { null }
-    )
+    private val _uiState = MutableStateFlow(createInitialState())
+    val uiState = _uiState.asStateFlow()
 
     init {
-        loadInventory()
+        loadInventory() // Load inventory items from the database
         orderId?.let { loadExistingOrder(it) }
     }
+
+
+    private fun createInitialState() = OrderFormContract.State(
+        isLoading = false,
+        isEditMode = orderId != null,
+        orderId = orderId,
+        contactPhoneField = createFormField(Res.string.cant_be_blank),
+        deliveryDate = "15.07.2024", // TODO: Replace with actual date
+        deliveryMethod = DeliveryMethod.PICKUP,
+        deliveryAddressField = createFormField(Res.string.cant_be_blank),
+        deliveryTimeField = createFormField(Res.string.time_cant_be_empty),
+        deliveryCommentField = createFormField(),
+        productSelectionState = ProductSelectionState(
+            folders = emptyList(),
+            selectedFolderId = null,
+            selectedItemId = null,
+            selectedItems = emptyMap()
+        )
+    )
+
+    private fun createFormField(errorMessage: StringResource? = null) = FormField<String, StringResource>(
+        scope = screenModelScope,
+        initialValue = "",
+        validation = flowBlock {
+            if (errorMessage != null) {
+                ValidationResult.of(it) {
+                    notBlank(errorMessage)
+                }
+            } else {
+                null
+            }
+        }
+    )
+
 
     override fun onEvent(event: OrderFormContract.Event) {
         when (event) {
@@ -152,42 +124,51 @@ class OrderFormScreenModel(
         }
     }
 
+    /**
+     * Updates the selected folder in the UI state
+     */
     private fun updateSelectedFolder(folderId: String?) {
-        _state.update { it.copy(productSelectionState = it.productSelectionState.copy(selectedFolderId = folderId)) }
+        _uiState.update { it.copy(productSelectionState = it.productSelectionState.copy(selectedFolderId = folderId)) }
     }
 
+    /**
+     * Updates the quantity of the selected inventory item in the UI state
+     */
     private fun updateSelectedItem(item: InventoryItem, quantity: Int) {
-        val updatedItems = _state.value.productSelectionState.selectedItems.toMutableMap()
-        if (quantity > 0) {
-            updatedItems[item] = quantity
-        } else {
-            updatedItems.remove(item)
+        _uiState.update {
+            val updatedItems = _uiState.value.productSelectionState.selectedItems.toMutableMap()
+            if (quantity > 0) {
+                updatedItems[item] = quantity
+            } else {
+                updatedItems.remove(item)
+            }
+            it.copy(productSelectionState = it.productSelectionState.copy(selectedItems = updatedItems))
         }
-        _state.update { it.copy(productSelectionState = it.productSelectionState.copy(selectedItems = updatedItems)) }
     }
 
     private fun updateDeliveryMethod(method: DeliveryMethod) {
-        _state.value = _state.value.copy(deliveryMethod = method)
+        _uiState.update { it.copy(deliveryMethod = method) }
     }
 
     private fun loadInventory() {
         screenModelScope.launch {
             getFoldersAndItemsInventory().ifSuccess { foldersAndItemsFlow ->
                 foldersAndItemsFlow.data.collect { folders ->
-                    _state.update { it.copy(productSelectionState = it.productSelectionState.copy(folders = folders)) }
+                    _uiState.update { it.copy(productSelectionState = it.productSelectionState.copy(folders = folders)) }
                 }
             }
         }
     }
 
     private suspend fun validateForm(): Boolean {
-        val phoneValid = _state.value.contactPhoneField.validate()
-        val timeValid = _state.value.deliveryTimeField.validate()
-        val commentValid = _state.value.deliveryCommentField.validate()
-        val addressValid = if (state.value.deliveryMethod == DeliveryMethod.DELIVERY) {
-            _state.value.deliveryAddressField.validate()
+        val state = _uiState.value
+        val phoneValid = state.contactPhoneField.validate()
+        val timeValid = state.deliveryTimeField.validate()
+        val commentValid = state.deliveryCommentField.validate()
+        val addressValid = if (state.deliveryMethod == DeliveryMethod.DELIVERY) {
+            state.deliveryAddressField.validate()
         } else true
-        val productSelectionValid = _state.value.productSelectionState.selectedItems.isNotEmpty()
+        val productSelectionValid = state.productSelectionState.selectedItems.isNotEmpty()
 
         return phoneValid && timeValid && addressValid && commentValid && productSelectionValid
     }
@@ -201,18 +182,18 @@ class OrderFormScreenModel(
             user = getCurrentUserId()
         )
 
-
+        val state = _uiState.value
         return Order(
             id = existingOrder?.id ?: randomUUID(),
             date = selectedDate,
-            address = _state.value.deliveryAddressField.data.value,
-            comment = _state.value.deliveryCommentField.data.value,
-            contactPhone = _state.value.contactPhoneField.data.value,
-            isDelivery = _state.value.deliveryMethod == DeliveryMethod.DELIVERY,
-            pickupTime = timestampFromDeliveryTime(_state.value.deliveryTimeField.data.value),
+            address = state.deliveryAddressField.data.value,
+            comment = state.deliveryCommentField.data.value,
+            contactPhone = state.contactPhoneField.data.value,
+            isDelivery = state.deliveryMethod == DeliveryMethod.DELIVERY,
+            pickupTime = timestampFromDeliveryTime(state.deliveryTimeField.data.value),
             status = existingOrder?.status ?: OrderStatus.CREATED,
             history = (existingOrder?.history ?: emptyList()) + newHistoryEvent,
-            items = _state.value.productSelectionState.selectedItems.map { (item, quantity) ->
+            items = state.productSelectionState.selectedItems.map { (item, quantity) ->
                 OrderItem(inventoryId = item.id, quantity = quantity)
             }
         )
@@ -236,11 +217,11 @@ class OrderFormScreenModel(
     }
 
     private fun updateStateWithExistingOrder(order: Order) {
-        _state.value.contactPhoneField.setValue(order.contactPhone ?: "")
-        _state.value.deliveryAddressField.setValue(order.address ?: "")
-        _state.value.deliveryTimeField.setValue(formatFromTimestampToTime(order.pickupTime))
-        _state.value.deliveryCommentField.setValue(order.comment ?: "")
-        _state.update { currentState ->
+        _uiState.value.contactPhoneField.setValue(order.contactPhone ?: "")
+        _uiState.value.deliveryAddressField.setValue(order.address ?: "")
+        _uiState.value.deliveryTimeField.setValue(formatFromTimestampToTime(order.pickupTime))
+        _uiState.value.deliveryCommentField.setValue(order.comment ?: "")
+        _uiState.update { currentState ->
             currentState.copy(
                 deliveryMethod = if (order.isDelivery) DeliveryMethod.DELIVERY else DeliveryMethod.PICKUP
             )
