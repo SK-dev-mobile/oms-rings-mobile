@@ -15,6 +15,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
 import cafe.adriel.voyager.navigator.internal.BackHandler
@@ -24,7 +25,10 @@ import omsringsmobile.composeapp.generated.resources.decrease_quantity
 import omsringsmobile.composeapp.generated.resources.increase_quantity
 import omsringsmobile.composeapp.generated.resources.item_count
 import omsringsmobile.composeapp.generated.resources.no_products_available
+import omsringsmobile.composeapp.generated.resources.select_category
 import omsringsmobile.composeapp.generated.resources.select_products
+import omsringsmobile.composeapp.generated.resources.selected_items_count
+import omsringsmobile.composeapp.generated.resources.tap_items_to_add
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import skdev.omsrings.mobile.domain.model.Folder
@@ -56,15 +60,13 @@ fun ProductSelectionSection(
     BackHandler(enabled = state.selectedFolderId != null) {
         onEvent(ProductSelectionEvent.OnFolderSelected(null))
     }
-
-
+    
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
-        Text(
-            text = stringResource(Res.string.select_products),
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        ProductSelectionHeader(
+            selectedItemsCount = state.selectedItems.values.sum(),
+            isFolderSelected = state.selectedFolderId != null
         )
 
         if (state.selectedFolderId == null) {
@@ -90,6 +92,48 @@ fun ProductSelectionSection(
                 )
 
             }
+        }
+    }
+}
+
+@Composable
+private fun ProductSelectionHeader(
+    selectedItemsCount: Int,
+    isFolderSelected: Boolean
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = Dimens.spaceMedium, vertical = Dimens.spaceSmall)
+    ) {
+        Text(
+            text = stringResource(Res.string.select_products),
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.primary
+        )
+
+        Spacer(Dimens.spaceSmall)
+
+        Text(
+            text = if (isFolderSelected) {
+                stringResource(Res.string.tap_items_to_add)
+            } else {
+                stringResource(Res.string.select_category)
+            },
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        Spacer(Dimens.spaceMedium)
+
+        if (selectedItemsCount > 0) {
+            Text(
+                text = pluralStringResource(Res.plurals.selected_items_count, selectedItemsCount, selectedItemsCount),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.secondary,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }

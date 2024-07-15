@@ -128,6 +128,16 @@
     <string name="select_products">Выберите товары</string>
     <string name="back_to_categories">Назад к категориям</string>
     <string name="no_products_available">Товары отсутствуют</string>
+    <string name="select_category">Выберите категорию товаров</string>
+    <string name="tap_items_to_add">Нажмите на товары, чтобы добавить их в заказ</string>
+    <plurals name="selected_items_count">
+        <item quantity="zero">Товары не выбраны</item>
+        <item quantity="one">Выбран %1$d товар</item>
+        <item quantity="few">Выбрано %1$d товара</item>
+        <item quantity="many">Выбрано %1$d товаров</item>
+        <item quantity="other">Выбрано %1$d товаров</item>
+    </plurals>
+
 
     <!-- Создание заказа -->
     <string name="order_created">Заказ создан</string>
