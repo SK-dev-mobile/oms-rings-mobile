@@ -27,7 +27,6 @@ import skdev.omsrings.mobile.ui.theme.values.Dimens
 
 // TODO: сделать редактирование заказа
 // TODO: сделать отображение загрузки
-// TODO: привести в порядок строковые ресурсы
 
 class OrderFormScreen(
     private val selectedDate: Timestamp

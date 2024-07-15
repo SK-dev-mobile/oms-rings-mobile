@@ -8,6 +8,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.cant_be_blank
 import omsringsmobile.composeapp.generated.resources.order_created
@@ -37,6 +43,7 @@ import skdev.omsrings.mobile.utils.notification.ToastType
 import skdev.omsrings.mobile.utils.result.ifSuccess
 import skdev.omsrings.mobile.utils.uuid.randomUUID
 
+private const val MILLIS_IN_SECOND = 1000L
 
 class OrderFormScreenModel(
     private val notificationManager: NotificationManager,
@@ -164,6 +171,20 @@ class OrderFormScreenModel(
         return phoneValid && timeValid && addressValid && commentValid && productSelectionValid
     }
 
+    private fun timestampFromDeliveryTime(time: String): Timestamp {
+        val (hours, minutes) = time.split(":").map { it.toInt() }
+        val localTime = LocalTime(hours, minutes)
+
+        val selectedLocalDate = Instant.fromEpochMilliseconds(selectedDate.seconds * MILLIS_IN_SECOND)
+            .toLocalDateTime(TimeZone.currentSystemDefault())
+            .date
+
+        val localDateTime = LocalDateTime(selectedLocalDate, localTime)
+        val instant = localDateTime.toInstant(TimeZone.currentSystemDefault())
+
+        return Timestamp(instant.epochSeconds, instant.nanosecondsOfSecond)
+    }
+
     private fun createOrderFromState(): Order {
         return Order(
             id = randomUUID(),
@@ -172,7 +193,7 @@ class OrderFormScreenModel(
             comment = _state.value.deliveryCommentField.data.value,
             contactPhone = _state.value.contactPhoneField.data.value,
             isDelivery = _state.value.deliveryMethod == DeliveryMethod.DELIVERY,
-            pickupTime = Timestamp.now(),
+            pickupTime = timestampFromDeliveryTime(_state.value.deliveryTimeField.data.value),
             status = OrderStatus.CREATED,
             history = listOf(
                 OrderHistoryEvent(
@@ -209,3 +230,5 @@ class OrderFormScreenModel(
         }
     }
 }
+
+
