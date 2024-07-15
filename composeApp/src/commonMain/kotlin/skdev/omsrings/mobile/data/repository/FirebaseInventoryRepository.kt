@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.map
 import skdev.omsrings.mobile.domain.model.Folder
 import skdev.omsrings.mobile.domain.model.InventoryItem
 import skdev.omsrings.mobile.domain.repository.InventoryRepository
+import skdev.omsrings.mobile.utils.error.DataError
+import skdev.omsrings.mobile.utils.result.DataResult
 
 class FirebaseInventoryRepository(
     private val firestore: FirebaseFirestore
@@ -46,9 +48,41 @@ class FirebaseInventoryRepository(
 
     private suspend fun updateFolderItems(folderId: String, update: (Folder) -> Folder) {
         val folderRef = foldersCollection.document(folderId)
-        val folder = folderRef.get().data<Folder>() ?: return
+        val folder = folderRef.get().data<Folder>()
         val updatedFolder = update(folder)
         folderRef.set(updatedFolder)
+    }
+
+    override suspend fun getInventoryItemsByIds(ids: List<String>): DataResult<List<InventoryItem>, DataError> {
+        return try {
+            val items = mutableListOf<InventoryItem>()
+
+            // Fetch all folders
+            val foldersSnapshot = foldersCollection.get().documents
+
+            // Iterate through each folder
+            for (folderDoc in foldersSnapshot) {
+                val folder = folderDoc.data<Folder>()
+
+                // Filter items in this folder that match the requested ids
+                val matchingItems = folder.inventoryItems.filter { it.id in ids }
+                items.addAll(matchingItems)
+
+
+                // If we've found all requested items, we can stop searching
+                if (items.size == ids.size) break
+            }
+
+            // Check if we found all requested items
+            if (items.size < ids.size) {
+                val missingIds = ids - items.map { it.id }.toSet()
+                DataResult.error(DataError.InventoryItem.NOT_FOUND)
+            } else {
+                DataResult.Success(items)
+            }
+        } catch (e: Exception) {
+            DataResult.error(DataError.Network.UNKNOWN)
+        }
     }
 
 

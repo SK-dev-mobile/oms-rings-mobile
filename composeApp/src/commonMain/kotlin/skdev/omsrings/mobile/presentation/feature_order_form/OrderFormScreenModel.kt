@@ -29,6 +29,7 @@ import skdev.omsrings.mobile.domain.model.OrderItem
 import skdev.omsrings.mobile.domain.model.OrderStatus
 import skdev.omsrings.mobile.domain.usecase.feature_order.CreateOrderUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_order.GetFoldersAndItemsInventory
+import skdev.omsrings.mobile.domain.usecase.feature_order.GetInventoryItemsByIdsUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_order.GetOrderByIdUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_order.UpdateOrderUseCase
 import skdev.omsrings.mobile.presentation.base.BaseScreenModel
@@ -53,6 +54,7 @@ class OrderFormScreenModel(
     private val updateOrderUseCase: UpdateOrderUseCase,
     private val getFoldersAndItemsInventory: GetFoldersAndItemsInventory,
     private val getOrderByIdUseCase: GetOrderByIdUseCase,
+    private val getInventoryItemsByIdsUseCase: GetInventoryItemsByIdsUseCase,
     private val selectedDate: Timestamp,
     private val orderId: String? = null
 ) : BaseScreenModel<OrderFormContract.Event, OrderFormContract.Effect>(
@@ -236,6 +238,7 @@ class OrderFormScreenModel(
             getOrderByIdUseCase(orderId).collect { orderResult ->
                 orderResult.ifSuccess { order ->
                     updateStateWithExistingOrder(order.data)
+                    fetchAndUpdateSelectedItems(order.data.items)
                 }
             }
         }
@@ -248,14 +251,21 @@ class OrderFormScreenModel(
         _state.value.deliveryCommentField.setValue(order.comment ?: "")
         _state.update { currentState ->
             currentState.copy(
-                deliveryMethod = if (order.isDelivery) DeliveryMethod.DELIVERY else DeliveryMethod.PICKUP,
-                productSelectionState = currentState.productSelectionState.copy(
-                    selectedItems = order.items.associate { orderItem ->
-                        // You might need to fetch the actual InventoryItem here
-                        InventoryItem(id = orderItem.inventoryId, name = "") to orderItem.quantity
-                    }
-                )
+                deliveryMethod = if (order.isDelivery) DeliveryMethod.DELIVERY else DeliveryMethod.PICKUP
             )
+        }
+    }
+
+    private fun fetchAndUpdateSelectedItems(orderItems: List<OrderItem>) {
+        screenModelScope.launch {
+            val inventoryItemIds = orderItems.map { it.inventoryId }
+            getInventoryItemsByIdsUseCase(inventoryItemIds).ifSuccess { itemResult ->
+                itemResult.data.forEach { item ->
+                    val orderItem = orderItems.find { it.inventoryId == item.id }
+                    val quantity = orderItem?.quantity ?: 0
+                    updateSelectedItem(item, quantity)
+                }
+            }
         }
     }
 

@@ -28,7 +28,7 @@ internal fun App() = AppTheme(
 
     Box {
         Navigator(
-            OrderFormScreen(selectedDate = Timestamp.now())
+            OrderFormScreen(selectedDate = Timestamp.now(), orderId = "af9e24d9-6a62-4a83-9067-59bf82a1bb35"),
         ) { navigator ->
             SlideTransition(
                 navigator = navigator,
