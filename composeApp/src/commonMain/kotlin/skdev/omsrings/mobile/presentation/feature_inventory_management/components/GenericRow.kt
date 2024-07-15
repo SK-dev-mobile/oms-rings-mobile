@@ -43,7 +43,7 @@ fun GenericRow(
         ) {
             Icon(
                 imageVector = icon,
-                contentDescription = null,
+                contentDescription = title,
                 tint = iconTint
             )
             Spacer(Dimens.spaceMedium)

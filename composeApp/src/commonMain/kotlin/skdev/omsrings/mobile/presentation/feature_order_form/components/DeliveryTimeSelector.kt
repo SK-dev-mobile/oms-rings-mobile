@@ -38,6 +38,8 @@ import skdev.omsrings.mobile.ui.theme.values.Dimens
 import skdev.omsrings.mobile.utils.fields.FormField
 import skdev.omsrings.mobile.utils.fields.collectAsMutableState
 
+private const val DEFAULT_HOUR = 12
+private const val DEFAULT_MINUTE = 0
 
 @Composable
 fun DeliveryTimeSelector(
@@ -160,7 +162,8 @@ private fun TimePickerDialog(
     )
 }
 
-private fun String.parseHour(): Int = if (isBlank()) 12 else split(":")[0].toInt()
-private fun String.parseMinute(): Int = if (isBlank()) 0 else split(":")[1].toInt()
+
+private fun String.parseHour(): Int = if (isBlank()) DEFAULT_HOUR else split(":")[0].toInt()
+private fun String.parseMinute(): Int = if (isBlank()) DEFAULT_MINUTE else split(":")[1].toInt()
 private fun formatTime(hour: Int, minute: Int): String =
     "${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}"
