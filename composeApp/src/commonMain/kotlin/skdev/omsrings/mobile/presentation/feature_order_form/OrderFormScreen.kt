@@ -8,7 +8,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.koin.koinScreenModel
+import dev.gitlive.firebase.firestore.Timestamp
 import kotlinx.coroutines.launch
+import org.koin.core.parameter.parametersOf
 import skdev.omsrings.mobile.domain.model.DeliveryMethod
 import skdev.omsrings.mobile.presentation.base.BaseScreen
 import skdev.omsrings.mobile.presentation.feature_order_form.OrderFormContract.Event
@@ -23,10 +25,14 @@ import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
 // TODO: сделать отображение загрузки
 // TODO: привести в порядок строковые ресурсы
 
-object OrderFormScreen : BaseScreen("order_form_screen") {
+class OrderFormScreen(
+    private val selectedDate: Timestamp
+) : BaseScreen("order_form_screen") {
     @Composable
     override fun MainContent() {
-        val screenModel = koinScreenModel<OrderFormScreenModel>()
+        val screenModel = koinScreenModel<OrderFormScreenModel> {
+            parametersOf(selectedDate)
+        }
         val state by screenModel.state.collectAsState()
 
         OrderFormContent(

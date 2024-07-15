@@ -3,13 +3,11 @@ package skdev.omsrings.mobile.presentation.feature_order_form
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ShoppingCart
 import cafe.adriel.voyager.core.model.screenModelScope
+import dev.gitlive.firebase.firestore.Timestamp
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.cant_be_blank
 import omsringsmobile.composeapp.generated.resources.order_created
@@ -43,7 +41,8 @@ import skdev.omsrings.mobile.utils.uuid.randomUUID
 class OrderFormScreenModel(
     private val notificationManager: NotificationManager,
     private val createOrderUseCase: CreateOrderUseCase,
-    private val getFoldersAndItemsInventory: GetFoldersAndItemsInventory
+    private val getFoldersAndItemsInventory: GetFoldersAndItemsInventory,
+    private val selectedDate: Timestamp
 ) : BaseScreenModel<OrderFormContract.Event, OrderFormContract.Effect>(
     notificationManager
 ) {
@@ -52,7 +51,7 @@ class OrderFormScreenModel(
         OrderFormContract.State(
             isLoading = false,
             contactPhoneField = createPhoneField(),
-            deliveryDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
+            deliveryDate = "15.07.2024",
             deliveryMethod = DeliveryMethod.PICKUP,
             deliveryAddressField = createAddressField(),
             deliveryTimeField = createTimeField(),
@@ -168,16 +167,16 @@ class OrderFormScreenModel(
     private fun createOrderFromState(): Order {
         return Order(
             id = randomUUID(),
-            date = _state.value.deliveryDate.toString(),
+            date = selectedDate,
             address = _state.value.deliveryAddressField.data.value,
             comment = _state.value.deliveryCommentField.data.value,
             contactPhone = _state.value.contactPhoneField.data.value,
             isDelivery = _state.value.deliveryMethod == DeliveryMethod.DELIVERY,
-            pickupTime = _state.value.deliveryTimeField.data.value,
+            pickupTime = Timestamp.now(),
             status = OrderStatus.CREATED,
             history = listOf(
                 OrderHistoryEvent(
-                    time = Clock.System.now().toString(),
+                    time = Timestamp.now(),
                     type = OrderHistoryEventType.CREATED,
                     user = getCurrentUserId()
                 )

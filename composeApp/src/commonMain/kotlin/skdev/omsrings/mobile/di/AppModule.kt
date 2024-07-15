@@ -114,7 +114,8 @@ private val viewModels = module {
         OrderFormScreenModel(
             notificationManager = get(),
             createOrderUseCase = get(),
-            getFoldersAndItemsInventory = get()
+            getFoldersAndItemsInventory = get(),
+            selectedDate = get()
         )
     }
 
