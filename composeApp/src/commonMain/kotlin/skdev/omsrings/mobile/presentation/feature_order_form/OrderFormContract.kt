@@ -11,7 +11,12 @@ import skdev.omsrings.mobile.utils.fields.FormField
 class OrderFormContract {
     @Immutable
     data class State(
+        // Common
         val isLoading: Boolean,
+        val isEditMode: Boolean,
+
+        // Form
+        val orderId: String?,
         val deliveryDate: String,
         val deliveryTimeField: FormField<String, StringResource>,
         val contactPhoneField: FormField<String, StringResource>,
@@ -19,7 +24,7 @@ class OrderFormContract {
         val deliveryAddressField: FormField<String, StringResource>,
         val deliveryCommentField: FormField<String, StringResource>,
 
-        // Inventory
+        // Inventory selection
         val productSelectionState: ProductSelectionState
     )
 
@@ -31,15 +36,17 @@ class OrderFormContract {
         data class OnDeliveryMethodChanged(val method: DeliveryMethod) : Event
 
         // Submit
-        object OnSubmitClicked : Event
+        data object OnSubmitClicked : Event
 
         // Inventory
         data class OnProductSelectionEvent(val event: ProductSelectionEvent) : Event
 
+        // Edit
+        data class LoadExistingOrder(val orderId: String) : Event
+
     }
 
     sealed interface Effect {
-        data object OrderCreated : Effect
-
+        data object OrderCreatedOrUpdated : Effect
     }
 }

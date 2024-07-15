@@ -16,7 +16,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
 import cafe.adriel.voyager.navigator.internal.BackHandler
 import omsringsmobile.composeapp.generated.resources.Res
@@ -60,7 +59,7 @@ fun ProductSelectionSection(
     BackHandler(enabled = state.selectedFolderId != null) {
         onEvent(ProductSelectionEvent.OnFolderSelected(null))
     }
-    
+
     Column(
         modifier = modifier.fillMaxWidth()
     ) {

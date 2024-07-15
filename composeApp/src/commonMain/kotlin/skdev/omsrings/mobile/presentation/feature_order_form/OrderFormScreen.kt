@@ -29,12 +29,17 @@ import skdev.omsrings.mobile.ui.theme.values.Dimens
 // TODO: сделать отображение загрузки
 
 class OrderFormScreen(
-    private val selectedDate: Timestamp
+    private val selectedDate: Timestamp,
+    private val orderId: String? = null
 ) : BaseScreen("order_form_screen") {
     @Composable
     override fun MainContent() {
-        val screenModel = koinScreenModel<OrderFormScreenModel> { parametersOf(selectedDate) }
+        val screenModel = koinScreenModel<OrderFormScreenModel> { parametersOf(selectedDate, orderId) }
         val state by screenModel.state.collectAsState()
+
+        LaunchedEffect(orderId) {
+            orderId?.let { screenModel.onEvent(OrderFormContract.Event.LoadExistingOrder(it)) }
+        }
 
         OrderFormContent(
             state = state,

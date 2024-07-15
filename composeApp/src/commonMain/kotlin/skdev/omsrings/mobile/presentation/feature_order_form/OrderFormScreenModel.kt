@@ -49,20 +49,29 @@ class OrderFormScreenModel(
     private val notificationManager: NotificationManager,
     private val createOrderUseCase: CreateOrderUseCase,
     private val getFoldersAndItemsInventory: GetFoldersAndItemsInventory,
-    private val selectedDate: Timestamp
+    getOrderByIdUseCase: GetOrderByIdUseCase,
+    private val selectedDate: Timestamp,
+    private val orderId: String? = null
 ) : BaseScreenModel<OrderFormContract.Event, OrderFormContract.Effect>(
     notificationManager
 ) {
 
     private val _state = MutableStateFlow(
         OrderFormContract.State(
+            // Common
             isLoading = false,
+            isEditMode = orderId != null,
+            orderId = orderId,
+
+            // Form
             contactPhoneField = createPhoneField(),
             deliveryDate = "15.07.2024",
             deliveryMethod = DeliveryMethod.PICKUP,
             deliveryAddressField = createAddressField(),
             deliveryTimeField = createTimeField(),
             deliveryCommentField = createCommentField(),
+
+            // Inventory selection
             productSelectionState = ProductSelectionState(
                 folders = emptyList(),
                 selectedFolderId = null,
@@ -112,6 +121,7 @@ class OrderFormScreenModel(
 
     init {
         loadInventory()
+        orderId?.let { loadExistingOrder(it) }
     }
 
     override fun onEvent(event: OrderFormContract.Event) {
@@ -120,6 +130,7 @@ class OrderFormScreenModel(
             is OrderFormContract.Event.OnProductSelectionEvent -> handleProductSelectionEvent(event.event)
             OrderFormContract.Event.OnSubmitClicked -> submitOrder()
             is OrderFormContract.Event.OnBackClicked -> TODO()
+            is OrderFormContract.Event.LoadExistingOrder -> loadExistingOrder(event.orderId)
 
         }
     }
@@ -227,6 +238,36 @@ class OrderFormScreenModel(
                     )
                 }
             }
+        }
+    }
+
+    private fun loadExistingOrder(orderId: String) {
+        screenModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+            getOrderByIdUseCase(orderId).ifSuccess { order ->
+                updateStateWithExistingOrder(order)
+            }
+            _state.update { it.copy(isLoading = false) }
+        }
+    }
+
+    private fun updateStateWithExistingOrder(order: Order) {
+        _state.update { currentState ->
+            currentState.copy(
+                contactPhoneField = currentState.contactPhoneField.copy(initialValue = order.contactPhone),
+                deliveryMethod = if (order.isDelivery) DeliveryMethod.DELIVERY else DeliveryMethod.PICKUP,
+                deliveryAddressField = currentState.deliveryAddressField.copy(initialValue = order.address),
+                deliveryTimeField = currentState.deliveryTimeField.copy(
+                    initialValue = order.pickupTime.toLocalTime().toString()
+                ),
+                deliveryCommentField = currentState.deliveryCommentField.copy(initialValue = order.comment),
+                productSelectionState = currentState.productSelectionState.copy(
+                    selectedItems = order.items.associate { orderItem ->
+                        // You might need to fetch the actual InventoryItem here
+                        InventoryItem(id = orderItem.inventoryId, name = "", price = 0.0) to orderItem.quantity
+                    }
+                )
+            )
         }
     }
 }
