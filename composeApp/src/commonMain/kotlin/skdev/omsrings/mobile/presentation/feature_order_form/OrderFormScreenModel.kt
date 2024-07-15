@@ -74,6 +74,7 @@ class OrderFormScreenModel(
 
             // Form
             contactPhoneField = createPhoneField(),
+            // TODO: Replace with actual date
             deliveryDate = "15.07.2024",
             deliveryMethod = DeliveryMethod.PICKUP,
             deliveryAddressField = createAddressField(),
@@ -297,9 +298,7 @@ class OrderFormScreenModel(
     private fun formatFromTimestampToTime(timestamp: Timestamp): String {
         val instant = Instant.fromEpochMilliseconds(timestamp.seconds * MILLIS_IN_SECOND)
         val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-        val hour = localDateTime.hour.toString().padStart(2, '0')
-        val minute = localDateTime.minute.toString().padStart(2, '0')
-        return "$hour:$minute"
+        return "${localDateTime.hour.toString().padStart(2, '0')}:${localDateTime.minute.toString().padStart(2, '0')}"
     }
 
     private fun timestampFromDeliveryTime(time: String): Timestamp {
