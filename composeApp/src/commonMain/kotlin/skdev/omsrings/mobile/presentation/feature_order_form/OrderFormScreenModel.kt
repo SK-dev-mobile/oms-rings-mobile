@@ -78,7 +78,7 @@ class OrderFormScreenModel(
         isEditMode = orderId != null,
         orderId = orderId,
         contactPhoneField = createFormField(Res.string.cant_be_blank),
-        deliveryDate = "15.07.2024", // TODO: Replace with actual date
+        deliveryDate = formatFromTimestampToHumanDate(selectedDate),
         deliveryMethod = DeliveryMethod.PICKUP,
         deliveryAddressField = createFormField(Res.string.cant_be_blank),
         deliveryTimeField = createFormField(Res.string.time_cant_be_empty),
@@ -200,7 +200,7 @@ class OrderFormScreenModel(
     }
 
     private fun getCurrentUserId(): String {
-        // TODO: Implement actual user UUID retrieval
+        // TODO: #20 Implement actual user UUID retrieval
         return "current_user_id"
     }
 
@@ -276,12 +276,23 @@ class OrderFormScreenModel(
         )
     }
 
+    /**
+     * Formats the timestamp to a human-readable time
+     * @param timestamp the timestamp to format
+     * @return the formatted time string in the format "HH:mm"
+     */
     private fun formatFromTimestampToTime(timestamp: Timestamp): String {
         val instant = Instant.fromEpochMilliseconds(timestamp.seconds * MILLIS_IN_SECOND)
         val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
         return "${localDateTime.hour.toString().padStart(2, '0')}:${localDateTime.minute.toString().padStart(2, '0')}"
     }
 
+
+    /**
+     * Converts a time string to a timestamp
+     * @param time the time string in the format "HH:mm"
+     * @return the timestamp representing the time
+     */
     private fun timestampFromDeliveryTime(time: String): Timestamp {
         val (hours, minutes) = time.split(":").map { it.toInt() }
         val localTime = LocalTime(hours, minutes)
@@ -294,6 +305,19 @@ class OrderFormScreenModel(
         val instant = localDateTime.toInstant(TimeZone.currentSystemDefault())
 
         return Timestamp(instant.epochSeconds, instant.nanosecondsOfSecond)
+    }
+
+    /**
+     * Formats the timestamp to a human-readable date
+     * @param timestamp the timestamp to format
+     * @return the formatted date string in the format "dd.MM.yyyy"
+     */
+    private fun formatFromTimestampToHumanDate(timestamp: Timestamp): String {
+        val instant = Instant.fromEpochMilliseconds(timestamp.seconds * MILLIS_IN_SECOND)
+        val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+        return "${localDateTime.dayOfMonth.toString().padStart(2, '0')}.${
+            localDateTime.monthNumber.toString().padStart(2, '0')
+        }.${localDateTime.year}"
     }
 }
 
