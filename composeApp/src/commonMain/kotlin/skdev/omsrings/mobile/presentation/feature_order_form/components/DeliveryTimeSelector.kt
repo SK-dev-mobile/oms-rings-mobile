@@ -28,16 +28,16 @@ fun DeliveryTimeSelector(
     timeField: FormField<String, StringResource>,
     modifier: Modifier = Modifier
 ) {
-    val (phoneValue, phoneValueSetter) = timeField.data.collectAsMutableState()
-    val phoneError by timeField.error.collectAsState()
+    val (timeValue, timeValueSetter) = timeField.data.collectAsMutableState()
+    val timeError by timeField.error.collectAsState()
 
 
     var isTimePickerVisible by remember { mutableStateOf(false) }
 
 
     val timePickerState = rememberTimePickerState(
-        initialHour = phoneValue.ifBlank { "12:00" }.let(::parseHour),
-        initialMinute = phoneValue.ifBlank { "12:00" }.let(::parseMinute),
+        initialHour = timeValue.ifBlank { "12:00" }.let(::parseHour),
+        initialMinute = timeValue.ifBlank { "12:00" }.let(::parseMinute),
         is24Hour = true,
 
         )
@@ -52,13 +52,13 @@ fun DeliveryTimeSelector(
         )
 
         withStyle(SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-            append(phoneValue.ifBlank { "выбрать время" })
+            append(timeValue.ifBlank { "выбрать время" })
         }
 
         addStringAnnotation(
             tag = "TIME_SELECTOR",
             annotation = "open",
-            start = length - (phoneValue.ifBlank { "выбрать время" }).length,
+            start = length - (timeValue.ifBlank { "выбрать время" }).length,
             end = length
         )
     }
@@ -80,7 +80,7 @@ fun DeliveryTimeSelector(
             onDismissRequest = { isTimePickerVisible = false },
             onTimeSelected = { hour, minute ->
                 val newTime = formatTime(hour, minute)
-                phoneValueSetter(newTime)
+                timeValueSetter(newTime)
                 isTimePickerVisible = false
             },
             timePickerState = timePickerState
