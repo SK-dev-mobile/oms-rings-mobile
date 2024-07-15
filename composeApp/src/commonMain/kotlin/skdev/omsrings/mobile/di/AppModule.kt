@@ -9,13 +9,16 @@ import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 import skdev.omsrings.mobile.data.repository.AuthRepositoryImpl
 import skdev.omsrings.mobile.data.repository.FirebaseInventoryRepository
+import skdev.omsrings.mobile.data.repository.FirebaseOrderRepository
 import skdev.omsrings.mobile.data.repository.FirebaseUserSettingsRepository
 import skdev.omsrings.mobile.domain.repository.AuthRepository
 import skdev.omsrings.mobile.domain.repository.InventoryRepository
+import skdev.omsrings.mobile.domain.repository.OrderRepository
 import skdev.omsrings.mobile.domain.repository.UserSettingsRepository
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SendResetPasswordEmailUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignInUserUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignUpUserUseCase
+import skdev.omsrings.mobile.domain.usecase.feature_order.CreateOrderUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.ClearOldOrdersUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.GetUserSettingsUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.UpdateNotificationSettingsUseCase
@@ -50,6 +53,10 @@ private val data = module {
         FirebaseInventoryRepository(
             firestore = Firebase.firestore
         )
+    }
+
+    single<OrderRepository> {
+        FirebaseOrderRepository()
     }
 
 }
@@ -102,7 +109,8 @@ private val viewModels = module {
     // OrderForm
     factory<OrderFormScreenModel> {
         OrderFormScreenModel(
-            notificationManager = get()
+            notificationManager = get(),
+            createOrderUseCase = get()
         )
     }
 
@@ -137,6 +145,10 @@ private val useCases = module {
     factory<UpdateNotificationSettingsUseCase> { UpdateNotificationSettingsUseCase(repository = get()) }
     factory<UpdateShowClearedOrdersSettingsUseCase> { UpdateShowClearedOrdersSettingsUseCase(repository = get()) }
     factory<ClearOldOrdersUseCase> { ClearOldOrdersUseCase(repository = get()) }
+
+    // Feature Create Order
+    factory<CreateOrderUseCase> { CreateOrderUseCase(repository = get(), notificationManager = get()) }
+
 }
 
 private fun commonModule() = listOf(data, utils, viewModels, useCases)

@@ -4,6 +4,7 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -13,6 +14,12 @@ import org.jetbrains.compose.resources.StringResource
 import skdev.omsrings.mobile.domain.model.DeliveryMethod
 import skdev.omsrings.mobile.domain.model.Folder
 import skdev.omsrings.mobile.domain.model.InventoryItem
+import skdev.omsrings.mobile.domain.model.Order
+import skdev.omsrings.mobile.domain.model.OrderHistoryEvent
+import skdev.omsrings.mobile.domain.model.OrderHistoryEventType
+import skdev.omsrings.mobile.domain.model.OrderItem
+import skdev.omsrings.mobile.domain.model.OrderStatus
+import skdev.omsrings.mobile.domain.usecase.feature_order.CreateOrderUseCase
 import skdev.omsrings.mobile.presentation.base.BaseScreenModel
 import skdev.omsrings.mobile.presentation.feature_order_form.components.ProductSelectionEvent
 import skdev.omsrings.mobile.presentation.feature_order_form.components.ProductSelectionState
@@ -23,10 +30,13 @@ import skdev.omsrings.mobile.utils.fields.validators.ValidationResult
 import skdev.omsrings.mobile.utils.fields.validators.notBlank
 import skdev.omsrings.mobile.utils.fields.validators.notEmpty
 import skdev.omsrings.mobile.utils.notification.NotificationManager
+import skdev.omsrings.mobile.utils.result.ifSuccess
+import skdev.omsrings.mobile.utils.uuid.randomUUID
 
 
 class OrderFormScreenModel(
-    notificationManager: NotificationManager
+    notificationManager: NotificationManager,
+    private val createOrderUseCase: CreateOrderUseCase
 ) : BaseScreenModel<OrderFormContract.Event, OrderFormContract.Effect>(
     notificationManager
 ) {
@@ -44,32 +54,32 @@ class OrderFormScreenModel(
                 folders = listOf(
                     Folder(
                         id = "1",
-                        name = "Folder 1",
+                        name = "Раздел 1",
                         inventoryItems = listOf(
                             InventoryItem(
                                 id = "1",
-                                name = "Item 1",
+                                name = "Товар 1",
                                 stockQuantity = 10
                             ),
                             InventoryItem(
                                 id = "2",
-                                name = "Item 2",
+                                name = "Товар 2",
                                 stockQuantity = 20
                             ),
                         )
                     ),
                     Folder(
                         id = "2",
-                        name = "Folder 2",
+                        name = "Раздел 2",
                         inventoryItems = listOf(
                             InventoryItem(
                                 id = "3",
-                                name = "Item 3",
+                                name = "Товар 3",
                                 stockQuantity = 30
                             ),
                             InventoryItem(
                                 id = "4",
-                                name = "Item 4",
+                                name = "Товар 4",
                                 stockQuantity = 40
                             ),
                         )
@@ -128,7 +138,7 @@ class OrderFormScreenModel(
         when (event) {
             is OrderFormContract.Event.OnDeliveryMethodChanged -> updateDeliveryMethod(event.method)
             is OrderFormContract.Event.OnProductSelectionEvent -> handleProductSelectionEvent(event.event)
-            OrderFormContract.Event.OnSubmitClicked -> handleSubmit()
+            OrderFormContract.Event.OnSubmitClicked -> submitOrder()
             is OrderFormContract.Event.OnBackClicked -> TODO()
 
         }
@@ -157,17 +167,46 @@ class OrderFormScreenModel(
         }
     }
 
-    private fun handleSubmit() {
-        if (validateAll(
-                _state.value.contactPhoneField,
-                _state.value.deliveryAddressField,
-                _state.value.deliveryTimeField,
-                _state.value.deliveryCommentField
-            )
-        ) {
-            
+    private fun submitOrder() {
+        screenModelScope.launch {
+            if (validateAll(
+                    _state.value.contactPhoneField,
+                    _state.value.deliveryAddressField,
+                    _state.value.deliveryTimeField,
+                    _state.value.deliveryCommentField
+                )
+            ) {
+                val order = Order(
+                    id = randomUUID(),
+                    date = _state.value.deliveryDate.toString(),
+                    address = _state.value.deliveryAddressField.data.value,
+                    comment = _state.value.deliveryCommentField.data.value,
+                    contactPhone = _state.value.contactPhoneField.data.value,
+                    isDelivery = _state.value.deliveryMethod == DeliveryMethod.DELIVERY,
+                    pickupTime = _state.value.deliveryTimeField.data.value,
+                    status = OrderStatus.CREATED,
+                    history = listOf(
+                        OrderHistoryEvent(
+                            time = Clock.System.now().toString(),
+                            type = OrderHistoryEventType.CREATED,
+                            user = "current_user_id"
+                        )
 
+                    ),
+                    items = _state.value.productSelectionState.selectedItems.map { (item, quantity) ->
+                        OrderItem(
+                            inventoryId = item.id,
+                            quantity = quantity
+                        )
+                    }
+                )
+                createOrderUseCase(order).ifSuccess {
+//                    launchEffect(OrderFormContract.Effect.OrderCreated)
+                }
+
+            }
         }
+
     }
 
     private fun updateDeliveryMethod(method: DeliveryMethod) {
