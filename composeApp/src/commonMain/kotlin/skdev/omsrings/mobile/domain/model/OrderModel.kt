@@ -1,18 +1,18 @@
 package skdev.omsrings.mobile.domain.model
 
 
-import kotlinx.datetime.LocalDate
+import dev.gitlive.firebase.firestore.Timestamp
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class Order(
     val id: String, // UUID
-    val date: String, 
+    val date: Timestamp,
     val address: String?,
     val comment: String?,
     val contactPhone: String?,
     val isDelivery: Boolean,
-    val pickupTime: String,
+    val pickupTime: Timestamp,
     val status: OrderStatus,
     val history: List<OrderHistoryEvent>,
     val items: List<OrderItem>
@@ -26,7 +26,7 @@ data class OrderItem(
 
 @Serializable
 data class OrderHistoryEvent(
-    val time: String,
+    val time: Timestamp,
     val type: OrderHistoryEventType,
     val user: String // UUID as String
 )
