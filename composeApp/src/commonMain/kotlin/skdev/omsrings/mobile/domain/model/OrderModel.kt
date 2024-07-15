@@ -4,9 +4,11 @@ package skdev.omsrings.mobile.domain.model
 import dev.gitlive.firebase.firestore.Timestamp
 import kotlinx.serialization.Serializable
 
+typealias UUID = String
+
 @Serializable
 data class Order(
-    val id: String, // UUID
+    val id: UUID,
     val date: Timestamp,
     val address: String?,
     val comment: String?,
@@ -20,7 +22,7 @@ data class Order(
 
 @Serializable
 data class OrderItem(
-    val inventoryId: String, // UUID as String
+    val inventoryId: UUID,
     val quantity: Int
 )
 
@@ -28,7 +30,7 @@ data class OrderItem(
 data class OrderHistoryEvent(
     val time: Timestamp,
     val type: OrderHistoryEventType,
-    val user: String // UUID as String
+    val user: UUID,
 )
 
 enum class OrderHistoryEventType {
