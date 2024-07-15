@@ -11,6 +11,7 @@ import dev.gitlive.firebase.firestore.Timestamp
 import kotlinx.coroutines.launch
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.create_order
+import omsringsmobile.composeapp.generated.resources.edit_order
 import omsringsmobile.composeapp.generated.resources.order_details
 import omsringsmobile.composeapp.generated.resources.place_order
 import omsringsmobile.composeapp.generated.resources.tap_to_place_order
@@ -24,9 +25,6 @@ import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
 import skdev.omsrings.mobile.ui.components.helpers.Spacer
 import skdev.omsrings.mobile.ui.theme.values.Dimens
 
-
-// TODO: сделать редактирование заказа
-// TODO: сделать отображение загрузки
 
 class OrderFormScreen(
     private val selectedDate: Timestamp,
@@ -62,10 +60,19 @@ private fun OrderFormContent(
     val coroutineScope = rememberCoroutineScope()
     var isBottomSheetVisible by remember { mutableStateOf(false) }
 
+
+    // В зависимости от режима редактирования формируем заголовок экрана
+    val topAppBarTitle = if (state.isEditMode) {
+        stringResource(Res.string.edit_order, state.deliveryDate)
+    } else {
+        stringResource(Res.string.create_order, state.deliveryDate)
+    }
+
+
     Scaffold(
         topBar = {
             RingsTopAppBar(
-                title = stringResource(Res.string.create_order, state.deliveryDate),
+                title = topAppBarTitle,
                 onNavigationClicked = {
                     onEvent(Event.OnBackClicked)
                 }
@@ -167,7 +174,7 @@ private fun OrderDetailsBottomSheet(
 
         EnhancedConfirmOrderButton(
             onClick = { onEvent(Event.OnSubmitClicked) },
-            isEnabled = true,
+            isEnabled = state.productSelectionState.selectedItems.isNotEmpty(),
             modifier = Modifier.fillMaxWidth()
 
         )

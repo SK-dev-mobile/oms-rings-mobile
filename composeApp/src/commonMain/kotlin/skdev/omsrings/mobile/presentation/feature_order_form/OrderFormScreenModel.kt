@@ -18,6 +18,8 @@ import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.cant_be_blank
 import omsringsmobile.composeapp.generated.resources.order_created
 import omsringsmobile.composeapp.generated.resources.order_created_message
+import omsringsmobile.composeapp.generated.resources.order_updated
+import omsringsmobile.composeapp.generated.resources.order_updated_message
 import omsringsmobile.composeapp.generated.resources.time_cant_be_empty
 import org.jetbrains.compose.resources.StringResource
 import skdev.omsrings.mobile.domain.model.DeliveryMethod
@@ -219,15 +221,28 @@ class OrderFormScreenModel(
         screenModelScope.launch {
             if (validateForm()) {
                 val order = createOrderFromState()
-                createOrderUseCase(order).ifSuccess {
-                    notificationManager.show(
-                        notification = NotificationModel.Toast(
-                            titleRes = Res.string.order_created,
-                            messageRes = Res.string.order_created_message,
-                            icon = Icons.Rounded.ShoppingCart,
-                            type = ToastType.Success
+                if (_state.value.isEditMode) {
+                    updateOrderUseCase(order).ifSuccess {
+                        notificationManager.show(
+                            notification = NotificationModel.Toast(
+                                titleRes = Res.string.order_updated,
+                                messageRes = Res.string.order_updated_message,
+                                icon = Icons.Rounded.ShoppingCart,
+                                type = ToastType.Success
+                            )
                         )
-                    )
+                    }
+                } else {
+                    createOrderUseCase(order).ifSuccess {
+                        notificationManager.show(
+                            notification = NotificationModel.Toast(
+                                titleRes = Res.string.order_created,
+                                messageRes = Res.string.order_created_message,
+                                icon = Icons.Rounded.ShoppingCart,
+                                type = ToastType.Success
+                            )
+                        )
+                    }
                 }
             }
         }
