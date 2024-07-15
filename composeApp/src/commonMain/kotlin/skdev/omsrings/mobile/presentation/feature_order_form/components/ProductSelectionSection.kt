@@ -16,6 +16,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
+import cafe.adriel.voyager.navigator.internal.BackHandler
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.back_to_folders
 import omsringsmobile.composeapp.generated.resources.decrease_quantity
@@ -44,12 +46,18 @@ sealed interface ProductSelectionEvent {
     data class OnItemQuantityChanged(val item: InventoryItem, val quantity: Int) : ProductSelectionEvent
 }
 
+@OptIn(InternalVoyagerApi::class)
 @Composable
 fun ProductSelectionSection(
     modifier: Modifier = Modifier,
     state: ProductSelectionState,
     onEvent: (ProductSelectionEvent) -> Unit
 ) {
+    BackHandler(enabled = state.selectedFolderId != null) {
+        onEvent(ProductSelectionEvent.OnFolderSelected(null))
+    }
+    
+    
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
