@@ -21,6 +21,8 @@ import skdev.omsrings.mobile.domain.usecase.feature_auth.SignInUserUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignUpUserUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_order.CreateOrderUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_order.GetFoldersAndItemsInventory
+import skdev.omsrings.mobile.domain.usecase.feature_order.GetOrderByIdUseCase
+import skdev.omsrings.mobile.domain.usecase.feature_order.UpdateOrderUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.ClearOldOrdersUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.GetUserSettingsUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.UpdateNotificationSettingsUseCase
@@ -110,12 +112,15 @@ private val viewModels = module {
     }
 
     // OrderForm
-    factory<OrderFormScreenModel> {
+    factory<OrderFormScreenModel> { parameters ->
         OrderFormScreenModel(
             notificationManager = get(),
             createOrderUseCase = get(),
+            updateOrderUseCase = get(),
             getFoldersAndItemsInventory = get(),
-            selectedDate = get()
+            getOrderByIdUseCase = get(),
+            selectedDate = parameters.get(),
+            orderId = parameters.getOrNull()
         )
     }
 
@@ -154,6 +159,9 @@ private val useCases = module {
     // Feature Create Order
     factory<CreateOrderUseCase> { CreateOrderUseCase(repository = get(), notificationManager = get()) }
     factory<GetFoldersAndItemsInventory> { GetFoldersAndItemsInventory(repository = get()) }
+    factory<GetOrderByIdUseCase> { GetOrderByIdUseCase(repository = get()) }
+    factory<UpdateOrderUseCase> { UpdateOrderUseCase(repository = get()) }
+
 
 }
 

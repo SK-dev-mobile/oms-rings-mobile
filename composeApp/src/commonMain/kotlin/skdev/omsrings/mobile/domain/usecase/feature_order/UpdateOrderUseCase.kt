@@ -6,7 +6,7 @@ import skdev.omsrings.mobile.utils.error.DataError
 import skdev.omsrings.mobile.utils.result.DataResult
 
 class UpdateOrderUseCase(private val repository: OrderRepository) {
-    suspend operator fun invoke(order: Order): DataResult<Unit, DataError> {
+    suspend operator fun invoke(order: Order): DataResult<Order, DataError> {
         return repository.updateOrder(order)
     }
 }

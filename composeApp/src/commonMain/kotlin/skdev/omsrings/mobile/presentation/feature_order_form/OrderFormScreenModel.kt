@@ -29,6 +29,8 @@ import skdev.omsrings.mobile.domain.model.OrderItem
 import skdev.omsrings.mobile.domain.model.OrderStatus
 import skdev.omsrings.mobile.domain.usecase.feature_order.CreateOrderUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_order.GetFoldersAndItemsInventory
+import skdev.omsrings.mobile.domain.usecase.feature_order.GetOrderByIdUseCase
+import skdev.omsrings.mobile.domain.usecase.feature_order.UpdateOrderUseCase
 import skdev.omsrings.mobile.presentation.base.BaseScreenModel
 import skdev.omsrings.mobile.presentation.feature_order_form.components.ProductSelectionEvent
 import skdev.omsrings.mobile.presentation.feature_order_form.components.ProductSelectionState
@@ -48,8 +50,9 @@ private const val MILLIS_IN_SECOND = 1000L
 class OrderFormScreenModel(
     private val notificationManager: NotificationManager,
     private val createOrderUseCase: CreateOrderUseCase,
+    private val updateOrderUseCase: UpdateOrderUseCase,
     private val getFoldersAndItemsInventory: GetFoldersAndItemsInventory,
-    getOrderByIdUseCase: GetOrderByIdUseCase,
+    private val getOrderByIdUseCase: GetOrderByIdUseCase,
     private val selectedDate: Timestamp,
     private val orderId: String? = null
 ) : BaseScreenModel<OrderFormContract.Event, OrderFormContract.Effect>(
@@ -243,32 +246,36 @@ class OrderFormScreenModel(
 
     private fun loadExistingOrder(orderId: String) {
         screenModelScope.launch {
-            _state.update { it.copy(isLoading = true) }
-            getOrderByIdUseCase(orderId).ifSuccess { order ->
-                updateStateWithExistingOrder(order)
+            getOrderByIdUseCase(orderId).collect { orderResult ->
+                orderResult.ifSuccess { order ->
+                    updateStateWithExistingOrder(order.data)
+                }
             }
-            _state.update { it.copy(isLoading = false) }
         }
     }
 
     private fun updateStateWithExistingOrder(order: Order) {
+        _state.value.contactPhoneField.setValue(order.contactPhone ?: "")
+        _state.value.deliveryAddressField.setValue(order.address ?: "")
+        _state.value.deliveryTimeField.setValue(formatFromTimestampToTime(order.pickupTime))
+        _state.value.deliveryCommentField.setValue(order.comment ?: "")
         _state.update { currentState ->
             currentState.copy(
-                contactPhoneField = currentState.contactPhoneField.copy(initialValue = order.contactPhone),
                 deliveryMethod = if (order.isDelivery) DeliveryMethod.DELIVERY else DeliveryMethod.PICKUP,
-                deliveryAddressField = currentState.deliveryAddressField.copy(initialValue = order.address),
-                deliveryTimeField = currentState.deliveryTimeField.copy(
-                    initialValue = order.pickupTime.toLocalTime().toString()
-                ),
-                deliveryCommentField = currentState.deliveryCommentField.copy(initialValue = order.comment),
                 productSelectionState = currentState.productSelectionState.copy(
                     selectedItems = order.items.associate { orderItem ->
                         // You might need to fetch the actual InventoryItem here
-                        InventoryItem(id = orderItem.inventoryId, name = "", price = 0.0) to orderItem.quantity
+                        InventoryItem(id = orderItem.inventoryId, name = "") to orderItem.quantity
                     }
                 )
             )
         }
+    }
+
+    private fun formatFromTimestampToTime(timestamp: Timestamp): String {
+        val instant = Instant.fromEpochMilliseconds(timestamp.seconds * MILLIS_IN_SECOND)
+        val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+        return "${localDateTime.hour}:${localDateTime.minute}"
     }
 }
 
