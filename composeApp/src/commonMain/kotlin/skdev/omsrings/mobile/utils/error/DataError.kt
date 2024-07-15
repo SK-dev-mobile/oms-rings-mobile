@@ -30,5 +30,11 @@ sealed interface DataError : Error {
         UNKNOWN
     }
 
+    enum class InventoryItem : DataError {
+        NOT_FOUND,
+        PERMISSION_DENIED,
+        UNKNOWN
+    }
+
 
 }
