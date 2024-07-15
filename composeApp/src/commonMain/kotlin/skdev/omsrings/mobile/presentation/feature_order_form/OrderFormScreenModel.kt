@@ -63,6 +63,8 @@ class OrderFormScreenModel(
     notificationManager
 ) {
 
+    private var existingOrder: Order? = null
+
     private val _state = MutableStateFlow(
         OrderFormContract.State(
             // Common
@@ -190,23 +192,25 @@ class OrderFormScreenModel(
     }
 
 
-    private fun createOrderFromState(): Order {
+    private fun createOrderFromState(existingOrder: Order?): Order {
+        val currentTime = Timestamp.now()
+        val newHistoryEvent = OrderHistoryEvent(
+            time = currentTime,
+            type = if (existingOrder != null) OrderHistoryEventType.CHANGED else OrderHistoryEventType.CREATED,
+            user = getCurrentUserId()
+        )
+
+
         return Order(
-            id = randomUUID(),
+            id = existingOrder?.id ?: randomUUID(),
             date = selectedDate,
             address = _state.value.deliveryAddressField.data.value,
             comment = _state.value.deliveryCommentField.data.value,
             contactPhone = _state.value.contactPhoneField.data.value,
             isDelivery = _state.value.deliveryMethod == DeliveryMethod.DELIVERY,
             pickupTime = timestampFromDeliveryTime(_state.value.deliveryTimeField.data.value),
-            status = OrderStatus.CREATED,
-            history = listOf(
-                OrderHistoryEvent(
-                    time = Timestamp.now(),
-                    type = OrderHistoryEventType.CREATED,
-                    user = getCurrentUserId()
-                )
-            ),
+            status = existingOrder?.status ?: OrderStatus.CREATED,
+            history = (existingOrder?.history ?: emptyList()) + newHistoryEvent,
             items = _state.value.productSelectionState.selectedItems.map { (item, quantity) ->
                 OrderItem(inventoryId = item.id, quantity = quantity)
             }
@@ -214,44 +218,15 @@ class OrderFormScreenModel(
     }
 
     private fun getCurrentUserId(): String {
+        // TODO: Implement actual user UUID retrieval
         return "current_user_id"
-    }
-
-    private fun submitOrder() {
-        screenModelScope.launch {
-            if (validateForm()) {
-                val order = createOrderFromState()
-                if (_state.value.isEditMode) {
-                    updateOrderUseCase(order).ifSuccess {
-                        notificationManager.show(
-                            notification = NotificationModel.Toast(
-                                titleRes = Res.string.order_updated,
-                                messageRes = Res.string.order_updated_message,
-                                icon = Icons.Rounded.ShoppingCart,
-                                type = ToastType.Success
-                            )
-                        )
-                    }
-                } else {
-                    createOrderUseCase(order).ifSuccess {
-                        notificationManager.show(
-                            notification = NotificationModel.Toast(
-                                titleRes = Res.string.order_created,
-                                messageRes = Res.string.order_created_message,
-                                icon = Icons.Rounded.ShoppingCart,
-                                type = ToastType.Success
-                            )
-                        )
-                    }
-                }
-            }
-        }
     }
 
     private fun loadExistingOrder(orderId: String) {
         screenModelScope.launch {
             getOrderByIdUseCase(orderId).collect { orderResult ->
                 orderResult.ifSuccess { order ->
+                    existingOrder = order.data
                     updateStateWithExistingOrder(order.data)
                     fetchAndUpdateSelectedItems(order.data.items)
                 }
@@ -271,6 +246,7 @@ class OrderFormScreenModel(
         }
     }
 
+
     private fun fetchAndUpdateSelectedItems(orderItems: List<OrderItem>) {
         screenModelScope.launch {
             val inventoryItemIds = orderItems.map { it.inventoryId }
@@ -282,6 +258,40 @@ class OrderFormScreenModel(
                 }
             }
         }
+    }
+
+
+    private fun submitOrder() {
+        screenModelScope.launch {
+            if (validateForm()) {
+                val order = createOrderFromState(existingOrder)
+                val result = if (existingOrder == null) {
+                    createOrderUseCase(order)
+                } else {
+                    updateOrderUseCase(order)
+                }
+                result.ifSuccess {
+                    showSuccessNotification(isUpdate = existingOrder != null)
+                }
+            }
+        }
+    }
+
+    private fun showSuccessNotification(isUpdate: Boolean) {
+        val (titleRes, messageRes) = if (isUpdate) {
+            Pair(Res.string.order_updated, Res.string.order_updated_message)
+        } else {
+            Pair(Res.string.order_created, Res.string.order_created_message)
+        }
+
+        notificationManager.show(
+            notification = NotificationModel.Toast(
+                titleRes = titleRes,
+                messageRes = messageRes,
+                icon = Icons.Rounded.ShoppingCart,
+                type = ToastType.Success
+            )
+        )
     }
 
     private fun formatFromTimestampToTime(timestamp: Timestamp): String {

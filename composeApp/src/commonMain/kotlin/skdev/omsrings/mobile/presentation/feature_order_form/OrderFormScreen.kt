@@ -2,19 +2,21 @@ package skdev.omsrings.mobile.presentation.feature_order_form
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.koin.koinScreenModel
 import dev.gitlive.firebase.firestore.Timestamp
-import kotlinx.coroutines.launch
 import omsringsmobile.composeapp.generated.resources.Res
+import omsringsmobile.composeapp.generated.resources.confirm_order
 import omsringsmobile.composeapp.generated.resources.create_order
+import omsringsmobile.composeapp.generated.resources.edit_confirm_order
 import omsringsmobile.composeapp.generated.resources.edit_order
+import omsringsmobile.composeapp.generated.resources.edit_place_order
 import omsringsmobile.composeapp.generated.resources.order_details
 import omsringsmobile.composeapp.generated.resources.place_order
-import omsringsmobile.composeapp.generated.resources.tap_to_place_order
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 import skdev.omsrings.mobile.domain.model.DeliveryMethod
@@ -53,73 +55,89 @@ private fun OrderFormContent(
     state: OrderFormContract.State,
     onEvent: (Event) -> Unit
 ) {
-
-    val bottomSheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true
-    )
-    val coroutineScope = rememberCoroutineScope()
+    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var isBottomSheetVisible by remember { mutableStateOf(false) }
 
-
-    // В зависимости от режима редактирования формируем заголовок экрана
-    val topAppBarTitle = if (state.isEditMode) {
-        stringResource(Res.string.edit_order, state.deliveryDate)
-    } else {
-        stringResource(Res.string.create_order, state.deliveryDate)
-    }
-
-
     Scaffold(
-        topBar = {
-            RingsTopAppBar(
-                title = topAppBarTitle,
-                onNavigationClicked = {
-                    onEvent(Event.OnBackClicked)
-                }
-            )
-        },
+        topBar = { OrderFormTopBar(state.isEditMode, state.deliveryDate, onEvent) },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = {
-                    isBottomSheetVisible = true
-                    coroutineScope.launch { bottomSheetState.show() }
-                },
-                icon = {
-                    Icon(
-                        Icons.Rounded.ShoppingCart,
-                        contentDescription = stringResource(Res.string.tap_to_place_order)
-                    )
-                },
-                text = { Text(stringResource(Res.string.place_order)) }
-            )
-        },
-        contentWindowInsets = WindowInsets.safeContent,
+            OrderFormFAB(state.isEditMode) { isBottomSheetVisible = true }
+        }
     ) { paddingValues ->
         ProductSelectionSection(
             modifier = Modifier.padding(paddingValues),
             state = state.productSelectionState,
-            onEvent = { productSelectionEvent ->
-                onEvent(Event.OnProductSelectionEvent(productSelectionEvent))
-            }
+            onEvent = { productSelectionEvent -> onEvent(Event.OnProductSelectionEvent(productSelectionEvent)) }
         )
 
         if (isBottomSheetVisible) {
-            ModalBottomSheet(
-                onDismissRequest = { isBottomSheetVisible = false },
-                sheetState = bottomSheetState
-            ) {
-                OrderDetailsBottomSheet(state, onEvent)
-            }
+            OrderDetailsBottomSheet(
+                state = state,
+                onEvent = onEvent,
+                onDismiss = { isBottomSheetVisible = false },
+                bottomSheetState = bottomSheetState
+            )
         }
     }
 
 }
 
+@Composable
+private fun OrderFormTopBar(
+    isEditMode: Boolean,
+    deliveryDate: String,
+    onEvent: (OrderFormContract.Event) -> Unit
+) {
+    val title = if (isEditMode) {
+        stringResource(Res.string.edit_order, deliveryDate)
+    } else {
+        stringResource(Res.string.create_order, deliveryDate)
+    }
 
+    RingsTopAppBar(
+        title = title,
+        onNavigationClicked = { onEvent(OrderFormContract.Event.OnBackClicked) }
+    )
+}
+
+@Composable
+private fun OrderFormFAB(
+    isEditMode: Boolean,
+    onClick: () -> Unit
+) {
+    val (text, icon) = if (isEditMode) {
+        Pair(stringResource(Res.string.edit_place_order), Icons.Rounded.Edit)
+    } else {
+        Pair(stringResource(Res.string.place_order), Icons.Rounded.ShoppingCart)
+    }
+
+    ExtendedFloatingActionButton(
+        onClick = onClick,
+        icon = { Icon(icon, contentDescription = null) },
+        text = { Text(text) }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun OrderDetailsBottomSheet(
     state: OrderFormContract.State,
-    onEvent: (Event) -> Unit
+    onEvent: (OrderFormContract.Event) -> Unit,
+    onDismiss: () -> Unit,
+    bottomSheetState: SheetState
+) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = bottomSheetState
+    ) {
+        OrderDetailsContent(state, onEvent)
+    }
+}
+
+@Composable
+private fun OrderDetailsContent(
+    state: OrderFormContract.State,
+    onEvent: (OrderFormContract.Event) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -172,13 +190,33 @@ private fun OrderDetailsBottomSheet(
 
         Spacer(Dimens.spaceLarge)
 
-        EnhancedConfirmOrderButton(
-            onClick = { onEvent(Event.OnSubmitClicked) },
+        ConfirmOrderButton(
+            isEditMode = state.isEditMode,
             isEnabled = state.productSelectionState.selectedItems.isNotEmpty(),
-            modifier = Modifier.fillMaxWidth()
-
+            onClick = { onEvent(Event.OnSubmitClicked) }
         )
     }
 }
 
+
+@Composable
+private fun ConfirmOrderButton(
+    isEditMode: Boolean,
+    isEnabled: Boolean,
+    onClick: () -> Unit
+) {
+    val (text, icon) = if (isEditMode) {
+        Pair(Res.string.edit_confirm_order, Icons.Rounded.Edit)
+    } else {
+        Pair(Res.string.confirm_order, Icons.Rounded.ShoppingCart)
+    }
+
+    EnhancedConfirmOrderButton(
+        text = text,
+        icon = icon,
+        onClick = onClick,
+        isEnabled = isEnabled,
+        modifier = Modifier.fillMaxWidth()
+    )
+}
 

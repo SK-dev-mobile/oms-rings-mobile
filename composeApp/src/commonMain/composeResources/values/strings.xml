@@ -147,11 +147,13 @@
     <string name="tap_to_place_order">Нажмите, чтобы оформить заказ</string>
 
     <!-- Редактирование заказа -->
-    <string name="order_updated">Заказ обновлен</string>
-    <string name="order_updated_message">Заказ успешно обновлен</string>
-    <string name="update_order">Обновить заказ</string>
+    <string name="order_updated">Заказ изменен</string>
+    <string name="order_updated_message">Заказ успешно изменен и отправлен на обработку</string>
+    <string name="update_order">Изменить заказ</string>
     <string name="tap_to_update_order">Нажмите, чтобы обновить заказ</string>
     <string name="edit_order">Изменить заказ (%1$s)</string>
+    <string name="edit_place_order">Изменить данные заказа</string>
+    <string name="edit_confirm_order">Подтвердить изменения</string>
 
 
     <!-- Детали заказа -->
