@@ -71,6 +71,7 @@
     <string name="continue_process">Продолжить</string>
     <string name="dont_have_account">У вас нет аккаунта?</string>
     <string name="create_account">Создать</string>
+    
     <!-- Inventory Management Screen -->
     <string name="inventory_management_header">Учет товара</string>
     <string name="inventory_management_add_item">Добавить товар</string>
@@ -92,11 +93,11 @@
     <string name="update_item_dialog_title">Изменить товар</string>
 
     <!-- FolderDialog -->
-    <string name="create_folder_dialog_title">Добавить раздел</string>
-    <string name="folder_name_label">Название раздела</string>
+    <string name="create_folder_dialog_title">Добавить категорию</string>
+    <string name="folder_name_label">Название категории</string>
     <string name="create_button_text">Создать</string>
     <string name="cancel_button_text">Отмена</string>
-    <string name="update_folder_dialog_title">Изменить раздел</string>
+    <string name="update_folder_dialog_title">Изменить категорию</string>
     <string name="update_button_text">Изменить</string>
 
     <!-- IncrementQuantity -->
@@ -107,15 +108,15 @@
     <string name="confirm_increment">Подтвердить</string>
 
     <!-- Empty Inventory Message -->
-    <string name="empty_inventory_items_title">В этом разделе пока нет товаров</string>
+    <string name="empty_inventory_items_title">В этой категории пока нет товаров</string>
     <string name="empty_inventory_items_description">Добавьте новый товар, чтобы начать учет</string>
     <string name="add_inventory_item">Добавить товар</string>
 
     <!-- Empty Folder Message -->
-    <string name="empty_folders_title">У вас пока нет разделов</string>
-    <string name="empty_folders_description">Создайте новый раздел, чтобы начать учет товаров</string>
-    <string name="add_folder">Создать раздел</string>
-    <string name="no_folders_available">Нет доступных разделов</string>
+    <string name="empty_folders_title">У вас пока нет категорий</string>
+    <string name="empty_folders_description">Создайте новую категорию, чтобы начать учет товаров</string>
+    <string name="add_folder">Создать категорию</string>
+    <string name="no_folders_available">Нет доступных категорий</string>
     <string name="no_items_available">Нет доступных товаров</string>
 
 
