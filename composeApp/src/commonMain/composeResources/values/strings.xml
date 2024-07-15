@@ -134,7 +134,6 @@
         <item quantity="zero">Товары не выбраны</item>
         <item quantity="one">Выбран %1$d товар</item>
         <item quantity="few">Выбрано %1$d товара</item>
-        <item quantity="many">Выбрано %1$d товаров</item>
         <item quantity="other">Выбрано %1$d товаров</item>
     </plurals>
 

@@ -185,19 +185,6 @@ class OrderFormScreenModel(
         return phoneValid && timeValid && addressValid && commentValid && productSelectionValid
     }
 
-    private fun timestampFromDeliveryTime(time: String): Timestamp {
-        val (hours, minutes) = time.split(":").map { it.toInt() }
-        val localTime = LocalTime(hours, minutes)
-
-        val selectedLocalDate = Instant.fromEpochMilliseconds(selectedDate.seconds * MILLIS_IN_SECOND)
-            .toLocalDateTime(TimeZone.currentSystemDefault())
-            .date
-
-        val localDateTime = LocalDateTime(selectedLocalDate, localTime)
-        val instant = localDateTime.toInstant(TimeZone.currentSystemDefault())
-
-        return Timestamp(instant.epochSeconds, instant.nanosecondsOfSecond)
-    }
 
     private fun createOrderFromState(): Order {
         return Order(
@@ -275,7 +262,23 @@ class OrderFormScreenModel(
     private fun formatFromTimestampToTime(timestamp: Timestamp): String {
         val instant = Instant.fromEpochMilliseconds(timestamp.seconds * MILLIS_IN_SECOND)
         val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-        return "${localDateTime.hour}:${localDateTime.minute}"
+        val hour = localDateTime.hour.toString().padStart(2, '0')
+        val minute = localDateTime.minute.toString().padStart(2, '0')
+        return "$hour:$minute"
+    }
+
+    private fun timestampFromDeliveryTime(time: String): Timestamp {
+        val (hours, minutes) = time.split(":").map { it.toInt() }
+        val localTime = LocalTime(hours, minutes)
+
+        val selectedLocalDate = Instant.fromEpochMilliseconds(selectedDate.seconds * MILLIS_IN_SECOND)
+            .toLocalDateTime(TimeZone.currentSystemDefault())
+            .date
+
+        val localDateTime = LocalDateTime(selectedLocalDate, localTime)
+        val instant = localDateTime.toInstant(TimeZone.currentSystemDefault())
+
+        return Timestamp(instant.epochSeconds, instant.nanosecondsOfSecond)
     }
 }
 

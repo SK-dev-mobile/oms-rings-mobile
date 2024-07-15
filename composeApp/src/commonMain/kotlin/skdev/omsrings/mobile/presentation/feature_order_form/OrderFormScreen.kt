@@ -38,7 +38,7 @@ class OrderFormScreen(
         val state by screenModel.state.collectAsState()
 
         LaunchedEffect(orderId) {
-            orderId?.let { screenModel.onEvent(OrderFormContract.Event.LoadExistingOrder(it)) }
+            orderId?.let { screenModel.onEvent(Event.LoadExistingOrder(it)) }
         }
 
         OrderFormContent(
