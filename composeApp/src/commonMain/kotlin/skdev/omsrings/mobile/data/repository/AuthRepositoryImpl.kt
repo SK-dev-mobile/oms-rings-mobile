@@ -7,10 +7,8 @@ import dev.gitlive.firebase.firestore.DocumentReference
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 import skdev.omsrings.mobile.data.base.BaseRepository
 import skdev.omsrings.mobile.domain.model.UserInfo
-import skdev.omsrings.mobile.domain.model.UserSettings
 import skdev.omsrings.mobile.utils.result.DataResult
 import skdev.omsrings.mobile.domain.repository.AuthRepository
-import skdev.omsrings.mobile.presentation.feature_auth.enitity.UserRole
 import skdev.omsrings.mobile.utils.error.DataError
 
 
@@ -65,7 +63,7 @@ class AuthRepositoryImpl(
     override fun Exception.toDataError(): DataError {
         return when (this) {
             is FirebaseAuthUserCollisionException -> DataError.Auth.USER_ALREADY_EXISTS
-            is FirebaseAuthInvalidCredentialsException -> DataError.Auth.WRONG_CREDITIALS
+            is FirebaseAuthInvalidCredentialsException -> DataError.Auth.WRONG_CREDENTIALS
             else -> DataError.Network.UNKNOWN
         }
     }

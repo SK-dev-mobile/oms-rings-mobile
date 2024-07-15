@@ -12,7 +12,7 @@ sealed interface DataError : Error {
 
     enum class Auth : DataError {
         USER_ALREADY_EXISTS,
-        WRONG_CREDITIALS,
+        WRONG_CREDENTIALS,
         UNKNOWN,
     }
 
@@ -21,7 +21,13 @@ sealed interface DataError : Error {
         NO_DATA,
         WRITE_ERROR,
         USER_NOT_FOUND,
-        USER_NOT_LOGGINED_IN
+        USER_NOT_LOGGED_IN
+    }
+
+    enum class Order : DataError {
+        NOT_FOUND,
+        PERMISSION_DENIED,
+        UNKNOWN
     }
 
 
