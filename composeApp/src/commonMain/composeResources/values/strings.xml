@@ -1,4 +1,5 @@
 <resources>
+    <string name="app_name">ЖБИ Кольца</string>
     <string name="back">Назад</string>
     <string name="quantity_must_be_positive_number">Количество должно быть положительным числом</string>
     <string name="time_cant_be_empty">Время не может быть не указано</string>
@@ -71,7 +72,7 @@
     <string name="continue_process">Продолжить</string>
     <string name="dont_have_account">У вас нет аккаунта?</string>
     <string name="create_account">Создать</string>
-    
+
     <!-- Inventory Management Screen -->
     <string name="inventory_management_header">Учет товара</string>
     <string name="inventory_management_add_item">Добавить товар</string>
@@ -176,5 +177,20 @@
     <!-- Общие -->
     <string name="ok">OK</string>
     <string name="cancel">Отмена</string>
+
+    <!-- MainScreen -->
+    <string name="nomenclature">Номеклатура</string>
+    <string name="edit_content">Редактировать состав</string>
+    <string name="day_of_week_monday">Пн</string>
+    <string name="day_of_week_tuesday">Вт</string>
+    <string name="day_of_week_wednesday">Ср</string>
+    <string name="day_of_week_thursday">Чт</string>
+    <string name="day_of_week_friday">Пт</string>
+    <string name="day_of_week_saturday">Сб</string>
+    <string name="day_of_week_sunday">Вс</string>
+
+    <!-- UserProfileScreen -->
+    <string name="user_profile_title">Профиль</string>
+    <string name="save_changes">Сохранить</string>
 
 </resources>

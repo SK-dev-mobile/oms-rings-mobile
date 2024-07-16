@@ -27,7 +27,7 @@ internal fun App() = AppTheme(
 
     Box {
         Navigator(
-            MainScreen,
+            MainScreen
         ) { navigator ->
             SlideTransition(
                 navigator = navigator,
