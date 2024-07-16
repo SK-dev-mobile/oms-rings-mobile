@@ -10,7 +10,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.koin.koinScreenModel
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import dev.gitlive.firebase.firestore.Timestamp
+import io.github.aakira.napier.Napier
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.confirm_order
 import omsringsmobile.composeapp.generated.resources.create_order
@@ -28,6 +31,7 @@ import skdev.omsrings.mobile.presentation.feature_order_form.components.*
 import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
 import skdev.omsrings.mobile.ui.components.helpers.Spacer
 import skdev.omsrings.mobile.ui.theme.values.Dimens
+import skdev.omsrings.mobile.utils.flow.observeAsEffects
 
 
 class OrderFormScreen(
@@ -38,6 +42,15 @@ class OrderFormScreen(
     override fun MainContent() {
         val screenModel = koinScreenModel<OrderFormScreenModel> { parametersOf(selectedDate, orderId) }
         val state by screenModel.uiState.collectAsState()
+        val navigator = LocalNavigator.currentOrThrow
+
+        screenModel.effects.observeAsEffects {
+            when(it) {
+                OrderFormContract.Effect.NavigateBack -> {
+                    navigator.pop()
+                }
+            }
+        }
 
         LaunchedEffect(orderId) {
             orderId?.let { screenModel.onEvent(Event.LoadExistingOrder(it)) }

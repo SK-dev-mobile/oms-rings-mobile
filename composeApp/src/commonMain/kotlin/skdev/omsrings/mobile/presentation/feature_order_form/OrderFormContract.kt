@@ -47,6 +47,6 @@ class OrderFormContract {
     }
 
     sealed interface Effect {
-        data object OrderCreatedOrUpdated : Effect
+        data object NavigateBack : Effect
     }
 }
