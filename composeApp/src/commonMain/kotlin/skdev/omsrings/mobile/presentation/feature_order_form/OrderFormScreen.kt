@@ -1,6 +1,8 @@
 package skdev.omsrings.mobile.presentation.feature_order_form
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.ShoppingCart
@@ -142,6 +144,7 @@ private fun OrderDetailsContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
             .padding(Dimens.spaceMedium)
     ) {
         Text(

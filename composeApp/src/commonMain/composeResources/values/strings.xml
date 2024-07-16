@@ -156,7 +156,6 @@
     <string name="edit_place_order">Изменить данные заказа</string>
     <string name="edit_confirm_order">Подтвердить изменения</string>
 
-
     <!-- Детали заказа -->
     <string name="order_details">Детали заказа</string>
     <string name="delivery_address">Адрес доставки</string>
@@ -170,7 +169,7 @@
     <!-- Время -->
     <string name="choose_delivery_time">Выберите время доставки</string>
     <string name="i_will_pickup_order_at">Я заберу заказ в </string>
-    <string name="please_deliver_order_at">Пожалуйста, доставьте заказ в </string>
+    <string name="please_deliver_order_at">Доставьте заказ в </string>
     <string name="choose_time">выберите время</string>
     <string name="choose_time_capitalized">Выберите время</string>
 
