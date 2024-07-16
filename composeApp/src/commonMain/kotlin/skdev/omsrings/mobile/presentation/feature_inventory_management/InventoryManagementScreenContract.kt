@@ -57,5 +57,7 @@ object InventoryManagementScreenContract {
 
     }
 
-    sealed interface Effect
+    sealed interface Effect {
+        object NavigateBack: Effect
+    }
 }

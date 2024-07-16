@@ -18,6 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
 import cafe.adriel.voyager.koin.koinScreenModel
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.internal.BackHandler
 import omsringsmobile.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.StringResource
@@ -33,6 +35,7 @@ import skdev.omsrings.mobile.presentation.feature_inventory_management.component
 import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
 import skdev.omsrings.mobile.ui.theme.values.Dimens
 import skdev.omsrings.mobile.utils.fields.FormField
+import skdev.omsrings.mobile.utils.flow.observeAsEffects
 
 object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
     @OptIn(InternalVoyagerApi::class)
@@ -40,7 +43,7 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
     override fun MainContent() {
         val screenModel = koinScreenModel<InventoryManagementScreenModel>()
         val state by screenModel.state.collectAsState()
-
+        val navigator = LocalNavigator.currentOrThrow
 
         val selectedFolder = remember(state.selectedFolderId, state.folders) {
             state.folders.find { it.id == state.selectedFolderId }
@@ -55,6 +58,14 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
 
         BackHandler(enabled = state.selectedFolderId != null) {
             screenModel.onEvent(Event.SetSelectedInventoryFolder(null))
+        }
+
+        screenModel.effects.observeAsEffects {
+            when(it) {
+                InventoryManagementScreenContract.Effect.NavigateBack -> {
+                    navigator.pop()
+                }
+            }
         }
 
         Scaffold(
