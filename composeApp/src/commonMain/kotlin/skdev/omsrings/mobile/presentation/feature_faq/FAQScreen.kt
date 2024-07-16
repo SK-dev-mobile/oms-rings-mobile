@@ -18,6 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.faq_cancelled_order
 import omsringsmobile.composeapp.generated.resources.faq_cancelled_order_description
@@ -32,10 +34,12 @@ import omsringsmobile.composeapp.generated.resources.faq_rescheduled_order
 import omsringsmobile.composeapp.generated.resources.faq_rescheduled_order_description
 import org.jetbrains.compose.resources.stringResource
 import skdev.omsrings.mobile.presentation.base.BaseScreen
+import skdev.omsrings.mobile.presentation.feature_order_form.OrderFormContract
 import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
 import skdev.omsrings.mobile.ui.components.helpers.Spacer
 import skdev.omsrings.mobile.ui.theme.CustomTheme
 import skdev.omsrings.mobile.ui.theme.values.Dimens
+import skdev.omsrings.mobile.utils.flow.observeAsEffects
 
 data class FAQItem(
     val title: String,
@@ -53,6 +57,7 @@ object FAQScreen : BaseScreen("faq_screen") {
 
 @Composable
 private fun FAQScreenContent() {
+    val navigator = LocalNavigator.currentOrThrow
 
     val faqItems = listOf(
         FAQItem(
@@ -85,7 +90,9 @@ private fun FAQScreenContent() {
         topBar = {
             RingsTopAppBar(
                 title = stringResource(Res.string.faq_header),
-                onNavigationClicked = { /* TODO: impl back navigation */ }
+                onNavigationClicked = {
+                    navigator.pop()
+                }
             )
         }
     ) { innerPadding ->

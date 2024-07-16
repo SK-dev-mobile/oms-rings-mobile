@@ -2,6 +2,7 @@ package skdev.omsrings.mobile.presentation.feature_inventory_management
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,6 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
 import cafe.adriel.voyager.koin.koinScreenModel
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.internal.BackHandler
 import omsringsmobile.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.StringResource
@@ -32,6 +35,7 @@ import skdev.omsrings.mobile.presentation.feature_inventory_management.component
 import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
 import skdev.omsrings.mobile.ui.theme.values.Dimens
 import skdev.omsrings.mobile.utils.fields.FormField
+import skdev.omsrings.mobile.utils.flow.observeAsEffects
 
 object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
     @OptIn(InternalVoyagerApi::class)
@@ -39,7 +43,7 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
     override fun MainContent() {
         val screenModel = koinScreenModel<InventoryManagementScreenModel>()
         val state by screenModel.state.collectAsState()
-
+        val navigator = LocalNavigator.currentOrThrow
 
         val selectedFolder = remember(state.selectedFolderId, state.folders) {
             state.folders.find { it.id == state.selectedFolderId }
@@ -56,13 +60,21 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
             screenModel.onEvent(Event.SetSelectedInventoryFolder(null))
         }
 
+        screenModel.effects.observeAsEffects {
+            when(it) {
+                InventoryManagementScreenContract.Effect.NavigateBack -> {
+                    navigator.pop()
+                }
+            }
+        }
+
         Scaffold(
             topBar = {
                 RingsTopAppBar(
                     title = title,
                     onNavigationClicked = {
                         if (state.selectedFolderId == null) {
-                            /* handle pop */
+                            screenModel.onEvent(Event.OnBackClicked)
                         } else {
                             screenModel.onEvent(Event.SetSelectedInventoryFolder(null))
                         }
@@ -96,6 +108,7 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
             Column(modifier = Modifier.padding(paddingValues)) {
                 if (state.selectedFolderId == null) {
                     FolderList(
+                        modifier = Modifier.fillMaxSize(),
                         folders = state.folders,
                         onCreateFolderClick = { screenModel.onEvent(Event.DisplayFolderDialog()) },
                         onFolderClick = { folder -> screenModel.onEvent(Event.SetSelectedInventoryFolder(folder.id)) },
@@ -157,7 +170,8 @@ object InventoryManagementScreen : BaseScreen("inventory_management_screen") {
 
 
 @Composable
-fun FolderList(
+private fun FolderList(
+    modifier: Modifier,
     folders: List<Folder>,
     onCreateFolderClick: () -> Unit,
     onFolderClick: (Folder) -> Unit,
@@ -167,7 +181,10 @@ fun FolderList(
     if (folders.isEmpty()) {
         EmptyFoldersMessage(onAddFolderClick = onCreateFolderClick)
     } else {
-        LazyColumn {
+        LazyColumn(
+            modifier = modifier,
+            contentPadding = PaddingValues(vertical = Dimens.spaceSmall)
+        ) {
             items(
                 items = folders,
                 key = { it.id } // Используем key для оптимизации обновлений списка
@@ -190,7 +207,7 @@ fun FolderList(
 
 
 @Composable
-fun InventoryItemList(
+private fun InventoryItemList(
     items: List<InventoryItem>,
     onIncrementQuantity: (InventoryItem) -> Unit,
     onEditItem: (InventoryItem) -> Unit,
@@ -317,27 +334,28 @@ fun FolderRow(
     onDelete: () -> Unit
 ) {
     GenericRow(
+        modifier = Modifier.padding(horizontal = Dimens.spaceMedium, vertical = Dimens.spaceSmall),
         icon = Icons.Rounded.Folder,
         iconTint = MaterialTheme.colorScheme.primary,
         title = folder.name,
         subtitle = pluralStringResource(Res.plurals.item_count, folder.inventoryItems.size, folder.inventoryItems.size),
         onRowClick = onClick,
-        primaryAction = {
-            IconButton(onClick = onEdit) {
-                Icon(
-                    Icons.Rounded.Edit,
-                    tint = MaterialTheme.colorScheme.secondary,
-                    contentDescription = "test"
-                )
-            }
-        },
-        secondaryAction = {
-            IconButton(onClick = onDelete) {
-                Icon(
-                    Icons.Rounded.Delete,
-                    tint = MaterialTheme.colorScheme.error,
-                    contentDescription = stringResource(Res.string.delete)
-                )
+        actions = {
+            Row {
+                IconButton(onClick = onEdit) {
+                    Icon(
+                        Icons.Rounded.Edit,
+                        tint = MaterialTheme.colorScheme.secondary,
+                        contentDescription = "test"
+                    )
+                }
+                IconButton(onClick = onDelete) {
+                    Icon(
+                        Icons.Rounded.Delete,
+                        tint = MaterialTheme.colorScheme.error,
+                        contentDescription = stringResource(Res.string.delete)
+                    )
+                }
             }
         }
     )
@@ -351,35 +369,34 @@ fun InventoryItemRow(
     onDeleteClick: () -> Unit
 ) {
     GenericRow(
+        modifier = Modifier.padding(horizontal = Dimens.spaceMedium, vertical = Dimens.spaceSmall),
         icon = Icons.Rounded.Inventory,
         iconTint = MaterialTheme.colorScheme.secondary,
         title = item.name,
         subtitle = stringResource(Res.string.item_stock, item.stockQuantity),
-        primaryAction = {
-            IconButton(onClick = onIncrementQuantity) {
-                Icon(
-                    Icons.Rounded.Add,
-                    tint = MaterialTheme.colorScheme.primary,
-                    contentDescription = stringResource(Res.string.increment_quantity_label)
-                )
-            }
-        },
-        secondaryAction = {
-            IconButton(onClick = onEditClick) {
-                Icon(
-                    Icons.Rounded.Edit,
-                    tint = MaterialTheme.colorScheme.secondary,
-                    contentDescription = ""
-                )
-            }
-        },
-        tertiaryAction = {
-            IconButton(onClick = onDeleteClick) {
-                Icon(
-                    Icons.Rounded.Delete,
-                    tint = MaterialTheme.colorScheme.error,
-                    contentDescription = stringResource(Res.string.delete)
-                )
+        actions = {
+            Row {
+                IconButton(onClick = onIncrementQuantity) {
+                    Icon(
+                        Icons.Rounded.Add,
+                        tint = MaterialTheme.colorScheme.primary,
+                        contentDescription = stringResource(Res.string.increment_quantity_label)
+                    )
+                }
+                IconButton(onClick = onEditClick) {
+                    Icon(
+                        Icons.Rounded.Edit,
+                        tint = MaterialTheme.colorScheme.secondary,
+                        contentDescription = ""
+                    )
+                }
+                IconButton(onClick = onDeleteClick) {
+                    Icon(
+                        Icons.Rounded.Delete,
+                        tint = MaterialTheme.colorScheme.error,
+                        contentDescription = stringResource(Res.string.delete)
+                    )
+                }
             }
         }
     )

@@ -1,6 +1,7 @@
 <resources>
     <string name="back">Назад</string>
     <string name="quantity_must_be_positive_number">Количество должно быть положительным числом</string>
+    <string name="time_cant_be_empty">Время не может быть не указано</string>
 
     <!-- in-app notifications -->
     <string name="error">Ошибка</string>
@@ -19,6 +20,7 @@
     <string name="user_not_loggined_in">Не выполнен вход в систему</string>
     <string name="user_already_exists">Пользователь уже существует</string>
     <string name="incorrect_email_or_password">Неверная почта или пароль</string>
+
 
     <!-- Fields warnings -->
     <string name="cant_be_blank">Поле не может быть пустым</string>
@@ -69,6 +71,7 @@
     <string name="continue_process">Продолжить</string>
     <string name="dont_have_account">У вас нет аккаунта?</string>
     <string name="create_account">Создать</string>
+    
     <!-- Inventory Management Screen -->
     <string name="inventory_management_header">Учет товара</string>
     <string name="inventory_management_add_item">Добавить товар</string>
@@ -90,11 +93,11 @@
     <string name="update_item_dialog_title">Изменить товар</string>
 
     <!-- FolderDialog -->
-    <string name="create_folder_dialog_title">Добавить папку</string>
-    <string name="folder_name_label">Название папки</string>
+    <string name="create_folder_dialog_title">Добавить категорию</string>
+    <string name="folder_name_label">Название категории</string>
     <string name="create_button_text">Создать</string>
     <string name="cancel_button_text">Отмена</string>
-    <string name="update_folder_dialog_title">Изменить папку</string>
+    <string name="update_folder_dialog_title">Изменить категорию</string>
     <string name="update_button_text">Изменить</string>
 
     <!-- IncrementQuantity -->
@@ -105,13 +108,73 @@
     <string name="confirm_increment">Подтвердить</string>
 
     <!-- Empty Inventory Message -->
-    <string name="empty_inventory_items_title">В этой папке пока нет товаров</string>
+    <string name="empty_inventory_items_title">В этой категории пока нет товаров</string>
     <string name="empty_inventory_items_description">Добавьте новый товар, чтобы начать учет</string>
     <string name="add_inventory_item">Добавить товар</string>
 
     <!-- Empty Folder Message -->
-    <string name="empty_folders_title">У вас пока нет папок</string>
-    <string name="empty_folders_description">Создайте новую папку, чтобы начать учет товаров</string>
-    <string name="add_folder">Создать папку</string>
+    <string name="empty_folders_title">У вас пока нет категорий</string>
+    <string name="empty_folders_description">Создайте новую категорию, чтобы начать учет товаров</string>
+    <string name="add_folder">Создать категорию</string>
+    <string name="no_folders_available">Нет доступных категорий</string>
+    <string name="no_items_available">Нет доступных товаров</string>
+
+
+    <!-- Order Form -->
+    <!-- Количество -->
+    <string name="increase_quantity">Увеличить количество</string>
+    <string name="decrease_quantity">Уменьшить количество</string>
+
+    <!-- Выбор товаров -->
+    <string name="select_products">Выберите товары</string>
+    <string name="back_to_categories">Назад к категориям</string>
+    <string name="no_products_available">Товары отсутствуют</string>
+    <string name="select_category">Выберите категорию товаров</string>
+    <string name="tap_items_to_add">Нажмите на товары, чтобы добавить их в заказ</string>
+    <plurals name="selected_items_count">
+        <item quantity="zero">Товары не выбраны</item>
+        <item quantity="one">Выбран %1$d товар</item>
+        <item quantity="few">Выбрано %1$d товара</item>
+        <item quantity="other">Выбрано %1$d товаров</item>
+    </plurals>
+
+
+    <!-- Создание заказа -->
+    <string name="order_created">Заказ создан</string>
+    <string name="order_created_message">Заказ успешно создан и отправлен на обработку</string>
+    <string name="create_order">Создать заказ на %1$s</string>
+    <string name="confirm_order">Подтвердить заказ</string>
+    <string name="place_order">Оформить заказ</string>
+    <string name="tap_to_place_order">Нажмите, чтобы оформить заказ</string>
+
+    <!-- Редактирование заказа -->
+    <string name="order_updated">Заказ изменен</string>
+    <string name="order_updated_message">Заказ успешно изменен и отправлен на обработку</string>
+    <string name="update_order">Изменить заказ</string>
+    <string name="tap_to_update_order">Нажмите, чтобы обновить заказ</string>
+    <string name="edit_order">Изменить заказ (%1$s)</string>
+    <string name="edit_place_order">Изменить данные заказа</string>
+    <string name="edit_confirm_order">Подтвердить изменения</string>
+
+    <!-- Детали заказа -->
+    <string name="order_details">Детали заказа</string>
+    <string name="delivery_address">Адрес доставки</string>
+    <string name="delivery_address_hint">Введите адрес доставки</string>
+    <string name="comment">Комментарий</string>
+
+    <!-- Способ получения -->
+    <string name="pickup">Самовывоз</string>
+    <string name="delivery">Доставка</string>
+
+    <!-- Время -->
+    <string name="choose_delivery_time">Выберите время доставки</string>
+    <string name="i_will_pickup_order_at">Я заберу заказ в </string>
+    <string name="please_deliver_order_at">Доставьте заказ в </string>
+    <string name="choose_time">выберите время</string>
+    <string name="choose_time_capitalized">Выберите время</string>
+
+    <!-- Общие -->
+    <string name="ok">OK</string>
+    <string name="cancel">Отмена</string>
 
 </resources>

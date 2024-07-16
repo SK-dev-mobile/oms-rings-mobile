@@ -12,8 +12,9 @@ import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.annotation.ExperimentalVoyagerApi
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
+import dev.gitlive.firebase.firestore.Timestamp
 import org.koin.compose.koinInject
-import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreen
+import skdev.omsrings.mobile.presentation.feature_order_form.OrderFormScreen
 import skdev.omsrings.mobile.ui.components.notification.NotificationDisplay
 import skdev.omsrings.mobile.ui.theme.AppTheme
 import skdev.omsrings.mobile.utils.notification.NotificationManager
@@ -27,7 +28,7 @@ internal fun App() = AppTheme(
 
     Box {
         Navigator(
-            InventoryManagementScreen
+            OrderFormScreen(selectedDate = Timestamp.now(), orderId = "af9e24d9-6a62-4a83-9067-59bf82a1bb35"),
         ) { navigator ->
             SlideTransition(
                 navigator = navigator,

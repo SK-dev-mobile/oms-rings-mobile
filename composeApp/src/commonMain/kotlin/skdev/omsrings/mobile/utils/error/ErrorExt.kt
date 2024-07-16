@@ -56,7 +56,7 @@ fun Error.toNotificationModel(): NotificationModel {
             titleRes = Res.string.error,
             messageRes = Res.string.user_not_found
         )
-        DataError.Local.USER_NOT_LOGGINED_IN -> NotificationModel.Error(
+        DataError.Local.USER_NOT_LOGGED_IN -> NotificationModel.Error(
             titleRes = Res.string.error,
             messageRes = Res.string.user_not_loggined_in
         )
@@ -64,7 +64,7 @@ fun Error.toNotificationModel(): NotificationModel {
             titleRes = Res.string.error,
             messageRes = Res.string.user_already_exists
         )
-        DataError.Auth.WRONG_CREDITIALS -> NotificationModel.Error(
+        DataError.Auth.WRONG_CREDENTIALS -> NotificationModel.Error(
             titleRes = Res.string.error,
             messageRes = Res.string.incorrect_email_or_password
         )

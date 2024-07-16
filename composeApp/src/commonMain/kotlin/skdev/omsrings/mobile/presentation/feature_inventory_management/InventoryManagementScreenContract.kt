@@ -51,8 +51,13 @@ object InventoryManagementScreenContract {
         data class DisplayIncrementQuantityDialog(val item: InventoryItem) : Event
         data object CloseIncrementQuantityDialog : Event
 
+        // Back navigation
+        data object OnBackClicked : Event
+
 
     }
 
-    sealed interface Effect
+    sealed interface Effect {
+        object NavigateBack: Effect
+    }
 }

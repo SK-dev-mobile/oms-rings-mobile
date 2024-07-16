@@ -3,6 +3,8 @@ package skdev.omsrings.mobile.domain.repository
 import kotlinx.coroutines.flow.Flow
 import skdev.omsrings.mobile.domain.model.Folder
 import skdev.omsrings.mobile.domain.model.InventoryItem
+import skdev.omsrings.mobile.utils.error.DataError
+import skdev.omsrings.mobile.utils.result.DataResult
 
 
 interface InventoryRepository {
@@ -13,4 +15,5 @@ interface InventoryRepository {
     suspend fun addInventoryItem(folderId: String, item: InventoryItem)
     suspend fun updateInventoryItem(folderId: String, item: InventoryItem)
     suspend fun deleteInventoryItem(folderId: String, itemId: String)
+    suspend fun getInventoryItemsByIds(ids: List<String>): DataResult<List<InventoryItem>, DataError>
 }

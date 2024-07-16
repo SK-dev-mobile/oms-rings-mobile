@@ -13,6 +13,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import cafe.adriel.voyager.koin.koinScreenModel
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import omsringsmobile.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import skdev.omsrings.mobile.presentation.base.BaseScreen
@@ -28,12 +30,15 @@ object UserSettingsScreen : BaseScreen("user_settings_screen") {
     override fun MainContent() {
         val screenModel = koinScreenModel<UserSettingsModel>()
         val state by screenModel.state.collectAsState()
+        val navigator = LocalNavigator.currentOrThrow
 
         Scaffold(
             topBar = {
                 RingsTopAppBar(
                     title = stringResource(Res.string.user_settings_title),
-                    onNavigationClicked = { /* TODO */ },
+                    onNavigationClicked = {
+                        navigator.pop()
+                    },
                     actions = {
                         Icon(
                             imageVector = Icons.Rounded.Settings,

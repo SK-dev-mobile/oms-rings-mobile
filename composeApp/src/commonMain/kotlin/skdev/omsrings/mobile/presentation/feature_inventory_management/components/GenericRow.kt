@@ -26,15 +26,11 @@ fun GenericRow(
     title: String,
     subtitle: String? = null,
     onRowClick: (() -> Unit)? = null,
-    primaryAction: (@Composable () -> Unit)? = null,
-    secondaryAction: (@Composable () -> Unit)? = null,
-    tertiaryAction: (@Composable () -> Unit)? = null,
+    actions: (@Composable () -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Surface(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = Dimens.spaceMedium, vertical = Dimens.spaceSmall)
             .clip(MaterialTheme.shapes.medium)
             .then(if (onRowClick != null) Modifier.clickable(onClick = onRowClick) else Modifier),
         tonalElevation = 1.dp
@@ -47,7 +43,7 @@ fun GenericRow(
         ) {
             Icon(
                 imageVector = icon,
-                contentDescription = null,
+                contentDescription = title,
                 tint = iconTint
             )
             Spacer(Dimens.spaceMedium)
@@ -64,9 +60,7 @@ fun GenericRow(
                     )
                 }
             }
-            primaryAction?.invoke()
-            secondaryAction?.invoke()
-            tertiaryAction?.invoke()
+            actions?.invoke()
         }
     }
 }

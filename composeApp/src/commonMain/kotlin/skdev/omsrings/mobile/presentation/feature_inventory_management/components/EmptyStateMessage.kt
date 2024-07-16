@@ -25,9 +25,9 @@ fun EmptyStateMessage(
     modifier: Modifier = Modifier,
     icon: ImageVector,
     title: String,
-    description: String,
-    actionText: String,
-    onActionClick: () -> Unit
+    description: String? = null,
+    actionText: String? = null,
+    onActionClick: (() -> Unit)? = null
 ) {
     Column(
         modifier = modifier,
@@ -46,18 +46,26 @@ fun EmptyStateMessage(
             style = MaterialTheme.typography.headlineSmall,
             textAlign = TextAlign.Center
         )
-        Spacer(Dimens.spaceSmall)
-        Text(
-            text = description,
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = Dimens.spaceLarge)
-        )
-        Spacer(24.dp)
-        Button(onClick = onActionClick) {
-            Icon(Icons.Rounded.Add, contentDescription = null)
+        // Этим кодом добавляется описание
+        if (description != null) {
             Spacer(Dimens.spaceSmall)
-            Text(actionText)
+            Text(
+                text = description,
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = Dimens.spaceLarge)
+            )
         }
+        //  Этим кодом добавляется кнопка с иконкой и текстом
+        if (actionText != null && onActionClick != null) {
+            Spacer(24.dp)
+            Button(onClick = onActionClick) {
+                Icon(Icons.Rounded.Add, contentDescription = null)
+                Spacer(Dimens.spaceSmall)
+                Text(actionText)
+            }
+        }
+
+
     }
 }

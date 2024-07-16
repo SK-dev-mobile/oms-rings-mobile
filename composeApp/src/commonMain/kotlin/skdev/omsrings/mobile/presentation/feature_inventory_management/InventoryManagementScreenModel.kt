@@ -1,6 +1,7 @@
 package skdev.omsrings.mobile.presentation.feature_inventory_management
 
 import cafe.adriel.voyager.core.model.screenModelScope
+import cafe.adriel.voyager.core.registry.screenModule
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -90,7 +91,7 @@ class InventoryManagementScreenModel(
         when (event) {
             // Transition between folder
             is Event.SetSelectedInventoryFolder -> setSelectedInventoryFolder(event.folderId)
-            
+
             // Folder
             is Event.CreateOrUpdateFolder -> createOrUpdateFolder()
             is Event.RemoveInventoryFolder -> removeInventoryFolder(event.folder)
@@ -111,6 +112,13 @@ class InventoryManagementScreenModel(
 
             is Event.DisplayIncrementQuantityDialog -> displayIncrementQuantityDialog(event.item)
             Event.CloseIncrementQuantityDialog -> closeIncrementQuantityDialog()
+            Event.OnBackClicked -> navigateBack()
+        }
+    }
+
+    private fun navigateBack() {
+        screenModelScope.launch {
+            launchEffect(Effect.NavigateBack)
         }
     }
 
