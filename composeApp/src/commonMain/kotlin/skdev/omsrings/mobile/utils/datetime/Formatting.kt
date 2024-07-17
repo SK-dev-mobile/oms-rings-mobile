@@ -37,7 +37,6 @@ expect fun LocalDate.format(pattern: String, default: String = ""): String
 
 fun LocalDate.format(pattern: DateTimePattern, default: String = ""): String {
     val r = format(pattern.patternValue, default)
-    Napier.d { "LocalDateFormat: $pattern and ${this.toString()} <-> $r" }
     return r
 }
 
