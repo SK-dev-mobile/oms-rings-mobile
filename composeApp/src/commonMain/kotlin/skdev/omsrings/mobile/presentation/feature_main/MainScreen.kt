@@ -40,6 +40,8 @@ import omsringsmobile.composeapp.generated.resources.user_settings_title
 import org.jetbrains.compose.resources.stringResource
 import skdev.omsrings.mobile.domain.model.DayInfoModel
 import skdev.omsrings.mobile.presentation.base.BaseScreen
+import skdev.omsrings.mobile.presentation.feature_day_orders.DayOrdersScreen
+import skdev.omsrings.mobile.presentation.feature_main.components.CalendarState
 import skdev.omsrings.mobile.presentation.feature_main.components.CalendarView
 import skdev.omsrings.mobile.presentation.feature_main.components.rememberCalendarState
 import skdev.omsrings.mobile.presentation.feature_user_settings.UserSettingsScreen
@@ -59,6 +61,9 @@ object MainScreen : BaseScreen("main_screen") {
         val navigator = LocalNavigator.currentOrThrow
         val uiState by screenModel.uiState.collectAsState()
         val updating by screenModel.updating.collectAsState()
+        val calendarState = rememberCalendarState {
+            screenModel.onEvent(MainScreenContract.Event.OnLoadMonthInfo(it))
+        }
 
         Scaffold(
             topBar = {
@@ -87,7 +92,11 @@ object MainScreen : BaseScreen("main_screen") {
             },
             floatingActionButton = {
                 ExtendedFloatingActionButton(
-                    onClick = { /* TODO */ }
+                    onClick = {
+                        navigator.push(
+                            DayOrdersScreen(selectedDay = calendarState.selectedDate.value)
+                        )
+                    }
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.Edit,
@@ -107,7 +116,7 @@ object MainScreen : BaseScreen("main_screen") {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues),
-                onAction = screenModel::onEvent,
+                calendarState = calendarState,
                 calendarDays = uiState.calendarDays,
                 updating = updating,
             )
@@ -117,14 +126,10 @@ object MainScreen : BaseScreen("main_screen") {
     @Composable
     private fun MainScreenContent(
         modifier: Modifier = Modifier,
-        onAction: OnAction,
+        calendarState: CalendarState,
         calendarDays: Map<LocalDate, DayInfoModel>,
         updating: Boolean,
     ) {
-        val calendarState = rememberCalendarState {
-            onAction(MainScreenContract.Event.OnLoadMonthInfo(it))
-        }
-
         Column(
             modifier = modifier
         ) {
