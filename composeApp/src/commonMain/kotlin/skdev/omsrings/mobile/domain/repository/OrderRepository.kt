@@ -1,5 +1,6 @@
 package skdev.omsrings.mobile.domain.repository
 
+import dev.gitlive.firebase.firestore.Timestamp
 import kotlinx.coroutines.flow.Flow
 import skdev.omsrings.mobile.domain.model.Order
 import skdev.omsrings.mobile.utils.error.DataError
@@ -11,4 +12,5 @@ interface OrderRepository {
     fun getAllOrders(): Flow<DataResult<List<Order>, DataError>>
     suspend fun updateOrder(order: Order): DataResult<Order, DataError>
     suspend fun deleteOrder(order: Order): DataResult<Unit, DataError>
+    suspend fun getAllOrdersByDateRange(start: Timestamp, end: Timestamp): DataResult<List<Order>, DataError>
 }

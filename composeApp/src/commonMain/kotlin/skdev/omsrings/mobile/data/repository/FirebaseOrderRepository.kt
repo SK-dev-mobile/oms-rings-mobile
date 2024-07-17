@@ -3,6 +3,7 @@ package skdev.omsrings.mobile.data.repository
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 import dev.gitlive.firebase.firestore.FirebaseFirestoreException
 import dev.gitlive.firebase.firestore.FirestoreExceptionCode
+import dev.gitlive.firebase.firestore.Timestamp
 import dev.gitlive.firebase.firestore.code
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -29,18 +30,22 @@ class FirebaseOrderRepository(
         try {
             val docSnapshot = ordersCollection.document(id).get()
             val order = docSnapshot.data<Order>()
-            if (order != null) {
-                emit(DataResult.success(order))
-            } else {
-                emit(DataResult.error(DataError.Order.NOT_FOUND))
-            }
+            emit(DataResult.success(order))
         } catch (e: Exception) {
             emit(DataResult.error(e.toDataError()))
         }
     }
 
     override fun getAllOrders(): Flow<DataResult<List<Order>, DataError>> {
-        TODO("Not yet implemented")
+        return flow {
+            try {
+                val querySnapshot = ordersCollection.get()
+                val orders = querySnapshot.documents.mapNotNull { it.data<Order>() }
+                emit(DataResult.success(orders))
+            } catch (e: Exception) {
+                emit(DataResult.error(e.toDataError()))
+            }
+        }
     }
 
     override suspend fun updateOrder(order: Order): DataResult<Order, DataError> =
@@ -52,6 +57,24 @@ class FirebaseOrderRepository(
 
     override suspend fun deleteOrder(order: Order): DataResult<Unit, DataError> {
         TODO("Not yet implemented")
+    }
+
+    override suspend fun getAllOrdersByDateRange(
+        start: Timestamp,
+        end: Timestamp
+    ): DataResult<List<Order>, DataError> {
+        return try {
+            val querySnapshot = ordersCollection
+                .where {
+                    "date" greaterThanOrEqualTo start
+                    "date" lessThanOrEqualTo end
+                }
+                .get()
+            val orders = querySnapshot.documents.mapNotNull { it.data<Order>() }
+            DataResult.success(orders)
+        } catch (e: Exception) {
+            DataResult.error(e.toDataError())
+        }
     }
 
     override fun Exception.toDataError(): DataError {
