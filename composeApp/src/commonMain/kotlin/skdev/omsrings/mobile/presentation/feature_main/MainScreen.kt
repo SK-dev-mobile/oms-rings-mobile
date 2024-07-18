@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,13 +31,17 @@ import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import io.github.aakira.napier.Napier
+import kotlinx.datetime.LocalDate
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.app_name
 import omsringsmobile.composeapp.generated.resources.edit_content
 import omsringsmobile.composeapp.generated.resources.user_profile_title
 import omsringsmobile.composeapp.generated.resources.user_settings_title
 import org.jetbrains.compose.resources.stringResource
+import skdev.omsrings.mobile.domain.model.DayInfoModel
 import skdev.omsrings.mobile.presentation.base.BaseScreen
+import skdev.omsrings.mobile.presentation.feature_day_orders.DayOrdersScreen
+import skdev.omsrings.mobile.presentation.feature_main.components.CalendarState
 import skdev.omsrings.mobile.presentation.feature_main.components.CalendarView
 import skdev.omsrings.mobile.presentation.feature_main.components.rememberCalendarState
 import skdev.omsrings.mobile.presentation.feature_user_settings.UserSettingsScreen
@@ -45,6 +50,8 @@ import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
 import skdev.omsrings.mobile.ui.components.helpers.Spacer
 import skdev.omsrings.mobile.ui.theme.values.Dimens
 
+private typealias OnAction = (MainScreenContract.Event) -> Unit
+
 object MainScreen : BaseScreen("main_screen") {
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -52,6 +59,11 @@ object MainScreen : BaseScreen("main_screen") {
     override fun MainContent() {
         val screenModel = koinScreenModel<MainScreenModel>()
         val navigator = LocalNavigator.currentOrThrow
+        val uiState by screenModel.uiState.collectAsState()
+        val updating by screenModel.updating.collectAsState()
+        val calendarState = rememberCalendarState {
+            screenModel.onEvent(MainScreenContract.Event.OnLoadMonthInfo(it))
+        }
 
         Scaffold(
             topBar = {
@@ -80,7 +92,11 @@ object MainScreen : BaseScreen("main_screen") {
             },
             floatingActionButton = {
                 ExtendedFloatingActionButton(
-                    onClick = { /* TODO */ }
+                    onClick = {
+                        navigator.push(
+                            DayOrdersScreen(selectedDay = calendarState.selectedDate.value)
+                        )
+                    }
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.Edit,
@@ -99,23 +115,29 @@ object MainScreen : BaseScreen("main_screen") {
             MainScreenContent(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
+                    .padding(paddingValues),
+                calendarState = calendarState,
+                calendarDays = uiState.calendarDays,
+                updating = updating,
             )
         }
     }
 
     @Composable
     private fun MainScreenContent(
-        modifier: Modifier = Modifier
+        modifier: Modifier = Modifier,
+        calendarState: CalendarState,
+        calendarDays: Map<LocalDate, DayInfoModel>,
+        updating: Boolean,
     ) {
-        val calendarState = rememberCalendarState()
-
         Column(
             modifier = modifier
         ) {
             CalendarView(
                 modifier = Modifier.fillMaxWidth(),
+                updating = updating,
                 state = calendarState,
+                calendarDays = calendarDays
             )
         }
     }

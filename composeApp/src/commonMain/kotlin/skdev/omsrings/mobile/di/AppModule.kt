@@ -19,6 +19,7 @@ import skdev.omsrings.mobile.domain.repository.UserSettingsRepository
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SendResetPasswordEmailUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignInUserUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignUpUserUseCase
+import skdev.omsrings.mobile.domain.usecase.feature_main.GetDaysInfoUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_order.CreateOrderUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_order.GetFoldersAndItemsInventory
 import skdev.omsrings.mobile.domain.usecase.feature_order.GetInventoryItemsByIdsUseCase
@@ -80,7 +81,8 @@ private val viewModels = module {
 
     factory<MainScreenModel> {
         MainScreenModel(
-            notificationManager = get()
+            notificationManager = get(),
+            getDaysInfoUseCase = get()
         )
     }
 
@@ -165,6 +167,13 @@ private val useCases = module {
     factory<UpdateOrderUseCase> { UpdateOrderUseCase(repository = get()) }
     factory<GetInventoryItemsByIdsUseCase> { GetInventoryItemsByIdsUseCase(repository = get()) }
 
+    // Feature Main
+    factory<GetDaysInfoUseCase> {
+        GetDaysInfoUseCase(
+            repository = get(),
+            notificationManager = get()
+        )
+    }
 
 }
 

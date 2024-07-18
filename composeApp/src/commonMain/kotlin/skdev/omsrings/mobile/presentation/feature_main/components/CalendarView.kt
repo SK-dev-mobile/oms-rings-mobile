@@ -1,7 +1,6 @@
 package skdev.omsrings.mobile.presentation.feature_main.components
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -42,14 +40,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
@@ -70,10 +65,11 @@ import omsringsmobile.composeapp.generated.resources.day_of_week_tuesday
 import omsringsmobile.composeapp.generated.resources.day_of_week_wednesday
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
+import skdev.omsrings.mobile.domain.model.DayInfoModel
 import skdev.omsrings.mobile.presentation.feature_main.components.CalendarState.Companion.MAX_MONTH_BUFFER
+import skdev.omsrings.mobile.ui.components.animations.shimmerEffect
 import skdev.omsrings.mobile.ui.components.helpers.Spacer
 import skdev.omsrings.mobile.ui.theme.CustomTheme
-import skdev.omsrings.mobile.ui.theme.values.AnimationSpec
 import skdev.omsrings.mobile.ui.theme.values.Dimens
 import skdev.omsrings.mobile.ui.theme.values.IconSize
 import skdev.omsrings.mobile.utils.datetime.DateTimePattern
@@ -90,22 +86,25 @@ fun rememberCalendarState(
 
 @Immutable
 data class YearMonth(val month: Month, val year: Int) {
-    private var localDate: LocalDate = LocalDate(year, month, 1)
+    private var firstLocalDate: LocalDate = LocalDate(year, month, 1)
 
     fun format(pattern: DateTimePattern = DateTimePattern.CALENDAR_MONTH_YEAR): String {
         require(pattern == DateTimePattern.CALENDAR_MONTH_YEAR)
-        return localDate.format(pattern)
+        return firstLocalDate.format(pattern)
     }
 
     val firstDayOfMonth: LocalDate
-        get() = localDate
+        get() = firstLocalDate
+
+    val lastDayOfMonth: LocalDate
+        get() = firstLocalDate.plus(1, DateTimeUnit.MONTH).minus(1, DateTimeUnit.DAY)
 
     fun plus(value: Int, unit: DateTimeUnit.DateBased): YearMonth {
-        return localDate.plus(value, unit).yearMonth
+        return firstLocalDate.plus(value, unit).yearMonth
     }
 
     fun minus(value: Int, unit: DateTimeUnit.DateBased): YearMonth {
-        return localDate.minus(value, unit).yearMonth
+        return firstLocalDate.minus(value, unit).yearMonth
     }
 }
 
@@ -146,6 +145,10 @@ class CalendarState(
     private val _startDayOfWeek = mutableStateOf(initialStartDayOfWeek)
     val startDayOfWeek: State<DayOfWeek> = _startDayOfWeek
 
+    init {
+        onMonthChanged(currentMonth.value)
+    }
+
     fun selectDate(date: LocalDate) {
         _selectedDate.value = date
         updateCurrentMonth(date.yearMonth)
@@ -175,7 +178,7 @@ fun CalendarView(
     showWeekBar: Boolean = true,
     showMonthBar: Boolean = true,
     updating: Boolean = false,
-    dateAddionalInfo: ((LocalDate) -> DateAdditionalInfo)? = null,
+    calendarDays: Map<LocalDate, DayInfoModel>,
 ) {
     val initialPage = CalendarState.MAX_MONTH_BUFFER
     val pagerState = rememberPagerState(
@@ -212,12 +215,20 @@ fun CalendarView(
             )
         }
 
-        if (updating) {
-            LinearProgressIndicator(
-                modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.primary,
-                trackColor = MaterialTheme.colorScheme.outline,
-            )
+        Box(
+            modifier = Modifier
+                .height(4.dp)
+                .fillMaxWidth()
+        ) {
+            if (updating) {
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .height(4.dp)
+                        .fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            }
         }
 
         Column(
@@ -237,7 +248,6 @@ fun CalendarView(
                 modifier = Modifier.fillMaxWidth(),
                 state = pagerState,
                 key = { it },
-                beyondBoundsPageCount = 2,
             ) { page ->
                 val month = remember(page) {
                     currentDate.yearMonth.plus(page - initialPage, DateTimeUnit.MONTH)
@@ -256,7 +266,7 @@ fun CalendarView(
                     currentDate = currentDate,
                     selectedDate = state.selectedDate.value,
                     onDateClick = state::selectDate,
-                    dateAddionalInfo = dateAddionalInfo,
+                    calendarDays = calendarDays,
                 )
             }
         }
@@ -271,9 +281,8 @@ private fun CalendarMonthView(
     currentDate: LocalDate,
     selectedDate: LocalDate,
     onDateClick: (LocalDate) -> Unit,
-    dateAddionalInfo: ((LocalDate) -> DateAdditionalInfo)?,
+    calendarDays: Map<LocalDate, DayInfoModel>,
 ) {
-
     val itemModifier: Modifier = remember {
         Modifier
             .fillMaxWidth()
@@ -290,7 +299,6 @@ private fun CalendarMonthView(
     ) {
         items(35) { dayOffset ->
             val date = startDay.plus(dayOffset, DateTimeUnit.DAY)
-            val addionalInfo = remember(date) { if (dateAddionalInfo != null) dateAddionalInfo(date) else DateAdditionalInfo(false, false) }
             DayView(
                 modifier = Modifier.fillMaxWidth(),
                 itemModifier = itemModifier,
@@ -298,8 +306,8 @@ private fun CalendarMonthView(
                 enabled = date.month == month.month,
                 selected = date == selectedDate,
                 currentDate = date == currentDate,
-                locked = addionalInfo.locked,
-                edited = addionalInfo.edited,
+                locked = calendarDays.get(date)?.isLocked ?: false,
+                edited = calendarDays.get(date)?.isEdited ?: false,
                 onClick = { onDateClick(date) },
             )
         }
@@ -430,6 +438,8 @@ private fun DayView(
 
             Row(
                 modifier = Modifier.height(IconSize.ExtraSmall),
+                horizontalArrangement = Arrangement.spacedBy(Dimens.spaceExtraSmall, Alignment.CenterHorizontally),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 if (locked) {
                     Icon(
@@ -439,8 +449,6 @@ private fun DayView(
                         contentDescription = null
                     )
                 }
-
-                Spacer(Dimens.spaceExtraSmall)
 
                 if (edited) {
                     Icon(

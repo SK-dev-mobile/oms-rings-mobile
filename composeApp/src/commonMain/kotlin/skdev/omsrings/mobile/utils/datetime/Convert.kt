@@ -23,7 +23,7 @@ fun LocalDate.toInstant(end: Boolean = false): Instant =
     LocalDateTime(
         date = this,
         time = if (end) LocalTime(23, 59, 59) else LocalTime(0, 0)
-    ).toInstant(TimeZone.UTC)
+    ).toInstant(TimeZone.currentSystemDefault())
 
 /**
  * Получение абсолютного времени из миллисекунд.
