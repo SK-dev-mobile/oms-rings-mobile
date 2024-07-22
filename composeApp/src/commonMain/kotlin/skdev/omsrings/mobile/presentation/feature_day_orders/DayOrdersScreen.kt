@@ -3,8 +3,10 @@ package skdev.omsrings.mobile.presentation.feature_day_orders
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
@@ -115,8 +117,7 @@ fun DayOrdersScreenContent(
     LazyColumn(
         modifier = modifier,
         state = lazyState,
-        contentPadding = PaddingValues(vertical = Dimens.spaceMedium),
-        verticalArrangement = Arrangement.spacedBy(Dimens.spaceMedium),
+        contentPadding = WindowInsets.navigationBars.asPaddingValues()
     ) {
         items(orders, key = { it.id }) {
             OrderView(

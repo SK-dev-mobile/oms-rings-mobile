@@ -50,7 +50,7 @@ fun OrderView(
     ) {
         OrderHeader(
             modifier = Modifier
-                .padding(horizontal = Dimens.spaceMedium)
+                .padding(Dimens.spaceMedium)
                 .fillMaxWidth(),
             orderId = orderInfoModel.id,
             createdBy = orderInfoModel.createdBy,
@@ -61,8 +61,6 @@ fun OrderView(
                 }
             }
         )
-
-        Spacer(Dimens.spaceMedium)
 
         HorizontalPager(
             modifier = Modifier
