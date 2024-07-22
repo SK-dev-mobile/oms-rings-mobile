@@ -100,6 +100,9 @@ kotlin {
             implementation(libs.firebase.auth.android)
             implementation(libs.firebase.firestore.android)
             implementation(libs.firebase.messaging.android)
+
+            // Preview
+            implementation(compose.preview)
         }
 
         iosMain.dependencies {

@@ -7,13 +7,17 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.annotation.ExperimentalVoyagerApi
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.koinInject
-import skdev.omsrings.mobile.presentation.feature_main.MainScreen
+import skdev.omsrings.mobile.presentation.feature_day_orders.DayOrdersScreen
 import skdev.omsrings.mobile.ui.components.notification.NotificationDisplay
 import skdev.omsrings.mobile.ui.theme.AppTheme
 import skdev.omsrings.mobile.utils.notification.NotificationManager
@@ -27,7 +31,9 @@ internal fun App() = AppTheme(
 
     Box {
         Navigator(
-            MainScreen
+            DayOrdersScreen(
+                selectedDay = remember { Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date }
+            )
         ) { navigator ->
             SlideTransition(
                 navigator = navigator,

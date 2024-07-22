@@ -193,4 +193,20 @@
     <string name="user_profile_title">Профиль</string>
     <string name="save_changes">Сохранить</string>
 
+    <!-- DayOrdersScreen -->
+    <string name="order_created_status">Заказ новый</string>
+    <string name="order_completed_status">Заказ выполнен</string>
+    <string name="order_archived_status">Заказ списан</string>
+    <string name="event_type_created">Создан</string>
+    <string name="event_type_completed">Завершен</string>
+    <string name="event_type_archived">Архивирован</string>
+    <string name="event_type_changed">Изменен</string>
+    <string name="full_history">Полная история</string>
+    <string name="collapse">Свернуть</string>
+    <string name="history">История</string>
+    <string name="order_number">#%1$s</string>
+    <string name="item_quantity">x%1$d</string>
+    <string name="order_composition">Состав заказа</string>
+    <string name="order_general_information">Общая информация</string>
+
 </resources>

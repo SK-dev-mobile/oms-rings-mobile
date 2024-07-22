@@ -1,5 +1,7 @@
 package skdev.omsrings.mobile.utils.datetime
 
+import dev.gitlive.firebase.firestore.Timestamp
+import dev.gitlive.firebase.firestore.toMilliseconds
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -41,3 +43,11 @@ fun Instant.toEndOfDay(): Instant =
             time = LocalTime(23, 59, 59)
         ).toInstant(TimeZone.UTC)
     }
+
+fun Timestamp.toLocalDate(): LocalDate =
+    Instant.fromEpochMilliseconds(this.toMilliseconds().toLong()).toLocalDateTime(TimeZone.currentSystemDefault()).date
+
+
+fun Timestamp.toLocalDateTime(): LocalDateTime =
+    Instant.fromEpochMilliseconds(this.toMilliseconds().toLong()).toLocalDateTime(TimeZone.currentSystemDefault())
+
