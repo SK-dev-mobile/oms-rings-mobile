@@ -52,8 +52,6 @@ fun OrderHistory(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(Dimens.spaceSmall)
     ) {
-        Spacer(Dimens.spaceSmall)
-
         createdEvent?.let { event ->
             Text(
                 text = stringResource(Res.string.history),

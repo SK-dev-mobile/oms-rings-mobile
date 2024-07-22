@@ -32,9 +32,7 @@ import omsringsmobile.composeapp.generated.resources.comment
 import omsringsmobile.composeapp.generated.resources.delivery
 import omsringsmobile.composeapp.generated.resources.delivery_address
 import omsringsmobile.composeapp.generated.resources.order_composition
-import omsringsmobile.composeapp.generated.resources.order_delivery_time
 import omsringsmobile.composeapp.generated.resources.order_general_information
-import omsringsmobile.composeapp.generated.resources.order_pickup_time
 import omsringsmobile.composeapp.generated.resources.pickup
 import org.jetbrains.compose.resources.stringResource
 import skdev.omsrings.mobile.ui.components.buttons.InlineIconButton
@@ -76,8 +74,6 @@ fun OrderMainInfo(
                 onClick = onOrderItemsClicked
             )
         }
-
-        Spacer(Dimens.spaceSmall)
 
         Row(
             modifier = Modifier.fillMaxWidth(),
