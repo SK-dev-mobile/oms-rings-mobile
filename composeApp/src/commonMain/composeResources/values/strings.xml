@@ -208,5 +208,5 @@
     <string name="item_quantity">x%1$d</string>
     <string name="order_composition">Состав заказа</string>
     <string name="order_general_information">Общая информация</string>
-
+    <string name="create">Создать</string>
 </resources>
