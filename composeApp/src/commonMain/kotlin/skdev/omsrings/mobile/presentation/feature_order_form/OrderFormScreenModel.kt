@@ -216,12 +216,10 @@ class OrderFormScreenModel(
 
     private fun loadExistingOrder(orderId: String) {
         screenModelScope.launch {
-            getOrderByIdUseCase(orderId).collect { orderResult ->
-                orderResult.ifSuccess { order ->
-                    existingOrder = order.data
-                    updateStateWithExistingOrder(order.data)
-                    fetchAndUpdateSelectedItems(order.data.items)
-                }
+            getOrderByIdUseCase(orderId).ifSuccess { orderResult ->
+                existingOrder = orderResult.data
+                updateStateWithExistingOrder(orderResult.data)
+                fetchAndUpdateSelectedItems(orderResult.data.items)
             }
         }
     }

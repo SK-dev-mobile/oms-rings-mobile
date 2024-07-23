@@ -54,5 +54,6 @@ enum class DateTimePattern(val patternValue: String) {
     SIMPLE_DATE("dd.MM.yyyy"),
     FULL_DATE_TIME("dd.MM.yyyy HH:mm:ss"),
     FULL_DATE_TIME_WITHOUT_SECONDS("dd.MM.yyyy HH:mm"),
+    HISTORY_EVENT_TIME("dd.MM HH:mm"),
     SIMPLE_TIME("HH:mm")
 }

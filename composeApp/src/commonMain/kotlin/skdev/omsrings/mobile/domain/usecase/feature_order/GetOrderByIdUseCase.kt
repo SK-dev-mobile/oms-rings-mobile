@@ -7,7 +7,7 @@ import skdev.omsrings.mobile.utils.error.DataError
 import skdev.omsrings.mobile.utils.result.DataResult
 
 class GetOrderByIdUseCase(private val repository: OrderRepository) {
-    suspend operator fun invoke(orderId: String): Flow<DataResult<Order, DataError>> {
+    suspend operator fun invoke(orderId: String): DataResult<Order, DataError> {
         return repository.getOrderById(orderId)
     }
 }

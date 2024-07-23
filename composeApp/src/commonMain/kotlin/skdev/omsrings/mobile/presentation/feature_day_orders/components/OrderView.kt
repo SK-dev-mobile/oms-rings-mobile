@@ -80,7 +80,10 @@ fun OrderView(
                     pickupTime = orderInfoModel.pickupTime,
                     onOrderItemsClicked = {
                         scope.launch {
-                            pagerState.animateScrollToPage(1, animationSpec = AnimationSpec.tweeSlow)
+                            pagerState.animateScrollToPage(
+                                1,
+                                animationSpec = AnimationSpec.tweeSlow
+                            )
                         }
                     }
                 )
@@ -108,8 +111,13 @@ fun OrderView(
                 .padding(horizontal = Dimens.spaceMedium)
                 .fillMaxWidth(),
             status = orderInfoModel.status,
-            onChangeStatusClicked = {
-                onAction(DayOrdersScreenContract.Event.OnNextOrderStatusClicked(orderInfoModel.id))
+            onChangeStatusClicked = { status ->
+                onAction(
+                    DayOrdersScreenContract.Event.OnUpdateOrderStatusClicked(
+                        orderInfoModel.id,
+                        status
+                    )
+                )
             }
         )
 

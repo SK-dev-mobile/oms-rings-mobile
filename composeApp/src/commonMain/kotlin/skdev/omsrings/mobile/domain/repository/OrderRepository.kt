@@ -10,7 +10,7 @@ import skdev.omsrings.mobile.utils.result.DataResult
 
 interface OrderRepository {
     suspend fun createOrder(order: Order): DataResult<Order, DataError>
-    fun getOrderById(id: String): Flow<DataResult<Order, DataError>>
+    suspend fun getOrderById(id: String): DataResult<Order, DataError>
     fun getAllOrders(): Flow<DataResult<List<Order>, DataError>>
     suspend fun updateOrder(order: Order): DataResult<Order, DataError>
     suspend fun deleteOrder(order: Order): DataResult<Unit, DataError>

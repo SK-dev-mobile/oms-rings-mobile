@@ -112,30 +112,33 @@ fun EventItem(
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(
-            text = event.time,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.primary,
-            maxLines = 1,
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = event.time,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary,
+                maxLines = 1,
+            )
 
-        Spacer(Dimens.spaceExtraSmall)
+            Spacer(Dimens.spaceExtraSmall)
 
-        Text(
-            modifier = Modifier.width(128.dp),
-            text = stringResource(event.type.toResValue()),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.primary,
-            maxLines = 1,
-        )
+            Text(
+                modifier = Modifier.width(128.dp),
+                text = stringResource(event.type.toResValue()),
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 1,
+            )
+        }
 
         Spacer(Dimens.spaceExtraSmall)
 
         Text(
             text = event.userFullName,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.primary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )

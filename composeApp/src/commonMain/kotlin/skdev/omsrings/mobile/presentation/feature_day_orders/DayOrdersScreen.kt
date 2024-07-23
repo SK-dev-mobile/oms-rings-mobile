@@ -269,5 +269,4 @@ fun DayOrdersScreenContent(
             state = refreshState
         )
     }
-
 }

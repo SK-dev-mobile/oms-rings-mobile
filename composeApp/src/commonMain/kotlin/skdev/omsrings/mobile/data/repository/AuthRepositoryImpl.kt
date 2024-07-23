@@ -47,9 +47,30 @@ class AuthRepositoryImpl(
         fullName: String,
         isEmployer: Boolean
     ): DataResult<Unit, DataError> = withCathing {
-        val user = firebaseAuth.currentUser ?: return@withCathing DataResult.Error(DataError.Network.UNKNOWN)
+        val user = firebaseAuth.currentUser ?: return@withCathing DataResult.Error(DataError.Network.UNAUTHORIZED)
         val document = userInfoDocument ?: userInfoCollection.add(user.uid)
-        setUserInfo(document, UserInfo(fullName, phoneNumber, isEmployer))
+        val snapshot = document.get()
+        val oldInfo = if (snapshot.exists) {
+            snapshot.data<UserInfo>()
+        } else {
+            UserInfo.DEFAULT
+        }
+        setUserInfo(
+            document,
+            UserInfo(
+                fullName = if (fullName.isNotBlank()) fullName else oldInfo.fullName,
+                phoneNumber = if (phoneNumber.isNotBlank()) phoneNumber else oldInfo.phoneNumber,
+                isEmployer = isEmployer
+            )
+        )
+    }
+
+    override suspend fun gerUserInfo(): DataResult<UserInfo, DataError> {
+        return withCathing {
+            val document = userInfoDocument ?: return@withCathing DataResult.Error(DataError.Network.UNAUTHORIZED)
+            val userInfo = document.get().data<UserInfo>()
+            DataResult.Success(userInfo)
+        }
     }
 
     private suspend fun setUserInfo(

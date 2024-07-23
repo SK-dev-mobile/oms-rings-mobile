@@ -34,7 +34,7 @@ import skdev.omsrings.mobile.ui.theme.values.Dimens
 fun OrderStatus(
     modifier: Modifier = Modifier,
     status: OrderStatus,
-    onChangeStatusClicked: () -> Unit,
+    onChangeStatusClicked: (status: OrderStatus) -> Unit,
 ) {
     Row(
        modifier = modifier
@@ -81,7 +81,15 @@ fun OrderStatus(
                 modifier = Modifier
                     .aspectRatio(1f)
                     .fillMaxHeight(),
-                onClick = onChangeStatusClicked,
+                onClick = {
+                    onChangeStatusClicked(
+                        when(status) {
+                            OrderStatus.CREATED -> OrderStatus.COMPLETED
+                            OrderStatus.COMPLETED -> OrderStatus.ARCHIVED
+                            else -> OrderStatus.CREATED
+                        }
+                    )
+                },
                 contentPadding = PaddingValues(Dimens.spaceSmall),
                 shape = MaterialTheme.shapes.large,
             ) {

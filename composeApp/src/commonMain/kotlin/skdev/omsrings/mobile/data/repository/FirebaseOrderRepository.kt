@@ -38,14 +38,10 @@ class FirebaseOrderRepository(
             DataResult.success(order)
         }
 
-    override fun getOrderById(id: String): Flow<DataResult<Order, DataError>> = flow {
-        try {
-            val docSnapshot = ordersCollection.document(id).get()
-            val order = docSnapshot.data<Order>()
-            emit(DataResult.success(order))
-        } catch (e: Exception) {
-            emit(DataResult.error(e.toDataError()))
-        }
+    override suspend fun getOrderById(id: String): DataResult<Order, DataError> = withCathing {
+        val docSnapshot = ordersCollection.document(id).get()
+        val order = docSnapshot.data<Order>()
+        DataResult.success(order)
     }
 
     override fun getAllOrders(): Flow<DataResult<List<Order>, DataError>> {
@@ -60,18 +56,15 @@ class FirebaseOrderRepository(
         }
     }
 
-    override suspend fun getOrdersByDay(date: Timestamp): DataResult<List<Order>, DataError> {
-        return try {
+    override suspend fun getOrdersByDay(date: Timestamp): DataResult<List<Order>, DataError> =
+        withCathing {
             val querySnapshot = ordersCollection.where {
                 ("date" greaterThanOrEqualTo date.asStartOfDay()) and ("date" lessThanOrEqualTo date.asEndOfDay())
             }.get()
             val orders = querySnapshot.documents.mapNotNull { it.data<Order>() }
             DataResult.success(orders)
-        } catch (e: Exception) {
-            Napier.e(e, tag = TAG) { e.message ?: "Unknown error" }
-            DataResult.error(e.toDataError())
         }
-    }
+
 
     override suspend fun updateOrder(order: Order): DataResult<Order, DataError> =
         withCathing {

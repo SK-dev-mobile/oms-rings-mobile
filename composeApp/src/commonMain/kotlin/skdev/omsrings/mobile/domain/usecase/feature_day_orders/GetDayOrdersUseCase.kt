@@ -57,7 +57,7 @@ class GetDayOrdersUseCase(
                 status = order.status,
                 history = order.history.map {
                     OrderHistoryEvent(
-                        time = it.time.toLocalDateTime().format(DateTimePattern.FULL_DATE_TIME_WITHOUT_SECONDS),
+                        time = it.time.toLocalDateTime().format(DateTimePattern.HISTORY_EVENT_TIME),
                         type = it.type,
                         userFullName = it.userFullName
                     )
