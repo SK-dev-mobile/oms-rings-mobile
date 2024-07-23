@@ -84,7 +84,7 @@ object MainScreen : BaseScreen("main_screen") {
                 ExtendedFloatingActionButton(
                     onClick = {
                         navigator.push(
-                            DayOrdersScreen(selectedDay = calendarState.selectedDate.value)
+                            DayOrdersScreen(selectedDate = calendarState.selectedDate.value)
                         )
                     }
                 ) {

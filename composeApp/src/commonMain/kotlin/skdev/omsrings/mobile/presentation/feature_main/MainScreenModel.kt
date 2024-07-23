@@ -7,9 +7,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.LocalDate
-import skdev.omsrings.mobile.domain.model.DayInfoModel
-import skdev.omsrings.mobile.domain.model.Order
 import skdev.omsrings.mobile.domain.usecase.feature_main.GetDaysInfoUseCase
 import skdev.omsrings.mobile.presentation.base.BaseScreenModel
 import skdev.omsrings.mobile.presentation.feature_main.components.YearMonth
@@ -37,7 +34,7 @@ class MainScreenModel(
 
     private fun onLoadMonthInfo(month: YearMonth) {
         screenModelScope.launch {
-            onUpdateState()
+            startUpdating()
             Napier.d(tag = TAG) { "Load days info from ${month.firstDayOfMonth} to ${month.lastDayOfMonth}" }
             getDaysInfoUseCase(
                 start = month.firstDayOfMonth,
@@ -51,7 +48,7 @@ class MainScreenModel(
                 }
             }
             delay(1.seconds) // Ожидание, чтобы показывать progress bar дольше, чем реальная загрузка
-            onUpdatedState()
+            stopUpdating()
         }
     }
 

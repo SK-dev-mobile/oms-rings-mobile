@@ -131,10 +131,11 @@ private val viewModels = module {
     }
 
     // Day Orders
-    factory<DayOrdersScreenModel> {
+    factory<DayOrdersScreenModel> { parameters ->
         DayOrdersScreenModel(
             notificationManager = get(),
             getDayOrdersUseCase = get(),
+            selectedDate = parameters.get()
         )
     }
 

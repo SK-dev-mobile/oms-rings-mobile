@@ -7,14 +7,17 @@ import skdev.omsrings.mobile.presentation.feature_auth.enitity.UserRole
 
 object DayOrdersScreenContract {
     sealed interface Event {
-        data class OnStart(val selectedDate: LocalDate) : Event
+        object OnStart : Event
         object OnDispose : Event
         data class OnNextOrderStatusClicked(val orderId: UUID) : Event
         data class OnCallClicked(val number: String) : Event
         data class OnOrderDetailsClicked(val orderId: UUID) : Event
+        object OnCreateOrderClicked : Event
     }
 
     sealed interface Effect {
         object NaivgateBack : Effect
+        data class NavigateToOrderDetails(val selectedDate: LocalDate, val orderId: UUID) : Effect
+        data class NavigateToOrderForm(val selectedDate: LocalDate) : Effect
     }
 }

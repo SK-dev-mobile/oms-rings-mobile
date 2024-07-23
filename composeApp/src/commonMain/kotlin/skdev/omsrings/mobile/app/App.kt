@@ -32,7 +32,7 @@ internal fun App() = AppTheme(
     Box {
         Navigator(
             DayOrdersScreen(
-                selectedDay = remember { Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date }
+                selectedDate = remember { Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date }
             )
         ) { navigator ->
             SlideTransition(

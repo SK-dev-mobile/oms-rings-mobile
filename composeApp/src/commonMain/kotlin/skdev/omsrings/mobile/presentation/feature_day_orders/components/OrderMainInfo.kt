@@ -102,7 +102,7 @@ fun OrderMainInfo(
         }
 
 
-        if (comment != null) {
+        if (comment != null && comment.isNotBlank()) {
 
             InfoElementRow(
                 modifier = Modifier.fillMaxWidth(),
