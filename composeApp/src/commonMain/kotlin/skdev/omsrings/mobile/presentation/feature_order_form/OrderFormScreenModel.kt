@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
@@ -37,6 +38,10 @@ import skdev.omsrings.mobile.domain.usecase.feature_order.UpdateOrderUseCase
 import skdev.omsrings.mobile.presentation.base.BaseScreenModel
 import skdev.omsrings.mobile.presentation.feature_order_form.components.ProductSelectionEvent
 import skdev.omsrings.mobile.presentation.feature_order_form.components.ProductSelectionState
+import skdev.omsrings.mobile.utils.datetime.DateTimePattern
+import skdev.omsrings.mobile.utils.datetime.format
+import skdev.omsrings.mobile.utils.datetime.toInstant
+import skdev.omsrings.mobile.utils.datetime.toTimestamp
 import skdev.omsrings.mobile.utils.fields.FormField
 import skdev.omsrings.mobile.utils.fields.flowBlock
 import skdev.omsrings.mobile.utils.fields.validators.ValidationResult
@@ -56,7 +61,7 @@ class OrderFormScreenModel(
     private val getFoldersAndItemsInventory: GetFoldersAndItemsInventory,
     private val getOrderByIdUseCase: GetOrderByIdUseCase,
     private val getInventoryItemsByIdsUseCase: GetInventoryItemsByIdsUseCase,
-    private val selectedDate: Timestamp,
+    private val selectedDate: LocalDate,
     private val orderId: String? = null
 ) : BaseScreenModel<OrderFormContract.Event, OrderFormContract.Effect>(
     notificationManager
@@ -78,7 +83,7 @@ class OrderFormScreenModel(
         isEditMode = orderId != null,
         orderId = orderId,
         contactPhoneField = createFormField(Res.string.cant_be_blank),
-        deliveryDate = formatFromTimestampToHumanDate(selectedDate),
+        deliveryDate = selectedDate.format(DateTimePattern.SIMPLE_DATE),
         deliveryMethod = DeliveryMethod.PICKUP,
         deliveryAddressField = createFormField(Res.string.cant_be_blank),
         deliveryTimeField = createFormField(Res.string.time_cant_be_empty),
@@ -191,7 +196,7 @@ class OrderFormScreenModel(
         val state = _uiState.value
         return Order(
             id = existingOrder?.id ?: randomUUID(),
-            date = selectedDate,
+            date = selectedDate.toTimestamp(),
             address = state.deliveryAddressField.data.value,
             comment = state.deliveryCommentField.data.value,
             contactPhone = state.contactPhoneField.data.value,
@@ -302,28 +307,8 @@ class OrderFormScreenModel(
     private fun timestampFromDeliveryTime(time: String): Timestamp {
         val (hours, minutes) = time.split(":").map { it.toInt() }
         val localTime = LocalTime(hours, minutes)
-
-        val selectedLocalDate = Instant.fromEpochMilliseconds(selectedDate.seconds * MILLIS_IN_SECOND)
-            .toLocalDateTime(TimeZone.currentSystemDefault())
-            .date
-
-        val localDateTime = LocalDateTime(selectedLocalDate, localTime)
-        val instant = localDateTime.toInstant(TimeZone.currentSystemDefault())
-
-        return Timestamp(instant.epochSeconds, instant.nanosecondsOfSecond)
-    }
-
-    /**
-     * Formats the timestamp to a human-readable date
-     * @param timestamp the timestamp to format
-     * @return the formatted date string in the format "dd.MM.yyyy"
-     */
-    private fun formatFromTimestampToHumanDate(timestamp: Timestamp): String {
-        val instant = Instant.fromEpochMilliseconds(timestamp.seconds * MILLIS_IN_SECOND)
-        val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-        return "${localDateTime.dayOfMonth.toString().padStart(2, '0')}.${
-            localDateTime.monthNumber.toString().padStart(2, '0')
-        }.${localDateTime.year}"
+        val selectedLocalDateTime = LocalDateTime(selectedDate, localTime)
+        return selectedLocalDateTime.toTimestamp()
     }
 }
 

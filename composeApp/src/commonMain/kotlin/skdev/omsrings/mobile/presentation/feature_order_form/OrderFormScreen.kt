@@ -14,6 +14,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import dev.gitlive.firebase.firestore.Timestamp
 import io.github.aakira.napier.Napier
+import kotlinx.datetime.LocalDate
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.confirm_order
 import omsringsmobile.composeapp.generated.resources.create_order
@@ -35,7 +36,7 @@ import skdev.omsrings.mobile.utils.flow.observeAsEffects
 
 
 class OrderFormScreen(
-    private val selectedDate: Timestamp,
+    private val selectedDate: LocalDate,
     private val orderId: String? = null
 ) : BaseScreen("order_form_screen") {
     @Composable

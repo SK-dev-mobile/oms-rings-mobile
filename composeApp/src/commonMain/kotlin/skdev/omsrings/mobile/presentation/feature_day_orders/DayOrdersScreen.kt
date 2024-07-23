@@ -102,9 +102,7 @@ class DayOrdersScreen(
                                 onClick = {
                                     navigator.push(
                                         OrderFormScreen(
-                                            selectedDate = Timestamp.fromMilliseconds(
-                                                selectedDay.toInstant().toEpochMilliseconds().toDouble()
-                                            )
+                                            selectedDate = selectedDay
                                         )
                                     )
                                 }
@@ -161,9 +159,7 @@ class DayOrdersScreen(
                         onClick = {
                             navigator.push(
                                 OrderFormScreen(
-                                    selectedDate = Timestamp.fromMilliseconds(
-                                        selectedDay.toInstant().toEpochMilliseconds().toDouble()
-                                    )
+                                    selectedDate = selectedDay
                                 )
                             )
                         }
