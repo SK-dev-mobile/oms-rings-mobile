@@ -20,5 +20,6 @@ object DayOrdersScreenContract {
         object NaivgateBack : Effect
         data class NavigateToOrderDetails(val selectedDate: LocalDate, val orderId: UUID) : Effect
         data class NavigateToOrderForm(val selectedDate: LocalDate) : Effect
+        data class IntentCallAction(val phoneNumber: String) : Effect
     }
 }

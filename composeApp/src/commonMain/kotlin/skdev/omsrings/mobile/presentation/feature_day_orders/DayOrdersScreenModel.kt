@@ -29,13 +29,9 @@ class DayOrdersScreenModel(
 
     override fun onEvent(event: DayOrdersScreenContract.Event) {
         when (event) {
-            is DayOrdersScreenContract.Event.OnCallClicked -> {
+            is DayOrdersScreenContract.Event.OnCallClicked -> onCallClicked(number = event.number)
 
-            }
-
-            DayOrdersScreenContract.Event.OnDispose -> {
-
-            }
+            DayOrdersScreenContract.Event.OnDispose -> {}
 
             is DayOrdersScreenContract.Event.OnUpdateOrderStatusClicked -> onUpdateOrderStatusClicked(
                 orderId = event.orderId,
@@ -88,6 +84,12 @@ class DayOrdersScreenModel(
             ).ifSuccess {
                 fetchData()
             }
+        }
+    }
+
+    private fun onCallClicked(number: String) {
+        screenModelScope.launch {
+            launchEffect(DayOrdersScreenContract.Effect.IntentCallAction(number))
         }
     }
 

@@ -16,6 +16,7 @@ import skdev.omsrings.mobile.utils.datetime.toLocalDateTime
 import skdev.omsrings.mobile.presentation.feature_day_orders.enitity.OrderItem as OrderItemModel
 import skdev.omsrings.mobile.utils.datetime.toTimestamp
 import skdev.omsrings.mobile.utils.error.DataError
+import skdev.omsrings.mobile.utils.format.formatPhoneNumber
 import skdev.omsrings.mobile.utils.notification.NotificationManager
 import skdev.omsrings.mobile.utils.result.DataResult
 import skdev.omsrings.mobile.utils.result.ifError
@@ -51,7 +52,7 @@ class GetDayOrdersUseCase(
                 date = order.date.toLocalDate().format(DateTimePattern.SIMPLE_DATE),
                 address = order.address,
                 comment = order.comment,
-                contactPhone = order.contactPhone?.let { "+" + it },
+                contactPhone = order.contactPhone?.let { formatPhoneNumber("+" + it) },
                 isDelivery = order.isDelivery,
                 pickupTime = order.pickupTime.toLocalDateTime().format(DateTimePattern.SIMPLE_TIME),
                 status = order.status,

@@ -43,6 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -90,6 +91,7 @@ class DayOrdersScreen(
         }
 
         val refreshState = rememberPullToRefreshState()
+        val uriHandler = LocalUriHandler.current
 
         LaunchedEffect(refreshState.isRefreshing) {
             if (refreshState.isRefreshing) {
@@ -103,10 +105,11 @@ class DayOrdersScreen(
         }
 
         screenModel.effects.observeAsEffects {
-            when(it) {
+            when (it) {
                 DayOrdersScreenContract.Effect.NaivgateBack -> {
                     navigator.pop()
                 }
+
                 is DayOrdersScreenContract.Effect.NavigateToOrderDetails -> {
                     navigator.push(
                         OrderFormScreen(
@@ -115,12 +118,17 @@ class DayOrdersScreen(
                         )
                     )
                 }
+
                 is DayOrdersScreenContract.Effect.NavigateToOrderForm -> {
                     navigator.push(
                         OrderFormScreen(
                             selectedDate = it.selectedDate,
                         )
                     )
+                }
+
+                is DayOrdersScreenContract.Effect.IntentCallAction -> {
+                    uriHandler.openUri("tel:${it.phoneNumber}")
                 }
             }
         }
