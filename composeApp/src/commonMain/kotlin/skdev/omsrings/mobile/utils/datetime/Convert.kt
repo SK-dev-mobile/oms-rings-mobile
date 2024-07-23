@@ -45,9 +45,11 @@ fun Instant.toEndOfDay(): Instant =
         ).toInstant(TimeZone.UTC)
     }
 
+fun Timestamp.toInstant(): Instant =
+    Instant.fromEpochMilliseconds(this.toMilliseconds().toLong())
+
 fun Timestamp.toLocalDate(): LocalDate =
     Instant.fromEpochMilliseconds(this.toMilliseconds().toLong()).toLocalDateTime(TimeZone.currentSystemDefault()).date
-
 
 fun Timestamp.toLocalDateTime(): LocalDateTime =
     Instant.fromEpochMilliseconds(this.toMilliseconds().toLong()).toLocalDateTime(TimeZone.currentSystemDefault())

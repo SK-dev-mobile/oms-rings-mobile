@@ -19,6 +19,7 @@ import skdev.omsrings.mobile.domain.repository.UserSettingsRepository
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SendResetPasswordEmailUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignInUserUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignUpUserUseCase
+import skdev.omsrings.mobile.domain.usecase.feature_day_orders.GetDayOrdersUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_main.GetDaysInfoUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_order.CreateOrderUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_order.GetFoldersAndItemsInventory
@@ -30,6 +31,7 @@ import skdev.omsrings.mobile.domain.usecase.feature_user_settings.GetUserSetting
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.UpdateNotificationSettingsUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.UpdateShowClearedOrdersSettingsUseCase
 import skdev.omsrings.mobile.presentation.feature_auth.AuthScreenModel
+import skdev.omsrings.mobile.presentation.feature_day_orders.DayOrdersScreenModel
 import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenModel
 import skdev.omsrings.mobile.presentation.feature_main.MainScreenModel
 import skdev.omsrings.mobile.presentation.feature_order_form.OrderFormScreenModel
@@ -128,6 +130,14 @@ private val viewModels = module {
         )
     }
 
+    // Day Orders
+    factory<DayOrdersScreenModel> {
+        DayOrdersScreenModel(
+            notificationManager = get(),
+            getDayOrdersUseCase = get(),
+        )
+    }
+
 }
 
 private val useCases = module {
@@ -175,6 +185,14 @@ private val useCases = module {
         )
     }
 
+    // Feature Day Orders
+    factory<GetDayOrdersUseCase> {
+        GetDayOrdersUseCase(
+            orderRepository = get(),
+            inventoryRepository = get(),
+            notificationManager = get()
+        )
+    }
 }
 
 private fun commonModule() = listOf(data, utils, viewModels, useCases)

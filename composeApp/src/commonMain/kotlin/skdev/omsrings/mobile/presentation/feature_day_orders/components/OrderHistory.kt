@@ -1,7 +1,5 @@
 package skdev.omsrings.mobile.presentation.feature_day_orders.components
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,7 +9,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material.icons.rounded.ArrowDropUp
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,8 +27,9 @@ import omsringsmobile.composeapp.generated.resources.collapse
 import omsringsmobile.composeapp.generated.resources.full_history
 import omsringsmobile.composeapp.generated.resources.history
 import org.jetbrains.compose.resources.stringResource
+import skdev.omsrings.mobile.domain.model.OrderHistoryEventType
 import skdev.omsrings.mobile.presentation.feature_day_orders.enitity.OrderHistoryEvent
-import skdev.omsrings.mobile.presentation.feature_day_orders.enitity.OrderHistoryEventType
+import skdev.omsrings.mobile.presentation.feature_day_orders.enitity.toResValue
 import skdev.omsrings.mobile.ui.components.buttons.InlineIconButton
 import skdev.omsrings.mobile.ui.components.helpers.Spacer
 import skdev.omsrings.mobile.ui.theme.values.Dimens
@@ -126,7 +124,7 @@ fun EventItem(
 
         Text(
             modifier = Modifier.width(128.dp),
-            text = stringResource(event.type.resValue),
+            text = stringResource(event.type.toResValue()),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.primary,
             maxLines = 1,

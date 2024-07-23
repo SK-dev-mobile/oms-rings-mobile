@@ -1,5 +1,6 @@
 package skdev.omsrings.mobile.presentation.feature_day_orders.enitity
 
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.event_type_archived
@@ -10,6 +11,8 @@ import omsringsmobile.composeapp.generated.resources.order_archived_status
 import omsringsmobile.composeapp.generated.resources.order_completed_status
 import omsringsmobile.composeapp.generated.resources.order_created_status
 import org.jetbrains.compose.resources.StringResource
+import skdev.omsrings.mobile.domain.model.OrderHistoryEventType
+import skdev.omsrings.mobile.domain.model.OrderStatus
 import skdev.omsrings.mobile.domain.model.UUID
 
 
@@ -42,18 +45,22 @@ data class OrderHistoryEvent(
     val userFullName: String,
 )
 
-enum class OrderHistoryEventType(val resValue: StringResource) {
-    CREATED(Res.string.event_type_created),
-    COMPLETED(Res.string.event_type_completed),
-    ARCHIVED(Res.string.event_type_archived),
-    CHANGED(Res.string.event_type_changed)
+
+fun OrderHistoryEventType.toResValue(): StringResource {
+    return when (this) {
+        OrderHistoryEventType.CREATED -> Res.string.event_type_created
+        OrderHistoryEventType.COMPLETED -> Res.string.event_type_completed
+        OrderHistoryEventType.ARCHIVED -> Res.string.event_type_archived
+        OrderHistoryEventType.CHANGED -> Res.string.event_type_changed
+    }
 }
 
-@Serializable
-enum class OrderStatus(val resValue: StringResource) {
-    CREATED(Res.string.order_created_status),
-    COMPLETED(Res.string.order_completed_status),
-    ARCHIVED(Res.string.order_archived_status),
+fun OrderStatus.toResValue(): StringResource {
+    return when (this) {
+        OrderStatus.CREATED -> Res.string.order_created_status
+        OrderStatus.COMPLETED -> Res.string.order_completed_status
+        OrderStatus.ARCHIVED -> Res.string.order_archived_status
+    }
 }
 
 fun generateSampleOrderInfoList(): List<OrderInfoModel> {

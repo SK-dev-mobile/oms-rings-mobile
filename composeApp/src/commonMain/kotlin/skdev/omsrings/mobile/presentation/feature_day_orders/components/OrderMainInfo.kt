@@ -90,7 +90,7 @@ fun OrderMainInfo(
                 icon = Icons.Rounded.Schedule
             )
 
-            if (address != null) {
+            if (address != null  && address.isNotBlank()) {
                 InfoElementRow(
                     modifier = Modifier
                         .weight(.5f),
@@ -128,7 +128,7 @@ private fun InfoElementRow(
     ) {
         VerticalDivider(
             modifier = Modifier
-                .height(IconSize.Small)
+                .height(28.dp)
                 .width(1.dp),
             color = MaterialTheme.colorScheme.primary
         )

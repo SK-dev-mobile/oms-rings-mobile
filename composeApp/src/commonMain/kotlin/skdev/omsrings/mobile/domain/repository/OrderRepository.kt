@@ -15,4 +15,5 @@ interface OrderRepository {
     suspend fun updateOrder(order: Order): DataResult<Order, DataError>
     suspend fun deleteOrder(order: Order): DataResult<Unit, DataError>
     suspend fun getDaysInfoByRange(start: Timestamp, end: Timestamp): DataResult<Map<LocalDate, DayInfoModel>, DataError>
+    suspend fun getOrdersByDay(date: Timestamp): DataResult<List<Order>, DataError>
 }

@@ -7,6 +7,7 @@ import dev.gitlive.firebase.firestore.FirestoreExceptionCode
 import dev.gitlive.firebase.firestore.Timestamp
 import dev.gitlive.firebase.firestore.code
 import dev.gitlive.firebase.firestore.toMilliseconds
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.datetime.Instant
@@ -15,6 +16,8 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import skdev.omsrings.mobile.data.base.BaseRepository
 import skdev.omsrings.mobile.data.model.DayInfoDTO
+import skdev.omsrings.mobile.data.utils.asEndOfDay
+import skdev.omsrings.mobile.data.utils.asStartOfDay
 import skdev.omsrings.mobile.domain.model.DayInfoModel
 import skdev.omsrings.mobile.domain.model.Order
 import skdev.omsrings.mobile.domain.repository.OrderRepository
@@ -25,7 +28,6 @@ import skdev.omsrings.mobile.utils.result.DataResult
 class FirebaseOrderRepository(
     private val firestore: FirebaseFirestore
 ) : BaseRepository, OrderRepository {
-
     private val ordersCollection = firestore.collection("orders")
     private val daysInfoCollection = firestore.collection("days_info")
 
@@ -55,6 +57,19 @@ class FirebaseOrderRepository(
             } catch (e: Exception) {
                 emit(DataResult.error(e.toDataError()))
             }
+        }
+    }
+
+    override suspend fun getOrdersByDay(date: Timestamp): DataResult<List<Order>, DataError> {
+        return try {
+            val querySnapshot = ordersCollection.where {
+                ("date" greaterThanOrEqualTo date.asStartOfDay()) and ("date" lessThanOrEqualTo date.asEndOfDay())
+            }.get()
+            val orders = querySnapshot.documents.mapNotNull { it.data<Order>() }
+            DataResult.success(orders)
+        } catch (e: Exception) {
+            Napier.e(e, tag = TAG) { e.message ?: "Unknown error" }
+            DataResult.error(e.toDataError())
         }
     }
 

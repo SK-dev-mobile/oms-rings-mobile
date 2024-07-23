@@ -13,7 +13,6 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.cant_be_blank
@@ -40,7 +39,6 @@ import skdev.omsrings.mobile.presentation.feature_order_form.components.ProductS
 import skdev.omsrings.mobile.presentation.feature_order_form.components.ProductSelectionState
 import skdev.omsrings.mobile.utils.datetime.DateTimePattern
 import skdev.omsrings.mobile.utils.datetime.format
-import skdev.omsrings.mobile.utils.datetime.toInstant
 import skdev.omsrings.mobile.utils.datetime.toTimestamp
 import skdev.omsrings.mobile.utils.fields.FormField
 import skdev.omsrings.mobile.utils.fields.flowBlock
@@ -190,12 +188,13 @@ class OrderFormScreenModel(
         val newHistoryEvent = OrderHistoryEvent(
             time = currentTime,
             type = if (existingOrder != null) OrderHistoryEventType.CHANGED else OrderHistoryEventType.CREATED,
-            user = getCurrentUserId()
+            userFullName = getCurrentUserName()
         )
 
         val state = _uiState.value
         return Order(
             id = existingOrder?.id ?: randomUUID(),
+            createdBy = getCurrentUserName(),
             date = selectedDate.toTimestamp(),
             address = state.deliveryAddressField.data.value,
             comment = state.deliveryCommentField.data.value,
@@ -210,8 +209,8 @@ class OrderFormScreenModel(
         )
     }
 
-    private fun getCurrentUserId(): String {
-        // TODO: #20 Implement actual user UUID retrieval
+    private fun getCurrentUserName(): String {
+        // TODO: #20 Implement actual user name retrieval
         return "current_user_id"
     }
 

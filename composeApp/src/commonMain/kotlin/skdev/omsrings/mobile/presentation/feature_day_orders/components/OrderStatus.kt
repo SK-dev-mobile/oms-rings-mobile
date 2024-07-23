@@ -24,7 +24,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
-import skdev.omsrings.mobile.presentation.feature_day_orders.enitity.OrderStatus
+import skdev.omsrings.mobile.domain.model.OrderStatus
+import skdev.omsrings.mobile.presentation.feature_day_orders.enitity.toResValue
 import skdev.omsrings.mobile.ui.theme.CustomTheme
 import skdev.omsrings.mobile.ui.theme.values.Dimens
 
@@ -69,7 +70,7 @@ fun OrderStatus(
                 )
 
                 Text(
-                    text = stringResource(status.resValue)
+                    text = stringResource(status.toResValue())
                 )
             }
         }

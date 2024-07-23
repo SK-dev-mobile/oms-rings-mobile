@@ -34,12 +34,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import dev.gitlive.firebase.firestore.Timestamp
@@ -72,17 +74,22 @@ class DayOrdersScreen(
 
     @Composable
     override fun MainContent() {
-
+        val screenModel = koinScreenModel<DayOrdersScreenModel>()
         val navigator = LocalNavigator.currentOrThrow
         val formattedSelectedDay = remember(selectedDay) {
             selectedDay.format(DateTimePattern.SIMPLE_DATE)
         }
+        val dayOrders by screenModel.dayOrders.collectAsState()
 
         val lazyState = rememberLazyListState()
         val showFloatingButton by remember(lazyState) {
             derivedStateOf {
                 lazyState.firstVisibleItemIndex == 0 && lazyState.firstVisibleItemScrollOffset < 40
             }
+        }
+
+        LaunchedEffect(Unit) {
+            screenModel.onEvent(DayOrdersScreenContract.Event.OnStart(selectedDay))
         }
 
         Scaffold(
@@ -184,9 +191,7 @@ class DayOrdersScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues),
-                orders = remember {
-                    generateSampleOrderInfoList()
-                },
+                orders = dayOrders,
                 lazyState = lazyState,
                 onAction = {
 

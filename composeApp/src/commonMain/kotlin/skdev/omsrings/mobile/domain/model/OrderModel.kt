@@ -9,6 +9,7 @@ typealias UUID = String
 @Serializable
 data class Order(
     val id: UUID,
+    val createdBy: String,
     val date: Timestamp,
     val address: String?,
     val comment: String?,
@@ -30,7 +31,7 @@ data class OrderItem(
 data class OrderHistoryEvent(
     val time: Timestamp,
     val type: OrderHistoryEventType,
-    val user: UUID,
+    val userFullName: String,
 )
 
 enum class OrderHistoryEventType {

@@ -1,6 +1,7 @@
 package skdev.omsrings.mobile.data.repository
 
 import dev.gitlive.firebase.firestore.FirebaseFirestore
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import skdev.omsrings.mobile.domain.model.Folder
@@ -81,9 +82,13 @@ class FirebaseInventoryRepository(
                 DataResult.Success(items)
             }
         } catch (e: Exception) {
+            Napier.e(e, tag = TAG) { e.message ?: "Unknown error" }
             DataResult.error(DataError.Network.UNKNOWN)
         }
     }
 
 
+    companion object {
+        const val TAG = "FirebaseInventoryRepository"
+    }
 }
