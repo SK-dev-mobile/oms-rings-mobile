@@ -8,7 +8,7 @@ import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
-import skdev.omsrings.mobile.data.repository.AuthRepositoryImpl
+import skdev.omsrings.mobile.data.repository.FirebaseAuthRepository
 import skdev.omsrings.mobile.data.repository.FirebaseInventoryRepository
 import skdev.omsrings.mobile.data.repository.FirebaseOrderRepository
 import skdev.omsrings.mobile.data.repository.FirebaseUserSettingsRepository
@@ -44,7 +44,7 @@ private val data = module {
     single<FirebaseFirestore> { Firebase.firestore }
 
     single<AuthRepository> {
-        AuthRepositoryImpl(
+        FirebaseAuthRepository(
             firebaseAuth = Firebase.auth,
             firestore = get()
         )

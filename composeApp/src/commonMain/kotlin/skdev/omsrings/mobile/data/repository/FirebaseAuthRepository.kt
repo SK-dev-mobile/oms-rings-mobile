@@ -12,7 +12,7 @@ import skdev.omsrings.mobile.domain.repository.AuthRepository
 import skdev.omsrings.mobile.utils.error.DataError
 
 
-class AuthRepositoryImpl(
+class FirebaseAuthRepository(
     private val firebaseAuth: FirebaseAuth,
     private val firestore: FirebaseFirestore,
 ) : BaseRepository, AuthRepository {
