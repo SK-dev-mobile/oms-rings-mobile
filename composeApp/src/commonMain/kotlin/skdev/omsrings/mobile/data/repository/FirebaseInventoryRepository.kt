@@ -87,6 +87,61 @@ class FirebaseInventoryRepository(
         }
     }
 
+    /**
+     * Обновляет количество нескольких товаров в инвентаре одновременно.
+     *
+     * Эта функция используется для массового обновления остатков товаров, например, при закрытии заказа.
+     * Она выполняет все обновления в рамках одной транзакции Firebase, что гарантирует атомарность операции
+     * и предотвращает возникновение ошибок при одновременном доступе к данным.
+     *
+     * @param items Список пар, где каждая пара содержит ID товара и количество, которое нужно вычесть из текущего остатка.
+     * @return [DataResult.Success] с [Unit], если все обновления прошли успешно,
+     *         или [DataResult.Error] с соответствующей ошибкой, если что-то пошло не так.
+     *
+     * Пример использования:
+     * ```
+     * val items = listOf("itemUUID1" to 2, "itemUUID2" to 1)
+     * val result = inventoryRepository.updateMultipleInventoryItems(items)
+     * when (result) {
+     *     is DataResult.Success -> println("Остатки товаров успешно обновлены")
+     *     is DataResult.Error -> println("Ошибка при обновлении остатков: ${result.error}")
+     * }
+     * ```
+     *
+     * @throws IllegalStateException если какой-либо из указанных товаров не найден в инвентаре.
+     */
+    override suspend fun updateMultipleInventoryItems(items: List<Pair<String, Int>>): DataResult<Unit, DataError> {
+        return try {
+            firestore.runTransaction {
+                items.forEach { (itemId, quantityChange) ->
+                    var itemUpdated = false
+                    foldersCollection.get().documents.forEach { folderDoc ->
+                        val folder = folderDoc.data<Folder>()
+                        val updatedItems = folder.inventoryItems.map { item ->
+                            if (item.id == itemId) {
+                                itemUpdated = true
+                                item.copy(stockQuantity = (item.stockQuantity - quantityChange).coerceAtLeast(0))
+                            } else {
+                                item
+                            }
+                        }
+                        if (itemUpdated) {
+                            set(folderDoc.reference, folder.copy(inventoryItems = updatedItems))
+                            return@forEach
+                        }
+                    }
+                    if (!itemUpdated) {
+                        throw IllegalStateException("Товар не найден: $itemId")
+                    }
+                }
+            }
+            DataResult.Success(Unit)
+        } catch (e: Exception) {
+            Napier.e(e, tag = TAG) { "Ошибка при обновлении нескольких товаров: ${e.message}" }
+            DataResult.error(DataError.InventoryItem.UPDATE_FAILED)
+        }
+    }
+
 
     companion object {
         const val TAG = "FirebaseInventoryRepository"
