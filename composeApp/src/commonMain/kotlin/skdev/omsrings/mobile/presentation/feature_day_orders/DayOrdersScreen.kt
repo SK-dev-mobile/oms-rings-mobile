@@ -1,5 +1,6 @@
 package skdev.omsrings.mobile.presentation.feature_day_orders
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -22,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Help
 import androidx.compose.material.icons.rounded.AddCircleOutline
 import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.LockOpen
 import androidx.compose.material.icons.rounded.ShoppingCart
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -82,13 +84,20 @@ class DayOrdersScreen(
         }
         val dayOrders by screenModel.dayOrders.collectAsState()
         val updating by screenModel.updating.collectAsState()
+        val isLocked by screenModel.isLocked.collectAsState()
 
         val lazyState = rememberLazyListState()
-        val showFloatingButton by remember(lazyState) {
+        val showAddButton by remember {
             derivedStateOf {
-                lazyState.firstVisibleItemIndex == 0 && lazyState.firstVisibleItemScrollOffset < 40
+                !updating && !isLocked
             }
         }
+        val showFloatingButton by remember(lazyState, showAddButton) {
+            derivedStateOf {
+                lazyState.firstVisibleItemIndex == 0 && lazyState.firstVisibleItemScrollOffset < 40 && showAddButton
+            }
+        }
+
 
         val refreshState = rememberPullToRefreshState()
         val uriHandler = LocalUriHandler.current
@@ -142,11 +151,12 @@ class DayOrdersScreen(
                     },
                     actions = {
                         AnimatedVisibility(
-                            visible = !showFloatingButton,
+                            visible = !showFloatingButton && showAddButton,
                             enter = scaleIn(AnimationSpec.springHigh),
                             exit = fadeOut(AnimationSpec.tweenFast),
                         ) {
                             IconButton(
+                                enabled = !updating,
                                 onClick = {
                                     screenModel.onEvent(DayOrdersScreenContract.Event.OnCreateOrderClicked)
                                 }
@@ -158,16 +168,22 @@ class DayOrdersScreen(
                             }
                         }
                         IconButton(
+                            enabled = !updating,
                             onClick = {
-                                // TODO: Add action
+                                screenModel.onEvent(DayOrdersScreenContract.Event.ToggleLockedStatus)
                             }
                         ) {
-                            Icon(
-                                imageVector = Icons.Rounded.Lock,
-                                contentDescription = "Lock"
-                            )
+                            AnimatedContent(
+                                targetState = isLocked
+                            ) {
+                                Icon(
+                                    imageVector = if (it) Icons.Rounded.Lock else Icons.Rounded.LockOpen,
+                                    contentDescription = "Lock"
+                                )
+                            }
                         }
                         IconButton(
+                            enabled = !updating,
                             onClick = {
                                 // TODO: Add action
                             }
@@ -255,6 +271,7 @@ fun DayOrdersScreenContent(
             items(orders, key = { it.id }) {
                 OrderView(
                     modifier = Modifier.fillMaxWidth(),
+                    enabled = !updating,
                     orderInfoModel = it,
                     onAction = onAction,
                 )

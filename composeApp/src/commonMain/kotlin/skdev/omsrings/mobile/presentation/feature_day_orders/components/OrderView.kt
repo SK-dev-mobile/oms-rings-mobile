@@ -28,6 +28,7 @@ import skdev.omsrings.mobile.ui.theme.values.Dimens
 @Composable
 fun OrderView(
     modifier: Modifier = Modifier,
+    enabled: Boolean,
     orderInfoModel: OrderInfoModel,
     onAction: OnAction,
 ) {
@@ -41,7 +42,7 @@ fun OrderView(
 
     Column(
         modifier = modifier
-            .clickable {
+            .clickable(enabled) {
                 onAction(DayOrdersScreenContract.Event.OnOrderDetailsClicked(orderInfoModel.id))
             }
             .animateContentSize(),
@@ -52,6 +53,7 @@ fun OrderView(
             modifier = Modifier
                 .padding(Dimens.spaceMedium)
                 .fillMaxWidth(),
+            enabled = enabled,
             orderId = orderInfoModel.id,
             createdBy = orderInfoModel.createdBy,
             contactPhone = orderInfoModel.contactPhone,
@@ -110,6 +112,7 @@ fun OrderView(
             modifier = Modifier
                 .padding(horizontal = Dimens.spaceMedium)
                 .fillMaxWidth(),
+            enabled = enabled,
             status = orderInfoModel.status,
             onChangeStatusClicked = { status ->
                 onAction(

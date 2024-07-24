@@ -13,6 +13,7 @@ object DayOrdersScreenContract {
         data class OnUpdateOrderStatusClicked(val orderId: UUID, val status: OrderStatus) : Event
         data class OnCallClicked(val number: String) : Event
         data class OnOrderDetailsClicked(val orderId: UUID) : Event
+        object ToggleLockedStatus : Event
         object OnCreateOrderClicked : Event
     }
 

@@ -33,6 +33,7 @@ import skdev.omsrings.mobile.ui.theme.values.Dimens
 @Composable
 fun OrderStatus(
     modifier: Modifier = Modifier,
+    enabled: Boolean,
     status: OrderStatus,
     onChangeStatusClicked: (status: OrderStatus) -> Unit,
 ) {
@@ -81,6 +82,7 @@ fun OrderStatus(
                 modifier = Modifier
                     .aspectRatio(1f)
                     .fillMaxHeight(),
+                enabled = enabled,
                 onClick = {
                     onChangeStatusClicked(
                         when(status) {

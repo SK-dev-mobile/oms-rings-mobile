@@ -19,7 +19,9 @@ import skdev.omsrings.mobile.domain.repository.UserSettingsRepository
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SendResetPasswordEmailUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignInUserUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignUpUserUseCase
+import skdev.omsrings.mobile.domain.usecase.feature_day_orders.GetDayInfoUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_day_orders.GetDayOrdersUseCase
+import skdev.omsrings.mobile.domain.usecase.feature_day_orders.SetDayLockedStatusUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_day_orders.UpdateOrderStatusUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_main.GetDaysInfoUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_order.CreateOrderUseCase
@@ -138,6 +140,8 @@ private val viewModels = module {
             getDayOrdersUseCase = get(),
             updateOrderStatusUseCase = get(),
             selectedDate = parameters.get(),
+            getDayInfoUseCase = get(),
+            setDayLockedStatusUseCase = get(),
         )
     }
 
@@ -202,6 +206,18 @@ private val useCases = module {
             orderRepository = get(),
             authRepository = get(),
             notificationManager = get()
+        )
+    }
+
+    factory<SetDayLockedStatusUseCase> {
+        SetDayLockedStatusUseCase(
+            orderRepository = get()
+        )
+    }
+
+    factory<GetDayInfoUseCase> {
+        GetDayInfoUseCase(
+            orderRepository = get()
         )
     }
 }

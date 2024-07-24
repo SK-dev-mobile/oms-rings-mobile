@@ -9,7 +9,9 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import skdev.omsrings.mobile.domain.model.OrderStatus
 import skdev.omsrings.mobile.domain.model.UUID
+import skdev.omsrings.mobile.domain.usecase.feature_day_orders.GetDayInfoUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_day_orders.GetDayOrdersUseCase
+import skdev.omsrings.mobile.domain.usecase.feature_day_orders.SetDayLockedStatusUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_day_orders.UpdateOrderStatusUseCase
 import skdev.omsrings.mobile.presentation.base.BaseScreenModel
 import skdev.omsrings.mobile.presentation.feature_day_orders.enitity.OrderInfoModel
@@ -19,6 +21,8 @@ import skdev.omsrings.mobile.utils.result.ifSuccess
 class DayOrdersScreenModel(
     private val getDayOrdersUseCase: GetDayOrdersUseCase,
     private val updateOrderStatusUseCase: UpdateOrderStatusUseCase,
+    private val getDayInfoUseCase: GetDayInfoUseCase,
+    private val setDayLockedStatusUseCase: SetDayLockedStatusUseCase,
     notificationManager: NotificationManager,
     private val selectedDate: LocalDate,
 ) : BaseScreenModel<DayOrdersScreenContract.Event, DayOrdersScreenContract.Effect>(
@@ -26,6 +30,9 @@ class DayOrdersScreenModel(
 ) {
     private val _dayOrders = MutableStateFlow(emptyList<OrderInfoModel>())
     val dayOrders = _dayOrders.asStateFlow()
+
+    private val _isLocked = MutableStateFlow(false)
+    val isLocked = _isLocked.asStateFlow()
 
     override fun onEvent(event: DayOrdersScreenContract.Event) {
         when (event) {
@@ -41,6 +48,7 @@ class DayOrdersScreenModel(
             is DayOrdersScreenContract.Event.OnOrderDetailsClicked -> onOrderDetailsClicked(orderId = event.orderId)
             DayOrdersScreenContract.Event.OnCreateOrderClicked -> onCreateOrderClicked()
             DayOrdersScreenContract.Event.OnStart -> onStart()
+            DayOrdersScreenContract.Event.ToggleLockedStatus -> toggleLockedStatus()
         }
     }
 
@@ -54,6 +62,9 @@ class DayOrdersScreenModel(
         startUpdating()
         getDayOrdersUseCase.invoke(selectedDate).ifSuccess { result ->
             _dayOrders.update { result.data }
+        }
+        getDayInfoUseCase.invoke(selectedDate).ifSuccess { result ->
+            _isLocked.update { result.data.isLocked }
         }
         stopUpdating()
     }
@@ -90,6 +101,14 @@ class DayOrdersScreenModel(
     private fun onCallClicked(number: String) {
         screenModelScope.launch {
             launchEffect(DayOrdersScreenContract.Effect.IntentCallAction(number))
+        }
+    }
+
+    private fun toggleLockedStatus() {
+        screenModelScope.launch {
+            setDayLockedStatusUseCase.invoke(selectedDate, !isLocked.value).ifSuccess {
+                fetchData()
+            }
         }
     }
 

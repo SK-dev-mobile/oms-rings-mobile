@@ -31,6 +31,7 @@ import skdev.omsrings.mobile.ui.theme.values.IconSize
 fun OrderHeader(
     modifier: Modifier = Modifier,
     orderId: UUID,
+    enabled: Boolean,
     createdBy: String,
     contactPhone: String?,
     onCallClicked: () -> Unit,
@@ -65,6 +66,7 @@ fun OrderHeader(
 
         if (contactPhone != null) {
             Button(
+                enabled = enabled,
                 shape = MaterialTheme.shapes.large,
                 onClick = onCallClicked,
                 contentPadding = PaddingValues(horizontal = Dimens.spaceSmall)
