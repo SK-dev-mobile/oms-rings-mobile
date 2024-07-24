@@ -7,6 +7,7 @@ import dev.gitlive.firebase.firestore.FirestoreExceptionCode
 import dev.gitlive.firebase.firestore.Timestamp
 import dev.gitlive.firebase.firestore.code
 import dev.gitlive.firebase.firestore.toMilliseconds
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.datetime.Instant
@@ -15,17 +16,20 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import skdev.omsrings.mobile.data.base.BaseRepository
 import skdev.omsrings.mobile.data.model.DayInfoDTO
-import skdev.omsrings.mobile.data.utils.toLocalDate
+import skdev.omsrings.mobile.data.utils.asEndOfDay
+import skdev.omsrings.mobile.data.utils.asStartOfDay
 import skdev.omsrings.mobile.domain.model.DayInfoModel
 import skdev.omsrings.mobile.domain.model.Order
 import skdev.omsrings.mobile.domain.repository.OrderRepository
+import skdev.omsrings.mobile.utils.datetime.toLocalDate
+import skdev.omsrings.mobile.utils.datetime.toTimestamp
 import skdev.omsrings.mobile.utils.error.DataError
 import skdev.omsrings.mobile.utils.result.DataResult
+import skdev.omsrings.mobile.utils.uuid.randomUUID
 
 class FirebaseOrderRepository(
     private val firestore: FirebaseFirestore
 ) : BaseRepository, OrderRepository {
-
     private val ordersCollection = firestore.collection("orders")
     private val daysInfoCollection = firestore.collection("days_info")
 
@@ -36,14 +40,10 @@ class FirebaseOrderRepository(
             DataResult.success(order)
         }
 
-    override fun getOrderById(id: String): Flow<DataResult<Order, DataError>> = flow {
-        try {
-            val docSnapshot = ordersCollection.document(id).get()
-            val order = docSnapshot.data<Order>()
-            emit(DataResult.success(order))
-        } catch (e: Exception) {
-            emit(DataResult.error(e.toDataError()))
-        }
+    override suspend fun getOrderById(id: String): DataResult<Order, DataError> = withCathing {
+        val docSnapshot = ordersCollection.document(id).get()
+        val order = docSnapshot.data<Order>()
+        DataResult.success(order)
     }
 
     override fun getAllOrders(): Flow<DataResult<List<Order>, DataError>> {
@@ -58,12 +58,78 @@ class FirebaseOrderRepository(
         }
     }
 
+    override suspend fun getOrdersByDay(date: Timestamp): DataResult<List<Order>, DataError> =
+        withCathing {
+            val querySnapshot = ordersCollection.where {
+                ("date" greaterThanOrEqualTo date.asStartOfDay()) and ("date" lessThanOrEqualTo date.asEndOfDay())
+            }.get()
+            val orders = querySnapshot.documents.mapNotNull { it.data<Order>() }
+            DataResult.success(orders)
+        }
+
+
     override suspend fun updateOrder(order: Order): DataResult<Order, DataError> =
         withCathing {
             val docRef = ordersCollection.document(order.id)
             docRef.set(order)
             DataResult.success(order)
         }
+
+    override suspend fun getDayInfo(date: Timestamp): DataResult<DayInfoModel, DataError> =
+        withCathing {
+            val ordersQuerySnapshot = ordersCollection.where {
+                ("date" greaterThanOrEqualTo date.asStartOfDay()) and ("date" lessThanOrEqualTo date.asEndOfDay())
+            }.get()
+            val daysInfoQuerySnapshot = daysInfoCollection.where {
+                ("date" greaterThanOrEqualTo date.asStartOfDay()) and ("date" lessThanOrEqualTo date.asEndOfDay())
+            }.get()
+            val dayInfo: DayInfoDTO? = daysInfoQuerySnapshot.documents.filterNotNull().firstOrNull()?.data<DayInfoDTO>()
+            val isEdited = ordersQuerySnapshot.documents.isNotEmpty()
+
+            if (dayInfo != null) {
+                return@withCathing DataResult.success(
+                    DayInfoModel(
+                        isEdited = isEdited,
+                        isLocked = dayInfo.isLocked
+                    )
+                )
+            } else {
+                return@withCathing DataResult.success(
+                    DayInfoModel(
+                        isEdited = isEdited,
+                        isLocked = false
+                    )
+                )
+            }
+        }
+
+    override suspend fun changeDayLockedStatus(
+        date: Timestamp,
+        isLocked: Boolean
+    ): DataResult<DayInfoDTO, DataError> = withCathing {
+        val daysInfoQuerySnapshot = daysInfoCollection.where {
+            ("date" greaterThanOrEqualTo date.asStartOfDay()) and ("date" lessThanOrEqualTo date.asEndOfDay())
+        }.get()
+        val dayInfo = daysInfoQuerySnapshot.documents.filterNotNull().firstOrNull()
+        Napier.d(tag = TAG) { "changeDayLockedStatus: $dayInfo" }
+        if (dayInfo != null) {
+            dayInfo.reference.set(
+                DayInfoDTO(
+                    date = date,
+                    isLocked = isLocked
+                )
+            )
+            DataResult.success(dayInfo.data<DayInfoDTO>())
+        } else {
+            val dayInfo = daysInfoCollection.add(
+                DayInfoDTO(
+                    date = date,
+                    isLocked = isLocked
+                )
+            ).get()
+            DataResult.success(dayInfo.data<DayInfoDTO>())
+        }
+    }
 
     override suspend fun deleteOrder(order: Order): DataResult<Unit, DataError> {
         TODO("Not yet implemented")

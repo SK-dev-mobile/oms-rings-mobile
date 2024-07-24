@@ -8,7 +8,7 @@ import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
-import skdev.omsrings.mobile.data.repository.AuthRepositoryImpl
+import skdev.omsrings.mobile.data.repository.FirebaseAuthRepository
 import skdev.omsrings.mobile.data.repository.FirebaseInventoryRepository
 import skdev.omsrings.mobile.data.repository.FirebaseOrderRepository
 import skdev.omsrings.mobile.data.repository.FirebaseUserSettingsRepository
@@ -19,6 +19,10 @@ import skdev.omsrings.mobile.domain.repository.UserSettingsRepository
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SendResetPasswordEmailUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignInUserUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignUpUserUseCase
+import skdev.omsrings.mobile.domain.usecase.feature_day_orders.GetDayInfoUseCase
+import skdev.omsrings.mobile.domain.usecase.feature_day_orders.GetDayOrdersUseCase
+import skdev.omsrings.mobile.domain.usecase.feature_day_orders.SetDayLockedStatusUseCase
+import skdev.omsrings.mobile.domain.usecase.feature_day_orders.UpdateOrderStatusUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_main.GetDaysInfoUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_order.CreateOrderUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_order.GetFoldersAndItemsInventory
@@ -30,6 +34,7 @@ import skdev.omsrings.mobile.domain.usecase.feature_user_settings.GetUserSetting
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.UpdateNotificationSettingsUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.UpdateShowClearedOrdersSettingsUseCase
 import skdev.omsrings.mobile.presentation.feature_auth.AuthScreenModel
+import skdev.omsrings.mobile.presentation.feature_day_orders.DayOrdersScreenModel
 import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenModel
 import skdev.omsrings.mobile.presentation.feature_main.MainScreenModel
 import skdev.omsrings.mobile.presentation.feature_order_form.OrderFormScreenModel
@@ -41,7 +46,7 @@ private val data = module {
     single<FirebaseFirestore> { Firebase.firestore }
 
     single<AuthRepository> {
-        AuthRepositoryImpl(
+        FirebaseAuthRepository(
             firebaseAuth = Firebase.auth,
             firestore = get()
         )
@@ -128,6 +133,18 @@ private val viewModels = module {
         )
     }
 
+    // Day Orders
+    factory<DayOrdersScreenModel> { parameters ->
+        DayOrdersScreenModel(
+            notificationManager = get(),
+            getDayOrdersUseCase = get(),
+            updateOrderStatusUseCase = get(),
+            selectedDate = parameters.get(),
+            getDayInfoUseCase = get(),
+            setDayLockedStatusUseCase = get(),
+        )
+    }
+
 }
 
 private val useCases = module {
@@ -175,6 +192,34 @@ private val useCases = module {
         )
     }
 
+    // Feature Day Orders
+    factory<GetDayOrdersUseCase> {
+        GetDayOrdersUseCase(
+            orderRepository = get(),
+            inventoryRepository = get(),
+            notificationManager = get()
+        )
+    }
+
+    factory<UpdateOrderStatusUseCase> {
+        UpdateOrderStatusUseCase(
+            orderRepository = get(),
+            authRepository = get(),
+            notificationManager = get()
+        )
+    }
+
+    factory<SetDayLockedStatusUseCase> {
+        SetDayLockedStatusUseCase(
+            orderRepository = get()
+        )
+    }
+
+    factory<GetDayInfoUseCase> {
+        GetDayInfoUseCase(
+            orderRepository = get()
+        )
+    }
 }
 
 private fun commonModule() = listOf(data, utils, viewModels, useCases)

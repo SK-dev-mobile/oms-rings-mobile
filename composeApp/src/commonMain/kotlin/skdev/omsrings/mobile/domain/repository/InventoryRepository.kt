@@ -16,4 +16,5 @@ interface InventoryRepository {
     suspend fun updateInventoryItem(folderId: String, item: InventoryItem)
     suspend fun deleteInventoryItem(folderId: String, itemId: String)
     suspend fun getInventoryItemsByIds(ids: List<String>): DataResult<List<InventoryItem>, DataError>
+    suspend fun updateMultipleInventoryItems(items: List<Pair<String, Int>>): DataResult<Unit, DataError>
 }

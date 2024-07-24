@@ -114,7 +114,7 @@ class AuthScreenModel(
 
     private fun onSignUpClicked(role: UserRole) {
         screenModelScope.launch {
-            onUpdateState()
+            startUpdating()
             if (validateAll(
                     emailField,
                     passwordField,
@@ -133,13 +133,13 @@ class AuthScreenModel(
                     launchEffect(AuthScreenContract.Effect.NavigateToMainScreen)
                 }
             }
-            onUpdatedState()
+            stopUpdating()
         }
     }
 
     private fun onSignInClicked() {
         screenModelScope.launch {
-            onUpdateState()
+            startUpdating()
             if (validateAll(emailField, passwordField)) {
                 signInUserUseCase(
                     emailField.value(),
@@ -152,7 +152,7 @@ class AuthScreenModel(
                 }
 
             }
-            onUpdatedState()
+            stopUpdating()
         }
     }
 
@@ -184,7 +184,7 @@ class AuthScreenModel(
 
     private fun onResetPasswordClicked() {
         screenModelScope.launch {
-            onUpdateState()
+            startUpdating()
             if (validateAll(emailField)) {
                 sendResetPasswordEmailUseCase(
                     email = emailField.value()
@@ -198,7 +198,7 @@ class AuthScreenModel(
                     _uiState.update { AuthScreenContract.State.SignIn }
                 }
             }
-            onUpdatedState()
+            stopUpdating()
         }
     }
 

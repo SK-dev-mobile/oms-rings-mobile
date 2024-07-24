@@ -33,7 +33,7 @@ abstract class BaseScreenModel<Event, Effect>(
      * Sets the updating state to true.
      * This should be called when the ViewModel starts updating its state.
      */
-    fun onUpdateState() {
+    fun startUpdating() {
         _updating.value = true
     }
 
@@ -41,7 +41,7 @@ abstract class BaseScreenModel<Event, Effect>(
      * Sets the updating state to false.
      * This should be called when the ViewModel finishes updating its state.
      */
-    fun onUpdatedState() {
+    fun stopUpdating() {
         _updating.value = false
     }
 

@@ -68,6 +68,10 @@ fun Error.toNotificationModel(): NotificationModel {
             titleRes = Res.string.error,
             messageRes = Res.string.incorrect_email_or_password
         )
+        DataError.InventoryItem.NOT_FOUND -> NotificationModel.Error(
+            titleRes = Res.string.error,
+            messageRes = Res.string.no_data
+        )
         else -> NotificationModel.Error(
             titleRes = Res.string.unknown_error,
             messageRes = Res.string.retry_later

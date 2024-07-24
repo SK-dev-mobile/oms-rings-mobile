@@ -51,7 +51,7 @@ fun <I : Any, O : Any, E : RootError> DataResult<I, E>.map(mapper: (I) -> O): Da
 /**
  * Do smth if Result is success
  */
-suspend fun <D : Any, E : RootError> DataResult<D, E>.ifSuccess(body: suspend (result: DataResult.Success<D, E>) -> Unit): DataResult<D, E> {
+suspend inline fun <D : Any, E : RootError> DataResult<D, E>.ifSuccess(body: suspend (result: DataResult.Success<D, E>) -> Unit): DataResult<D, E> {
     if (this is DataResult.Success) {
         body(this)
     }
@@ -61,7 +61,7 @@ suspend fun <D : Any, E : RootError> DataResult<D, E>.ifSuccess(body: suspend (r
 /**
  * Do smth if Result is error
  */
-suspend fun <D : Any, E : RootError> DataResult<D, E>.ifError(body: suspend (result: DataResult.Error<D, E>) -> Unit): DataResult<D, E> {
+suspend inline fun <D : Any, E : RootError> DataResult<D, E>.ifError(body: suspend (result: DataResult.Error<D, E>) -> Unit): DataResult<D, E> {
     if (this is DataResult.Error) {
         body(this)
     }
