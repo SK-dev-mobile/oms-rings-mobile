@@ -18,7 +18,7 @@ class FirebaseUserProfileRepository(
 
     override suspend fun getUserProfile(): DataResult<UserInfo, DataError> = withCathing {
         val userId =
-            firebaseAuth.currentUser?.uid ?: return@withCathing DataResult.error(DataError.Local.USER_NOT_FOUND)
+            firebaseAuth.currentUser?.uid ?: return@withCathing DataResult.error(DataError.Local.USER_NOT_LOGGED_IN)
         val document = userInfoCollection.document(userId).get()
         val userInfo = document.data<UserInfo>()
         userInfo.let { DataResult.Success(it) }
@@ -26,7 +26,7 @@ class FirebaseUserProfileRepository(
 
     override suspend fun updateUserProfile(userInfo: UserInfo): DataResult<Unit, DataError> = withCathing {
         val userId =
-            firebaseAuth.currentUser?.uid ?: return@withCathing DataResult.error(DataError.Local.USER_NOT_FOUND)
+            firebaseAuth.currentUser?.uid ?: return@withCathing DataResult.error(DataError.Local.USER_NOT_LOGGED_IN)
         userInfoCollection.document(userId).set(userInfo)
         DataResult.Success(Unit)
     }

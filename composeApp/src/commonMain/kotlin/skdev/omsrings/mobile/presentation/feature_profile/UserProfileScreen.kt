@@ -26,12 +26,15 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import cafe.adriel.voyager.koin.koinScreenModel
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.edit_profile
 import omsringsmobile.composeapp.generated.resources.save_changes
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import skdev.omsrings.mobile.presentation.base.BaseScreen
+import skdev.omsrings.mobile.presentation.feature_auth.AuthScreen
 import skdev.omsrings.mobile.ui.components.fields.PhoneField
 import skdev.omsrings.mobile.ui.components.fields.SupportingText
 import skdev.omsrings.mobile.ui.components.fields.TextField
@@ -40,11 +43,13 @@ import skdev.omsrings.mobile.ui.components.helpers.Spacer
 import skdev.omsrings.mobile.ui.theme.values.Dimens
 import skdev.omsrings.mobile.utils.fields.FormField
 import skdev.omsrings.mobile.utils.fields.collectAsMutableState
+import skdev.omsrings.mobile.utils.flow.observeAsEffects
 
 object UserProfileScreen : BaseScreen("user_profile_screen") {
 
     @Composable
     override fun MainContent() {
+        val navigation = LocalNavigator.currentOrThrow
         val screenModel = koinScreenModel<UserProfileScreenModel>()
         val uiState by screenModel.uiState.collectAsState()
         val updating by screenModel.updating.collectAsState()
@@ -58,7 +63,16 @@ object UserProfileScreen : BaseScreen("user_profile_screen") {
             onEvent = screenModel::onEvent
         )
 
+        screenModel.effects.observeAsEffects { effect ->
+            when (effect) {
+                UserProfileContract.Effect.LoggedOut -> {
+                    navigation.push(AuthScreen)
+                }
+            }
+        }
+
     }
+
 
 }
 
@@ -101,7 +115,7 @@ private fun UserProfileContent(
             )
             Spacer(Dimens.spaceLarge)
             SaveButton(
-                isEnabled = !updating && uiState.isDataChanged && uiState.canSave,
+                isEnabled = !updating || uiState.isDataChanged || uiState.canSave,
                 onClick = { onEvent(UserProfileContract.Event.OnSaveProfile) }
             )
             Spacer(Dimens.spaceLarge)

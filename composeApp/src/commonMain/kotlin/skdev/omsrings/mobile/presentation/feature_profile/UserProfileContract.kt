@@ -1,13 +1,13 @@
 package skdev.omsrings.mobile.presentation.feature_profile
 
+import skdev.omsrings.mobile.domain.model.UserInfo
+
 object UserProfileContract {
 
     data class UIState(
+        val userInfo: UserInfo = UserInfo.DEFAULT,
         val isDataChanged: Boolean = false,
         val canSave: Boolean = false,
-        val fullName: String = "",
-        val phoneNumber: String = "",
-        val isEmployer: Boolean = false
     )
 
 
@@ -19,7 +19,6 @@ object UserProfileContract {
     }
 
     sealed interface Effect {
-        data object ProfileUpdated : Effect
         data object LoggedOut : Effect
     }
 }

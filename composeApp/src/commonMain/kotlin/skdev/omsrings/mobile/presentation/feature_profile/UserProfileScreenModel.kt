@@ -39,8 +39,7 @@ class UserProfileScreenModel(
     private val updateUserProfileUseCase: UpdateUserProfileUseCase,
     private val logoutUseCase: LogoutUseCase
 ) : BaseScreenModel<UserProfileContract.Event, UserProfileContract.Effect>(notificationManager) {
-    private var initialFullName = ""
-    private var initialPhoneNumber = ""
+    private var initialUserInfo = UserInfo.DEFAULT
 
     private val _uiState = MutableStateFlow(UserProfileContract.UIState())
     val uiState = _uiState.asStateFlow()
@@ -48,7 +47,7 @@ class UserProfileScreenModel(
 
     val fullNameField = FormField(
         scope = screenModelScope,
-        initialValue = initialFullName,
+        initialValue = initialUserInfo.fullName,
         validation = flowBlock {
             ValidationResult.of(it) {
                 notBlank(Res.string.cant_be_blank)
@@ -58,7 +57,7 @@ class UserProfileScreenModel(
 
     val phoneNumberField = FormField(
         scope = screenModelScope,
-        initialValue = initialPhoneNumber,
+        initialValue = initialUserInfo.phoneNumber,
         validation = flowBlock {
             ValidationResult.of(it) {
                 notBlank(Res.string.cant_be_blank)
@@ -72,26 +71,25 @@ class UserProfileScreenModel(
     }
 
     private fun loadUserProfile() {
+        onUpdateState()
         screenModelScope.launch {
             getUserProfileUseCase()
                 .ifSuccess { userInfoResult ->
                     val userInfo = userInfoResult.data
-                    initialFullName = userInfo.fullName
-                    initialPhoneNumber = userInfo.phoneNumber
-                    _uiState.update { uiState ->
-                        uiState.copy(
-                            fullName = userInfo.fullName,
-                            phoneNumber = userInfo.phoneNumber,
-                            isEmployer = userInfo.isEmployer
-                        )
-                    }
+                    _uiState.update { it.copy(userInfo = userInfo) }
+                    initialUserInfo = userInfo
                     fullNameField.setValue(userInfo.fullName)
                     phoneNumberField.setValue(userInfo.phoneNumber)
                 }.ifError { error ->
-                    showErrorMessage(error.error)
+                    if (error.error == DataError.Local.USER_NOT_LOGGED_IN) {
+                        launchEffect(UserProfileContract.Effect.LoggedOut)
+                        showErrorMessage(error.error)
+                    }
                 }
         }
+        onUpdatedState()
     }
+
 
     override fun onEvent(event: UserProfileContract.Event) {
         when (event) {
@@ -103,29 +101,23 @@ class UserProfileScreenModel(
     }
 
 
-    private fun showErrorMessage(error: DataError) {
-        Napier.e("Error: $error")
-        notificationManager.show(error.toNotificationModel())
-    }
-
     private fun updateFullName(fullName: String) {
         val formattedFullName = fullName.trim()
-        _uiState.update { it.copy(fullName = formattedFullName) }
+        _uiState.update { it.copy(userInfo = it.userInfo.copy(fullName = formattedFullName)) }
         fullNameField.setValue(fullName)
         fullNameField.validate()
         updateUIState()
     }
 
     private fun updatePhoneNumber(phoneNumber: String) {
-        _uiState.update { it.copy(phoneNumber = phoneNumber) }
+        _uiState.update { it.copy(userInfo = it.userInfo.copy(phoneNumber = phoneNumber)) }
         phoneNumberField.setValue(phoneNumber)
         phoneNumberField.validate()
         updateUIState()
     }
 
     private fun updateUIState() {
-        val isDataChanged = _uiState.value.fullName != initialFullName ||
-                _uiState.value.phoneNumber != initialPhoneNumber
+        val isDataChanged = _uiState.value.userInfo != initialUserInfo
         val canSave = isDataChanged &&
                 fullNameField.error.value == null &&
                 phoneNumberField.error.value == null
@@ -133,22 +125,13 @@ class UserProfileScreenModel(
     }
 
     private fun saveProfile() {
+        onUpdateState()
         screenModelScope.launch {
-            val updatedUserInfo = UserInfo(
-                fullName = fullNameField.data.value,
-                phoneNumber = phoneNumberField.data.value,
-                isEmployer = uiState.value.isEmployer
-            )
+            val updatedUserInfo = _uiState.value.userInfo
             updateUserProfileUseCase(updatedUserInfo)
                 .ifSuccess {
-                    initialFullName = updatedUserInfo.fullName
-                    initialPhoneNumber = updatedUserInfo.phoneNumber
-                    _uiState.update { uiState ->
-                        uiState.copy(
-                            fullName = updatedUserInfo.fullName,
-                            phoneNumber = updatedUserInfo.phoneNumber
-                        )
-                    }
+                    initialUserInfo = updatedUserInfo
+                    _uiState.update { it.copy(userInfo = updatedUserInfo) }
                     updateUIState()
                     showSuccessMessage(Res.string.profile_updated)
                 }
@@ -156,7 +139,26 @@ class UserProfileScreenModel(
                     showErrorMessage(error.error)
                 }
         }
+        onUpdatedState()
+    }
 
+    private fun logout() {
+        onUpdateState()
+        screenModelScope.launch {
+            logoutUseCase()
+                .ifSuccess {
+                    launchEffect(UserProfileContract.Effect.LoggedOut)
+                }
+                .ifError { error ->
+                    showErrorMessage(error.error)
+                }
+        }
+        onUpdatedState()
+    }
+
+    private fun showErrorMessage(error: DataError) {
+        Napier.e("Error: $error")
+        notificationManager.show(error.toNotificationModel())
     }
 
     private fun showSuccessMessage(message: StringResource) {
@@ -168,18 +170,6 @@ class UserProfileScreenModel(
                 type = ToastType.Success
             )
         )
-    }
-
-    private fun logout() {
-        screenModelScope.launch {
-            logoutUseCase()
-                .ifSuccess {
-                    launchEffect(UserProfileContract.Effect.LoggedOut)
-                }
-                .ifError { error ->
-                    showErrorMessage(error.error)
-                }
-        }
     }
 
 
