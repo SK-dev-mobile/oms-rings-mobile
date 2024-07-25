@@ -176,7 +176,7 @@ class AuthScreenModel(
                 }
 
                 AuthScreenContract.State.SignIn -> {
-                    launchEffect(AuthScreenContract.Effect.NaivgateBack)
+                    launchEffect(AuthScreenContract.Effect.NavigateBack)
                 }
             }
         }
