@@ -77,8 +77,9 @@ class UserProfileScreenModel(
             getUserProfileUseCase()
                 .ifSuccess { userInfoResult ->
                     val userInfo = userInfoResult.data
+                    initialUserInfo =
+                        userInfo // initialUserInfo должно быть установлено до updateFields, чтобы не ломался canSave и isDataChanged
                     updateFields(userInfo)
-                    initialUserInfo = userInfo
                 }.ifError { error ->
                     handleUserProfileError(error.error)
                 }
@@ -95,7 +96,7 @@ class UserProfileScreenModel(
                 UserInfo(
                     fullName = fullName,
                     phoneNumber = phoneNumber,
-                    isEmployer = _uiState.value.userInfo.isEmployer
+                    isEmployer = initialUserInfo.isEmployer
                 )
             }.collect { userInfo ->
                 updateUIState(userInfo)
@@ -126,18 +127,20 @@ class UserProfileScreenModel(
     }
 
     private fun isUserInfoChanged(currentUserInfo: UserInfo): Boolean {
-        val trimmedCurrentFullName = currentUserInfo.fullName.trim().replace("\\s+".toRegex(), " ")
-        val trimmedInitialFullName = initialUserInfo.fullName.trim().replace("\\s+".toRegex(), " ")
+        val trimmedCurrentFullName = trimAndNormalize(currentUserInfo.fullName)
+        val trimmedInitialFullName = trimAndNormalize(initialUserInfo.fullName)
 
-        return trimmedCurrentFullName != trimmedInitialFullName ||
-                currentUserInfo.phoneNumber != initialUserInfo.phoneNumber
+        val isFullNameChanged = trimmedCurrentFullName != trimmedInitialFullName
+        val isPhoneNumberChanged = currentUserInfo.phoneNumber != initialUserInfo.phoneNumber
+
+        return isFullNameChanged || isPhoneNumberChanged
     }
 
     private fun saveProfile() {
         screenModelScope.launch {
             onUpdateState()
             val updatedUserInfo = _uiState.value.userInfo.copy(
-                fullName = _uiState.value.userInfo.fullName.trim().replace("\\s+".toRegex(), " ")
+                fullName = trimAndNormalize(_uiState.value.userInfo.fullName)
             )
             updateUserProfileUseCase(updatedUserInfo)
                 .ifSuccess {
@@ -149,6 +152,7 @@ class UserProfileScreenModel(
             onUpdatedState()
         }
     }
+
 
     private fun handleProfileUpdateSuccess(updatedUserInfo: UserInfo) {
         initialUserInfo = updatedUserInfo
@@ -196,5 +200,8 @@ class UserProfileScreenModel(
         )
     }
 
+}
 
+private fun trimAndNormalize(input: String): String {
+    return input.trim().replace("\\s+".toRegex(), " ")
 }

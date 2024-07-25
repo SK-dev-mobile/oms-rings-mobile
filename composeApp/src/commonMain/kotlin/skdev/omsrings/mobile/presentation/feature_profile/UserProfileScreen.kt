@@ -10,8 +10,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ExitToApp
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -27,9 +27,13 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import io.github.aakira.napier.Napier
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.edit_profile
+import omsringsmobile.composeapp.generated.resources.full_name
+import omsringsmobile.composeapp.generated.resources.logout
 import omsringsmobile.composeapp.generated.resources.save_changes
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -56,6 +60,7 @@ object UserProfileScreen : BaseScreen("user_profile_screen") {
 
 
         UserProfileContent(
+            navigation = navigation,
             uiState = uiState,
             fullNameField = screenModel.fullNameField,
             phoneNumberField = screenModel.phoneNumberField,
@@ -78,6 +83,7 @@ object UserProfileScreen : BaseScreen("user_profile_screen") {
 
 @Composable
 private fun UserProfileContent(
+    navigation: Navigator,
     uiState: UserProfileContract.UIState,
     fullNameField: FormField<String, StringResource>,
     phoneNumberField: FormField<String, StringResource>,
@@ -88,10 +94,11 @@ private fun UserProfileContent(
         topBar = {
             RingsTopAppBar(
                 title = stringResource(Res.string.edit_profile),
+                onNavigationClicked = { navigation.pop() },
                 actions = {
                     Icon(
                         modifier = Modifier.padding(end = Dimens.spaceMedium),
-                        imageVector = Icons.Rounded.Save,
+                        imageVector = Icons.Rounded.Check,
                         contentDescription = stringResource(Res.string.save_changes)
                     )
                 }
@@ -113,13 +120,17 @@ private fun UserProfileContent(
                 onPhoneNumberChanged = { onEvent(UserProfileContract.Event.OnPhoneNumberChanged(it)) },
                 enabled = !updating
             )
-            Spacer(Dimens.spaceLarge)
+            Spacer(Dimens.spaceMedium)
+            Napier.d(
+                "UserProfileContent: uiState.canSave: ${uiState.canSave}, uiState.isDataChanged: ${uiState.isDataChanged}"
+            )
             SaveButton(
-                isEnabled = !updating && uiState.isDataChanged && uiState.canSave,
+                isEnabled = !updating && uiState.canSave && uiState.isDataChanged,
                 onClick = { onEvent(UserProfileContract.Event.OnSaveProfile) }
             )
             Spacer(Dimens.spaceLarge)
             LogoutButton(
+                isEnabled = !updating,
                 onClick = { onEvent(UserProfileContract.Event.OnLogout) }
             )
         }
@@ -145,7 +156,7 @@ private fun UserProfileForm(
         TextField(
             modifier = Modifier.fillMaxWidth(),
             leadingIcon = {
-                Icon(Icons.Rounded.Person, contentDescription = "Full name")
+                Icon(Icons.Rounded.Person, contentDescription = stringResource(Res.string.full_name))
             },
             value = fullNameValue,
             onValueChange = onFullNameChanged,
@@ -184,27 +195,34 @@ private fun SaveButton(isEnabled: Boolean, onClick: () -> Unit) {
         enabled = isEnabled,
         modifier = Modifier.fillMaxWidth()
     ) {
-        Icon(Icons.Rounded.Save, contentDescription = stringResource(Res.string.save_changes))
+        Icon(Icons.Rounded.Check, contentDescription = stringResource(Res.string.save_changes))
         Spacer(Dimens.spaceSmall)
         Text(stringResource(Res.string.save_changes))
     }
 }
 
 @Composable
-private fun LogoutButton(onClick: () -> Unit) {
+private fun LogoutButton(
+    isEnabled: Boolean,
+    onClick: () -> Unit
+) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter
     ) {
         OutlinedButton(
             onClick = onClick,
+            enabled = isEnabled,
             colors = ButtonDefaults.outlinedButtonColors(
                 contentColor = MaterialTheme.colorScheme.error
             )
         ) {
-            Icon(Icons.AutoMirrored.Rounded.ExitToApp, contentDescription = "Logout")
+            Icon(Icons.AutoMirrored.Rounded.ExitToApp, contentDescription = stringResource(Res.string.logout))
             Spacer(Dimens.spaceSmall)
-            Text("Logout")
+            Text(
+                text = stringResource(Res.string.logout),
+                style = MaterialTheme.typography.labelLarge
+            )
         }
     }
 }

@@ -194,7 +194,7 @@
     <string name="user_profile_title">Профиль</string>
     <string name="save_changes">Сохранить</string>
     <string name="edit_profile">Редактировать профиль</string>
-
+    <string name="logout">Выйти</string>
     <string name="profile_updated">Профиль обновлен</string>
 
 </resources>
