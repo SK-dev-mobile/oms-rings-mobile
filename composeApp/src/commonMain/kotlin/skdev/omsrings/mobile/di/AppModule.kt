@@ -1,6 +1,7 @@
 package skdev.omsrings.mobile.di
 
 import dev.gitlive.firebase.Firebase
+import dev.gitlive.firebase.auth.FirebaseAuth
 import dev.gitlive.firebase.auth.auth
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 import dev.gitlive.firebase.firestore.firestore
@@ -11,10 +12,12 @@ import org.koin.dsl.module
 import skdev.omsrings.mobile.data.repository.AuthRepositoryImpl
 import skdev.omsrings.mobile.data.repository.FirebaseInventoryRepository
 import skdev.omsrings.mobile.data.repository.FirebaseOrderRepository
+import skdev.omsrings.mobile.data.repository.FirebaseUserProfileRepository
 import skdev.omsrings.mobile.data.repository.FirebaseUserSettingsRepository
 import skdev.omsrings.mobile.domain.repository.AuthRepository
 import skdev.omsrings.mobile.domain.repository.InventoryRepository
 import skdev.omsrings.mobile.domain.repository.OrderRepository
+import skdev.omsrings.mobile.domain.repository.UserProfileRepository
 import skdev.omsrings.mobile.domain.repository.UserSettingsRepository
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SendResetPasswordEmailUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignInUserUseCase
@@ -25,6 +28,9 @@ import skdev.omsrings.mobile.domain.usecase.feature_order.GetFoldersAndItemsInve
 import skdev.omsrings.mobile.domain.usecase.feature_order.GetInventoryItemsByIdsUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_order.GetOrderByIdUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_order.UpdateOrderUseCase
+import skdev.omsrings.mobile.domain.usecase.feature_user_profile.GetUserProfileUseCase
+import skdev.omsrings.mobile.domain.usecase.feature_user_profile.LogoutUseCase
+import skdev.omsrings.mobile.domain.usecase.feature_user_profile.UpdateUserProfileUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.ClearOldOrdersUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.GetUserSettingsUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.UpdateNotificationSettingsUseCase
@@ -40,10 +46,11 @@ import skdev.omsrings.mobile.utils.notification.NotificationManager
 
 private val data = module {
     single<FirebaseFirestore> { Firebase.firestore }
+    single<FirebaseAuth> { Firebase.auth }
 
     single<AuthRepository> {
         AuthRepositoryImpl(
-            firebaseAuth = Firebase.auth,
+            firebaseAuth = get(),
             firestore = get()
         )
     }
@@ -65,6 +72,10 @@ private val data = module {
 
     single<OrderRepository> {
         FirebaseOrderRepository(firestore = get())
+    }
+
+    single<UserProfileRepository> {
+        FirebaseUserProfileRepository(firebaseAuth = get(), firestore = get())
     }
 
 }
@@ -132,7 +143,10 @@ private val viewModels = module {
     // Feature User Profile
     factory<UserProfileScreenModel> {
         UserProfileScreenModel(
-            notificationManager = get()
+            notificationManager = get(),
+            getUserProfileUseCase = get(),
+            updateUserProfileUseCase = get(),
+            logoutUseCase = get()
         )
     }
 
@@ -183,6 +197,11 @@ private val useCases = module {
             notificationManager = get()
         )
     }
+
+    // Feature User Profile
+    factory<GetUserProfileUseCase> { GetUserProfileUseCase(repository = get()) }
+    factory<UpdateUserProfileUseCase> { UpdateUserProfileUseCase(repository = get()) }
+    factory<LogoutUseCase> { LogoutUseCase(repository = get()) }
 
 }
 

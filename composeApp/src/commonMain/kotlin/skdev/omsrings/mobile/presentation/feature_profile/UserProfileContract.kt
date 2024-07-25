@@ -1,23 +1,19 @@
 package skdev.omsrings.mobile.presentation.feature_profile
 
-import org.jetbrains.compose.resources.StringResource
-import skdev.omsrings.mobile.utils.fields.FormField
-
 object UserProfileContract {
 
     data class UIState(
-        val fullName: FormField<String, StringResource>,
-        val phoneNumber: FormField<String, StringResource>,
-        val fullNameSource: String = "",
-        val phoneSource: String = "",
         val isDataChanged: Boolean = false,
-        val isLoading: Boolean = false
+        val canSave: Boolean = false,
+        val fullName: String = "",
+        val phoneNumber: String = "",
+        val isEmployer: Boolean = false
     )
 
 
     sealed interface Event {
-        data class OnFullNameChanged(val newFullName: String) : Event
-        data class OnPhoneNumberChanged(val newPhoneNumber: String) : Event
+        data class OnFullNameChanged(val fullName: String) : Event
+        data class OnPhoneNumberChanged(val phoneNumber: String) : Event
         data object OnSaveProfile : Event
         data object OnLogout : Event
     }

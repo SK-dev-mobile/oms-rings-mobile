@@ -10,6 +10,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ExitToApp
+import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -24,11 +25,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import cafe.adriel.voyager.koin.koinScreenModel
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.edit_profile
 import omsringsmobile.composeapp.generated.resources.save_changes
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import skdev.omsrings.mobile.presentation.base.BaseScreen
 import skdev.omsrings.mobile.ui.components.fields.PhoneField
@@ -37,6 +38,7 @@ import skdev.omsrings.mobile.ui.components.fields.TextField
 import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
 import skdev.omsrings.mobile.ui.components.helpers.Spacer
 import skdev.omsrings.mobile.ui.theme.values.Dimens
+import skdev.omsrings.mobile.utils.fields.FormField
 import skdev.omsrings.mobile.utils.fields.collectAsMutableState
 
 object UserProfileScreen : BaseScreen("user_profile_screen") {
@@ -47,8 +49,11 @@ object UserProfileScreen : BaseScreen("user_profile_screen") {
         val uiState by screenModel.uiState.collectAsState()
         val updating by screenModel.updating.collectAsState()
 
+
         UserProfileContent(
             uiState = uiState,
+            fullNameField = screenModel.fullNameField,
+            phoneNumberField = screenModel.phoneNumberField,
             updating = updating,
             onEvent = screenModel::onEvent
         )
@@ -60,6 +65,8 @@ object UserProfileScreen : BaseScreen("user_profile_screen") {
 @Composable
 private fun UserProfileContent(
     uiState: UserProfileContract.UIState,
+    fullNameField: FormField<String, StringResource>,
+    phoneNumberField: FormField<String, StringResource>,
     updating: Boolean,
     onEvent: (UserProfileContract.Event) -> Unit
 ) {
@@ -85,18 +92,16 @@ private fun UserProfileContent(
                 .padding(Dimens.spaceMedium),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            UserInfo(
-                fullName = uiState.fullName.data.value,
-                phoneNumber = uiState.phoneNumber.data.value
-            )
-            Spacer(Dimens.spaceLarge)
             UserProfileForm(
-                uiState = uiState,
+                fullName = fullNameField,
+                phoneNumber = phoneNumberField,
+                onFullNameChanged = { onEvent(UserProfileContract.Event.OnFullNameChanged(it)) },
+                onPhoneNumberChanged = { onEvent(UserProfileContract.Event.OnPhoneNumberChanged(it)) },
                 enabled = !updating
             )
             Spacer(Dimens.spaceLarge)
             SaveButton(
-                isEnabled = uiState.isDataChanged && !updating,
+                isEnabled = !updating && uiState.isDataChanged && uiState.canSave,
                 onClick = { onEvent(UserProfileContract.Event.OnSaveProfile) }
             )
             Spacer(Dimens.spaceLarge)
@@ -109,41 +114,27 @@ private fun UserProfileContent(
 }
 
 @Composable
-private fun UserInfo(fullName: String, phoneNumber: String) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            text = fullName,
-            style = MaterialTheme.typography.headlineMedium,
-            textAlign = TextAlign.Center
-        )
-        Spacer(Dimens.spaceSmall)
-        Text(
-            text = phoneNumber,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
-}
-
-@Composable
 private fun UserProfileForm(
-    uiState: UserProfileContract.UIState,
+    fullName: FormField<String, StringResource>,
+    phoneNumber: FormField<String, StringResource>,
+    onFullNameChanged: (String) -> Unit,
+    onPhoneNumberChanged: (String) -> Unit,
     enabled: Boolean
 ) {
-    val (fullNameValue, fullNameSetter) = uiState.fullName.data.collectAsMutableState()
-    val fullNameError by uiState.fullName.error.collectAsState()
+    val (fullNameValue, _) = fullName.data.collectAsMutableState()
+    val fullNameError by fullName.error.collectAsState()
 
-    val (phoneValue, phoneSetter) = uiState.phoneNumber.data.collectAsMutableState()
-    val phoneError by uiState.phoneNumber.error.collectAsState()
+    val (phoneValue, _) = phoneNumber.data.collectAsMutableState()
+    val phoneError by phoneNumber.error.collectAsState()
 
     Column(modifier = Modifier.fillMaxWidth()) {
         TextField(
             modifier = Modifier.fillMaxWidth(),
-            value = fullNameValue,
-            onValueChange = fullNameSetter,
-            label = {
-                Text("Full Name")
+            leadingIcon = {
+                Icon(Icons.Rounded.Person, contentDescription = "Full name")
             },
+            value = fullNameValue,
+            onValueChange = onFullNameChanged,
             supportingText = SupportingText(fullNameError),
             isError = fullNameError != null,
             enabled = enabled,
@@ -158,7 +149,7 @@ private fun UserProfileForm(
         PhoneField(
             modifier = Modifier.fillMaxWidth(),
             value = phoneValue,
-            onValueChange = phoneSetter,
+            onValueChange = onPhoneNumberChanged,
             supportingText = SupportingText(phoneError),
             isError = phoneError != null,
             enabled = enabled,

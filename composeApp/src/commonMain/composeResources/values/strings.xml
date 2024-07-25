@@ -8,6 +8,7 @@
     <string name="error">Ошибка</string>
     <string name="unknown_error">Неизвестная ошибка</string>
     <string name="retry_later">Попробуйте позже</string>
+    <string name="success">Успешно</string>
 
     <string name="request_timeout">Время запроса истекло</string>
     <string name="no_internet">Нет доступа к Интернету</string>
@@ -193,5 +194,7 @@
     <string name="user_profile_title">Профиль</string>
     <string name="save_changes">Сохранить</string>
     <string name="edit_profile">Редактировать профиль</string>
+
+    <string name="profile_updated">Профиль обновлен</string>
 
 </resources>
