@@ -8,7 +8,10 @@ object UserProfileContract {
     data class UIState(
         val fullName: FormField<String, StringResource>,
         val phoneNumber: FormField<String, StringResource>,
-        val updating: Boolean = false
+        val fullNameSource: String = "",
+        val phoneSource: String = "",
+        val isDataChanged: Boolean = false,
+        val isLoading: Boolean = false
     )
 
 

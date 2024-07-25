@@ -1,5 +1,6 @@
 package skdev.omsrings.mobile.presentation.feature_profile
 
+import androidx.compose.runtime.collectAsState
 import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -40,6 +41,8 @@ class UserProfileScreenModel(
                     }
                 }
             )
+            
+            
         )
     )
     val uiState: StateFlow<UserProfileContract.UIState> = _uiState.asStateFlow()
