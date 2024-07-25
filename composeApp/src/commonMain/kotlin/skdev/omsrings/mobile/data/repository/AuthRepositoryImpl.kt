@@ -4,21 +4,21 @@ import dev.gitlive.firebase.auth.FirebaseAuth
 import dev.gitlive.firebase.auth.FirebaseAuthInvalidCredentialsException
 import dev.gitlive.firebase.auth.FirebaseAuthUserCollisionException
 import dev.gitlive.firebase.firestore.DocumentReference
-import dev.gitlive.firebase.firestore.FirebaseFirestore
 import skdev.omsrings.mobile.data.base.BaseRepository
+import skdev.omsrings.mobile.data.utils.FirestoreCollections
 import skdev.omsrings.mobile.domain.model.UserInfo
-import skdev.omsrings.mobile.utils.result.DataResult
 import skdev.omsrings.mobile.domain.repository.AuthRepository
 import skdev.omsrings.mobile.utils.error.DataError
+import skdev.omsrings.mobile.utils.result.DataResult
 
 
 class AuthRepositoryImpl(
     private val firebaseAuth: FirebaseAuth,
-    private val firestore: FirebaseFirestore,
+    firestoreCollections: FirestoreCollections
 ) : BaseRepository, AuthRepository {
 
     // User info
-    private val userInfoCollection = firestore.collection("user_info")
+    private val userInfoCollection = firestoreCollections.userInfo
     private val userInfoDocument: DocumentReference?
         get() = firebaseAuth.currentUser?.uid?.let { userInfoCollection.document(it) }
 

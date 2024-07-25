@@ -1,8 +1,8 @@
 package skdev.omsrings.mobile.data.repository
 
 import dev.gitlive.firebase.auth.FirebaseAuth
-import dev.gitlive.firebase.firestore.FirebaseFirestore
 import skdev.omsrings.mobile.data.base.BaseRepository
+import skdev.omsrings.mobile.data.utils.FirestoreCollections
 import skdev.omsrings.mobile.domain.model.UserInfo
 import skdev.omsrings.mobile.domain.repository.UserProfileRepository
 import skdev.omsrings.mobile.utils.error.DataError
@@ -10,10 +10,10 @@ import skdev.omsrings.mobile.utils.result.DataResult
 
 class FirebaseUserProfileRepository(
     private val firebaseAuth: FirebaseAuth,
-    private val firestore: FirebaseFirestore
+    firestoreCollections: FirestoreCollections
 ) : BaseRepository, UserProfileRepository {
 
-    private val userInfoCollection = firestore.collection("user_info")
+    private val userInfoCollection = firestoreCollections.userInfo
 
 
     override suspend fun getUserProfile(): DataResult<UserInfo, DataError> = withCathing {

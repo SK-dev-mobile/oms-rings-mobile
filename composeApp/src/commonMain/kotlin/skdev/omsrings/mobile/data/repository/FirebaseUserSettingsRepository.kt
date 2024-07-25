@@ -1,6 +1,6 @@
 package skdev.omsrings.mobile.data.repository
 
-import dev.gitlive.firebase.firestore.FirebaseFirestore
+import skdev.omsrings.mobile.data.utils.FirestoreCollections
 import skdev.omsrings.mobile.domain.model.UserSettings
 import skdev.omsrings.mobile.domain.repository.UserSettingsRepository
 import skdev.omsrings.mobile.utils.error.DataError
@@ -8,15 +8,14 @@ import skdev.omsrings.mobile.utils.result.DataResult
 
 class FirebaseUserSettingsRepository(
     userId: String,
-    firestore: FirebaseFirestore
+    private val firestoreCollections: FirestoreCollections
 ) : UserSettingsRepository {
 
     // User Settings
-    private val userSettingsCollection = firestore.collection("user_settings")
+    private val userSettingsCollection = firestoreCollections.userSettings
     private val userSettingsDocument = userSettingsCollection.document(userId)
 
-
-    private val ordersCollection = firestore.collection("orders")
+    private val ordersCollection = firestoreCollections.orders
 
 
     override suspend fun getUserSettings(): DataResult<UserSettings, DataError> {

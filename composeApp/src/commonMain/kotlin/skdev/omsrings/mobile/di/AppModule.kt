@@ -14,6 +14,7 @@ import skdev.omsrings.mobile.data.repository.FirebaseInventoryRepository
 import skdev.omsrings.mobile.data.repository.FirebaseOrderRepository
 import skdev.omsrings.mobile.data.repository.FirebaseUserProfileRepository
 import skdev.omsrings.mobile.data.repository.FirebaseUserSettingsRepository
+import skdev.omsrings.mobile.data.utils.FirestoreCollections
 import skdev.omsrings.mobile.domain.repository.AuthRepository
 import skdev.omsrings.mobile.domain.repository.InventoryRepository
 import skdev.omsrings.mobile.domain.repository.OrderRepository
@@ -47,36 +48,18 @@ import skdev.omsrings.mobile.utils.notification.NotificationManager
 private val data = module {
     single<FirebaseFirestore> { Firebase.firestore }
     single<FirebaseAuth> { Firebase.auth }
+    single<FirestoreCollections> { FirestoreCollections(firestore = get()) }
 
-    single<AuthRepository> {
-        AuthRepositoryImpl(
-            firebaseAuth = get(),
-            firestore = get()
-        )
-    }
-
+    single<AuthRepository> { AuthRepositoryImpl(firebaseAuth = get(), firestoreCollections = get()) }
 
     // TODO: Replace userId with real user id
-    single<UserSettingsRepository> {
-        FirebaseUserSettingsRepository(
-            userId = "1",
-            firestore = get()
-        )
-    }
+    single<UserSettingsRepository> { FirebaseUserSettingsRepository(userId = "1", firestoreCollections = get()) }
 
-    single<InventoryRepository> {
-        FirebaseInventoryRepository(
-            firestore = get()
-        )
-    }
+    single<InventoryRepository> { FirebaseInventoryRepository(firestoreCollections = get()) }
 
-    single<OrderRepository> {
-        FirebaseOrderRepository(firestore = get())
-    }
+    single<OrderRepository> { FirebaseOrderRepository(firestoreCollections = get()) }
 
-    single<UserProfileRepository> {
-        FirebaseUserProfileRepository(firebaseAuth = get(), firestore = get())
-    }
+    single<UserProfileRepository> { FirebaseUserProfileRepository(firebaseAuth = get(), firestoreCollections = get()) }
 
 }
 
