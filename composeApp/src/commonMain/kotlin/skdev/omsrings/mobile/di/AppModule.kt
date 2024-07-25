@@ -33,6 +33,7 @@ import skdev.omsrings.mobile.presentation.feature_auth.AuthScreenModel
 import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenModel
 import skdev.omsrings.mobile.presentation.feature_main.MainScreenModel
 import skdev.omsrings.mobile.presentation.feature_order_form.OrderFormScreenModel
+import skdev.omsrings.mobile.presentation.feature_profile.UserProfileScreenModel
 import skdev.omsrings.mobile.presentation.feature_user_settings.UserSettingsModel
 import skdev.omsrings.mobile.utils.notification.NotificationManager
 
@@ -114,7 +115,7 @@ private val viewModels = module {
         )
     }
 
-    // OrderForm
+    // Feature OrderForm
     factory<OrderFormScreenModel> { parameters ->
         OrderFormScreenModel(
             notificationManager = get(),
@@ -127,6 +128,14 @@ private val viewModels = module {
             orderId = parameters.getOrNull()
         )
     }
+
+    // Feature User Profile
+    factory<UserProfileScreenModel> {
+        UserProfileScreenModel(
+            notificationManager = get()
+        )
+    }
+
 
 }
 
