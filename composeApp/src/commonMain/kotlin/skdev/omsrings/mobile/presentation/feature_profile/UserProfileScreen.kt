@@ -115,7 +115,7 @@ private fun UserProfileContent(
             )
             Spacer(Dimens.spaceLarge)
             SaveButton(
-                isEnabled = !updating || uiState.isDataChanged || uiState.canSave,
+                isEnabled = !updating && uiState.isDataChanged && uiState.canSave,
                 onClick = { onEvent(UserProfileContract.Event.OnSaveProfile) }
             )
             Spacer(Dimens.spaceLarge)

@@ -71,8 +71,8 @@ class UserProfileScreenModel(
     }
 
     private fun loadUserProfile() {
-        onUpdateState()
         screenModelScope.launch {
+            onUpdateState()
             getUserProfileUseCase()
                 .ifSuccess { userInfoResult ->
                     val userInfo = userInfoResult.data
@@ -86,8 +86,9 @@ class UserProfileScreenModel(
                         showErrorMessage(error.error)
                     }
                 }
+            onUpdatedState()
         }
-        onUpdatedState()
+
     }
 
 
@@ -105,28 +106,24 @@ class UserProfileScreenModel(
         val formattedFullName = fullName.trim()
         _uiState.update { it.copy(userInfo = it.userInfo.copy(fullName = formattedFullName)) }
         fullNameField.setValue(fullName)
-        fullNameField.validate()
         updateUIState()
     }
 
     private fun updatePhoneNumber(phoneNumber: String) {
         _uiState.update { it.copy(userInfo = it.userInfo.copy(phoneNumber = phoneNumber)) }
         phoneNumberField.setValue(phoneNumber)
-        phoneNumberField.validate()
         updateUIState()
     }
 
     private fun updateUIState() {
         val isDataChanged = _uiState.value.userInfo != initialUserInfo
-        val canSave = isDataChanged &&
-                fullNameField.error.value == null &&
-                phoneNumberField.error.value == null
+        val canSave = isDataChanged && phoneNumberField.validate() && fullNameField.validate()
         _uiState.update { it.copy(isDataChanged = isDataChanged, canSave = canSave) }
     }
 
     private fun saveProfile() {
-        onUpdateState()
         screenModelScope.launch {
+            onUpdateState()
             val updatedUserInfo = _uiState.value.userInfo
             updateUserProfileUseCase(updatedUserInfo)
                 .ifSuccess {
@@ -138,13 +135,13 @@ class UserProfileScreenModel(
                 .ifError { error ->
                     showErrorMessage(error.error)
                 }
+            onUpdatedState()
         }
-        onUpdatedState()
     }
 
     private fun logout() {
-        onUpdateState()
         screenModelScope.launch {
+            onUpdateState()
             logoutUseCase()
                 .ifSuccess {
                     launchEffect(UserProfileContract.Effect.LoggedOut)
@@ -152,8 +149,8 @@ class UserProfileScreenModel(
                 .ifError { error ->
                     showErrorMessage(error.error)
                 }
+            onUpdatedState()
         }
-        onUpdatedState()
     }
 
     private fun showErrorMessage(error: DataError) {
