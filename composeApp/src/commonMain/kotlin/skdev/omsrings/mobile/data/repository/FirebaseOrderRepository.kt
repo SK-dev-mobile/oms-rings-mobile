@@ -1,20 +1,15 @@
 package skdev.omsrings.mobile.data.repository
 
-import dev.gitlive.firebase.firestore.Filter
-import dev.gitlive.firebase.firestore.FirebaseFirestore
 import dev.gitlive.firebase.firestore.FirebaseFirestoreException
 import dev.gitlive.firebase.firestore.FirestoreExceptionCode
 import dev.gitlive.firebase.firestore.Timestamp
 import dev.gitlive.firebase.firestore.code
-import dev.gitlive.firebase.firestore.toMilliseconds
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import skdev.omsrings.mobile.data.base.BaseRepository
 import skdev.omsrings.mobile.data.model.DayInfoDTO
+import skdev.omsrings.mobile.data.utils.FirestoreCollections
 import skdev.omsrings.mobile.data.utils.toLocalDate
 import skdev.omsrings.mobile.domain.model.DayInfoModel
 import skdev.omsrings.mobile.domain.model.Order
@@ -23,11 +18,11 @@ import skdev.omsrings.mobile.utils.error.DataError
 import skdev.omsrings.mobile.utils.result.DataResult
 
 class FirebaseOrderRepository(
-    private val firestore: FirebaseFirestore
+    private val firestoreCollections: FirestoreCollections
 ) : BaseRepository, OrderRepository {
 
-    private val ordersCollection = firestore.collection("orders")
-    private val daysInfoCollection = firestore.collection("days_info")
+    private val ordersCollection = firestoreCollections.orders
+    private val daysInfoCollection = firestoreCollections.daysInfo
 
     override suspend fun createOrder(order: Order): DataResult<Order, DataError> =
         withCathing {

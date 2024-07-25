@@ -1,6 +1,7 @@
 package skdev.omsrings.mobile.di
 
 import dev.gitlive.firebase.Firebase
+import dev.gitlive.firebase.auth.FirebaseAuth
 import dev.gitlive.firebase.auth.auth
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 import dev.gitlive.firebase.firestore.firestore
@@ -11,10 +12,13 @@ import org.koin.dsl.module
 import skdev.omsrings.mobile.data.repository.AuthRepositoryImpl
 import skdev.omsrings.mobile.data.repository.FirebaseInventoryRepository
 import skdev.omsrings.mobile.data.repository.FirebaseOrderRepository
+import skdev.omsrings.mobile.data.repository.FirebaseUserProfileRepository
 import skdev.omsrings.mobile.data.repository.FirebaseUserSettingsRepository
+import skdev.omsrings.mobile.data.utils.FirestoreCollections
 import skdev.omsrings.mobile.domain.repository.AuthRepository
 import skdev.omsrings.mobile.domain.repository.InventoryRepository
 import skdev.omsrings.mobile.domain.repository.OrderRepository
+import skdev.omsrings.mobile.domain.repository.UserProfileRepository
 import skdev.omsrings.mobile.domain.repository.UserSettingsRepository
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SendResetPasswordEmailUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignInUserUseCase
@@ -25,6 +29,9 @@ import skdev.omsrings.mobile.domain.usecase.feature_order.GetFoldersAndItemsInve
 import skdev.omsrings.mobile.domain.usecase.feature_order.GetInventoryItemsByIdsUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_order.GetOrderByIdUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_order.UpdateOrderUseCase
+import skdev.omsrings.mobile.domain.usecase.feature_user_profile.GetUserProfileUseCase
+import skdev.omsrings.mobile.domain.usecase.feature_user_profile.LogoutUseCase
+import skdev.omsrings.mobile.domain.usecase.feature_user_profile.UpdateUserProfileUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.ClearOldOrdersUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.GetUserSettingsUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.UpdateNotificationSettingsUseCase
@@ -33,38 +40,26 @@ import skdev.omsrings.mobile.presentation.feature_auth.AuthScreenModel
 import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenModel
 import skdev.omsrings.mobile.presentation.feature_main.MainScreenModel
 import skdev.omsrings.mobile.presentation.feature_order_form.OrderFormScreenModel
+import skdev.omsrings.mobile.presentation.feature_profile.UserProfileScreenModel
 import skdev.omsrings.mobile.presentation.feature_user_settings.UserSettingsModel
 import skdev.omsrings.mobile.utils.notification.NotificationManager
 
 
 private val data = module {
     single<FirebaseFirestore> { Firebase.firestore }
+    single<FirebaseAuth> { Firebase.auth }
+    single<FirestoreCollections> { FirestoreCollections(firestore = get()) }
 
-    single<AuthRepository> {
-        AuthRepositoryImpl(
-            firebaseAuth = Firebase.auth,
-            firestore = get()
-        )
-    }
-
+    single<AuthRepository> { AuthRepositoryImpl(firebaseAuth = get(), firestoreCollections = get()) }
 
     // TODO: Replace userId with real user id
-    single<UserSettingsRepository> {
-        FirebaseUserSettingsRepository(
-            userId = "1",
-            firestore = get()
-        )
-    }
+    single<UserSettingsRepository> { FirebaseUserSettingsRepository(userId = "1", firestoreCollections = get()) }
 
-    single<InventoryRepository> {
-        FirebaseInventoryRepository(
-            firestore = get()
-        )
-    }
+    single<InventoryRepository> { FirebaseInventoryRepository(firestoreCollections = get()) }
 
-    single<OrderRepository> {
-        FirebaseOrderRepository(firestore = get())
-    }
+    single<OrderRepository> { FirebaseOrderRepository(firestoreCollections = get()) }
+
+    single<UserProfileRepository> { FirebaseUserProfileRepository(firebaseAuth = get(), firestoreCollections = get()) }
 
 }
 
@@ -114,7 +109,7 @@ private val viewModels = module {
         )
     }
 
-    // OrderForm
+    // Feature OrderForm
     factory<OrderFormScreenModel> { parameters ->
         OrderFormScreenModel(
             notificationManager = get(),
@@ -127,6 +122,17 @@ private val viewModels = module {
             orderId = parameters.getOrNull()
         )
     }
+
+    // Feature User Profile
+    factory<UserProfileScreenModel> {
+        UserProfileScreenModel(
+            notificationManager = get(),
+            getUserProfileUseCase = get(),
+            updateUserProfileUseCase = get(),
+            logoutUseCase = get()
+        )
+    }
+
 
 }
 
@@ -174,6 +180,11 @@ private val useCases = module {
             notificationManager = get()
         )
     }
+
+    // Feature User Profile
+    factory<GetUserProfileUseCase> { GetUserProfileUseCase(repository = get()) }
+    factory<UpdateUserProfileUseCase> { UpdateUserProfileUseCase(repository = get()) }
+    factory<LogoutUseCase> { LogoutUseCase(repository = get()) }
 
 }
 

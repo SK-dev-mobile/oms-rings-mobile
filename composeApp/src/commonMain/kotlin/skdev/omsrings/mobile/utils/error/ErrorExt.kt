@@ -24,50 +24,62 @@ fun Error.toNotificationModel(): NotificationModel {
             titleRes = Res.string.error,
             messageRes = Res.string.request_timeout
         )
+
         DataError.Network.NO_INTERNET -> NotificationModel.Error(
             titleRes = Res.string.error,
             messageRes = Res.string.no_internet
         )
+
         DataError.Network.UNAUTHORIZED -> NotificationModel.Error(
             titleRes = Res.string.error,
             messageRes = Res.string.unauthorized
         )
+
         DataError.Network.SERVER_ERROR -> NotificationModel.Error(
             titleRes = Res.string.error,
             messageRes = Res.string.server_error
         )
+
         DataError.Network.SERIALIZATION -> NotificationModel.Error(
             titleRes = Res.string.error,
             messageRes = Res.string.serialization
         )
+
         DataError.Local.READ_ERROR -> NotificationModel.Error(
             titleRes = Res.string.error,
             messageRes = Res.string.read_error
         )
+
         DataError.Local.NO_DATA -> NotificationModel.Error(
             titleRes = Res.string.error,
             messageRes = Res.string.no_data
         )
+
         DataError.Local.WRITE_ERROR -> NotificationModel.Error(
             titleRes = Res.string.error,
             messageRes = Res.string.write_error
         )
+
         DataError.Local.USER_NOT_FOUND -> NotificationModel.Error(
             titleRes = Res.string.error,
             messageRes = Res.string.user_not_found
         )
+
         DataError.Local.USER_NOT_LOGGED_IN -> NotificationModel.Error(
             titleRes = Res.string.error,
             messageRes = Res.string.user_not_loggined_in
         )
+
         DataError.Auth.USER_ALREADY_EXISTS -> NotificationModel.Error(
             titleRes = Res.string.error,
             messageRes = Res.string.user_already_exists
         )
+
         DataError.Auth.WRONG_CREDENTIALS -> NotificationModel.Error(
             titleRes = Res.string.error,
             messageRes = Res.string.incorrect_email_or_password
         )
+
         else -> NotificationModel.Error(
             titleRes = Res.string.unknown_error,
             messageRes = Res.string.retry_later

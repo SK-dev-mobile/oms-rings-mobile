@@ -1,8 +1,8 @@
 package skdev.omsrings.mobile.data.repository
 
-import dev.gitlive.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import skdev.omsrings.mobile.data.utils.FirestoreCollections
 import skdev.omsrings.mobile.domain.model.Folder
 import skdev.omsrings.mobile.domain.model.InventoryItem
 import skdev.omsrings.mobile.domain.repository.InventoryRepository
@@ -10,10 +10,10 @@ import skdev.omsrings.mobile.utils.error.DataError
 import skdev.omsrings.mobile.utils.result.DataResult
 
 class FirebaseInventoryRepository(
-    private val firestore: FirebaseFirestore
+    private val firestoreCollections: FirestoreCollections
 ) : InventoryRepository {
 
-    private val foldersCollection = firestore.collection("folders")
+    private val foldersCollection = firestoreCollections.folders
 
 
     override fun getFoldersAndItems(): Flow<List<Folder>> =

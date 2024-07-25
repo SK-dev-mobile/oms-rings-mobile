@@ -1,7 +1,5 @@
 package skdev.omsrings.mobile.presentation.feature_auth
 
-import omsringsmobile.composeapp.generated.resources.Res
-import org.jetbrains.compose.resources.StringResource
 import skdev.omsrings.mobile.presentation.feature_auth.enitity.UserRole
 
 object AuthScreenContract {
@@ -18,7 +16,7 @@ object AuthScreenContract {
 
     sealed interface Effect {
         object NavigateToMainScreen : Effect
-        object NaivgateBack : Effect
+        object NavigateBack : Effect
 
     }
 
