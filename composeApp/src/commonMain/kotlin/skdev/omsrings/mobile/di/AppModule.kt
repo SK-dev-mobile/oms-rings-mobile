@@ -51,7 +51,7 @@ private val data = module {
     // TODO: Replace userId with real user id
     single<UserSettingsRepository> {
         FirebaseUserSettingsRepository(
-            userId = "1",
+            firebaseAuth = Firebase.auth,
             firestore = get()
         )
     }

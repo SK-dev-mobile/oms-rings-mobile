@@ -36,5 +36,9 @@ sealed interface DataError : Error {
         UNKNOWN
     }
 
+    enum class Feature : DataError {
+        NOT_IMPLEMENTED
+    }
+
 
 }
