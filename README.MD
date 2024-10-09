@@ -8,6 +8,8 @@
 - **Поддержка нескольких платформ**: Общий код для Android и iOS с использованием Kotlin Multiplatform.
 - **Систему уведомлений**: Администраторы получают уведомления об изменениях в заказах.
 
+![Demo](assets/oms-rings-demostration.png)
+
 Основной пример: https://github.com/izluchatel-dev/RingsPlus/
 
 ---
