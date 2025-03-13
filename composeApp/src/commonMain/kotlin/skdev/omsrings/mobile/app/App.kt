@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.annotation.ExperimentalVoyagerApi
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
+import com.mmk.kmpnotifier.notification.NotifierManager
 import org.koin.compose.koinInject
 import skdev.omsrings.mobile.presentation.feature_main.MainScreen
 import skdev.omsrings.mobile.ui.components.notification.NotificationDisplay
@@ -24,6 +25,12 @@ internal fun App() = AppTheme(
     isDark = isSystemInDarkTheme()
 ) {
     val notificationManager: NotificationManager = koinInject()
+
+    NotifierManager.addListener(object : NotifierManager.Listener {
+        override fun onNewToken(token: String) {
+            println("onNewToken: $token")
+        }
+    })
 
     Box {
         Navigator(

@@ -1,5 +1,7 @@
 import UIKit
 import ComposeApp
+import FirebaseCore
+import FirebaseMessaging
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -18,6 +20,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             window.rootViewController = MainKt.MainViewController()
             window.makeKeyAndVisible()
         }
+        
+        FirebaseApp.configure()
+        NotifierManager.shared.initialize(configuration: NotificationPlatformConfigurationIos(
+            showPushNotification: true,
+            askNotificationPermissionOnStart: true)
+        )
+        
         return true
     }
+    
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+            Messaging.messaging().apnsToken = deviceToken
+      }
 }

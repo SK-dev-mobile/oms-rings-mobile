@@ -36,6 +36,7 @@ kotlin {
         iosSimulatorArm64()
     ).forEach {
         it.binaries.framework {
+            export(libs.kmpnotifier)
             baseName = "ComposeApp"
             isStatic = true
         }
@@ -43,6 +44,9 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            // Notifier
+            api(libs.kmpnotifier)
+
             // Compose
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -78,7 +82,7 @@ kotlin {
             // Firebase KMP
             api(libs.gitlive.firebase.auth)
             api(libs.gitlive.firebase.firestore)
-            api(libs.gitlive.firebase.messaging)
+//            api(libs.gitlive.firebase.messaging)
         }
 
         androidMain.dependencies {
@@ -99,7 +103,7 @@ kotlin {
             implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.firebase.auth.android)
             implementation(libs.firebase.firestore.android)
-            implementation(libs.firebase.messaging.android)
+//            implementation(libs.firebase.messaging.android)
         }
 
         iosMain.dependencies {
@@ -112,23 +116,23 @@ android {
     namespace = "skdev.omsrings.mobile"
     compileSdk = 34
 
-    val keystorePropertiesFile = rootProject.file("signing/keystore.properties")
-    val keystoreProperties = Properties()
-    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+//    val keystorePropertiesFile = rootProject.file("signing/keystore.properties")
+//    val keystoreProperties = Properties()
+//    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
     signingConfigs {
         create("release") {
-            keyAlias = keystoreProperties["keyAliasRelease"] as String
-            keyPassword = keystoreProperties["keyPasswordRelease"] as String
-            storeFile = rootProject.file("signing/keystore.jks")
-            storePassword = keystoreProperties["storePassword"] as String
+//            keyAlias = keystoreProperties["keyAliasRelease"] as String
+//            keyPassword = keystoreProperties["keyPasswordRelease"] as String
+//            storeFile = rootProject.file("signing/keystore.jks")
+//            storePassword = keystoreProperties["storePassword"] as String
         }
 
         getByName("debug") {
-            keyAlias = keystoreProperties["keyAliasDebug"] as String
-            keyPassword = keystoreProperties["keyPasswordDebug"] as String
-            storeFile = rootProject.file("signing/keystore.jks")
-            storePassword = keystoreProperties["storePassword"] as String
+//            keyAlias = keystoreProperties["keyAliasDebug"] as String
+//            keyPassword = keystoreProperties["keyPasswordDebug"] as String
+//            storeFile = rootProject.file("signing/keystore.jks")
+//            storePassword = keystoreProperties["storePassword"] as String
         }
     }
 
@@ -176,6 +180,9 @@ android {
         //enables a Compose tooling support in the AndroidStudio
         compose = true
     }
+}
+dependencies {
+    implementation(libs.firebase.messaging.ktx)
 }
 
 buildConfig {
