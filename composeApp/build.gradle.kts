@@ -37,8 +37,16 @@ kotlin {
     ).forEach {
         it.binaries.framework {
             export(libs.kmpnotifier)
+            export(libs.koin.core)
             baseName = "ComposeApp"
             isStatic = true
+            binaryOptions["bundleId"] = "skdev.omsrings.mobile.iosApp"
+        }
+    }
+
+    sourceSets.all {
+        languageSettings {
+            optIn("kotlin.ExperimentalUuidApi") // Добавьте эту строку
         }
     }
 
@@ -107,7 +115,9 @@ kotlin {
         }
 
         iosMain.dependencies {
-
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
         }
     }
 }
@@ -121,12 +131,12 @@ android {
 //    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
     signingConfigs {
-        create("release") {
-//            keyAlias = keystoreProperties["keyAliasRelease"] as String
-//            keyPassword = keystoreProperties["keyPasswordRelease"] as String
-//            storeFile = rootProject.file("signing/keystore.jks")
-//            storePassword = keystoreProperties["storePassword"] as String
-        }
+//        create("release") {
+////            keyAlias = keystoreProperties["keyAliasRelease"] as String
+////            keyPassword = keystoreProperties["keyPasswordRelease"] as String
+////            storeFile = rootProject.file("signing/keystore.jks")
+////            storePassword = keystoreProperties["storePassword"] as String
+//        }
 
         getByName("debug") {
 //            keyAlias = keystoreProperties["keyAliasDebug"] as String
@@ -137,15 +147,15 @@ android {
     }
 
     buildTypes {
-        release {
-            isMinifyEnabled = false
-            isDebuggable = false
-            signingConfig = signingConfigs.getByName("release")
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
+//        release {
+//            isMinifyEnabled = false
+//            isDebuggable = false
+//            signingConfig = signingConfigs.getByName("release")
+//            proguardFiles(
+//                getDefaultProguardFile("proguard-android-optimize.txt"),
+//                "proguard-rules.pro"
+//            )
+//        }
 
         debug {
             isDebuggable = true

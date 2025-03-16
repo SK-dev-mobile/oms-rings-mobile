@@ -180,10 +180,11 @@ private val useCases = module {
 private fun commonModule() = listOf(data, utils, viewModels, useCases)
 
 fun initKoin(
-    appDeclaration: KoinAppDeclaration = {},
+//    appDeclaration: KoinAppDeclaration = {},
 ) {
+    println("Koin initialization started")
     startKoin {
-        appDeclaration()
+//        appDeclaration()
         modules(
             commonModule() + platformModule()
         )

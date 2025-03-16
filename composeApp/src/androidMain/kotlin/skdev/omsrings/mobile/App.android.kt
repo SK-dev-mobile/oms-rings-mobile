@@ -20,9 +20,7 @@ import skdev.omsrings.mobile.di.initKoin
 class AndroidApp : Application() {
     override fun onCreate() {
         super.onCreate()
-        initKoin {
-            androidContext(this@AndroidApp)
-        }
+        initKoin()
         Firebase.initialize(this@AndroidApp)
         Napier.base(DebugAntilog())
         NotifierManager.initialize(

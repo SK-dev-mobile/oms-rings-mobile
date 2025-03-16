@@ -7,14 +7,12 @@ import FirebaseMessaging
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
-    init() {
-        KoinDIKt.doInitKoin(appDeclaration: {_ in })
-    }
-
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        AppModuleKt.doInitKoin()
+        
         window = UIWindow(frame: UIScreen.main.bounds)
         if let window = window {
             window.rootViewController = MainKt.MainViewController()
@@ -22,10 +20,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         FirebaseApp.configure()
-        NotifierManager.shared.initialize(configuration: NotificationPlatformConfigurationIos(
-            showPushNotification: true,
-            askNotificationPermissionOnStart: true)
-        )
+//        NotifierManager.shared.initialize(configuration: NotificationPlatformConfigurationIos(
+//            showPushNotification: true,
+//            askNotificationPermissionOnStart: true)
+//        )
         
         return true
     }
