@@ -40,7 +40,7 @@ kotlin {
             export(libs.koin.core)
             baseName = "ComposeApp"
             isStatic = true
-            binaryOptions["bundleId"] = "skdev.omsrings.mobile.iosApp"
+            binaryOptions["bundleId"] = "skdev.omsrings.mobile.ios"
         }
     }
 

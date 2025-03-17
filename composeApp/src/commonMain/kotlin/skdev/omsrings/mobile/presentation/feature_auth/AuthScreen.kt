@@ -65,8 +65,7 @@ object AuthScreen : BaseScreen("auth_screen") {
             AnimatedContent(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(paddingValues),
+                    .verticalScroll(rememberScrollState()),
                 transitionSpec = {
                     when {
                         AuthScreenContract.State.SignIn isTransitioningTo AuthScreenContract.State.SignUp -> {

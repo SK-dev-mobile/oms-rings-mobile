@@ -1,12 +1,12 @@
 [versions]
 
 kmpnotifier = "1.3.0"
-kotlin = "2.0.20"
+kotlin = "2.1.10"
 compose = "1.6.11"
 agp = "8.6.1"
 androidx-activityCompose = "1.9.0"
 playServices = "17.0.0"
-voyager = "1.1.0-beta02"
+voyager = "1.1.0-beta03"
 napier = "2.7.1"
 buildConfig = "4.1.1"
 kotlinx-coroutines = "1.9.0-RC"
@@ -21,9 +21,9 @@ datastorePreferencesVersion = "1.1.1"
 #Gradle
 gradlePlugins-google-services = "4.4.2"
 #Firebase Android
-firebase-android-bom = "33.1.1"
+firebase-android-bom = "33.10.0"
 #Gitlive
-firebase-gitlive-sdk = "1.13.0"
+firebase-gitlive-sdk = "2.1.0"
 firebaseMessagingKtx = "24.1.0"
 
 [libraries]
