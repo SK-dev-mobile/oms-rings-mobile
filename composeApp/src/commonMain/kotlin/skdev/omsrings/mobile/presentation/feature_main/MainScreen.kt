@@ -44,6 +44,7 @@ import skdev.omsrings.mobile.presentation.feature_day_orders.DayOrdersScreen
 import skdev.omsrings.mobile.presentation.feature_main.components.CalendarState
 import skdev.omsrings.mobile.presentation.feature_main.components.CalendarView
 import skdev.omsrings.mobile.presentation.feature_main.components.rememberCalendarState
+import skdev.omsrings.mobile.presentation.feature_profile.ProfileScreen
 import skdev.omsrings.mobile.presentation.feature_user_settings.UserSettingsScreen
 import skdev.omsrings.mobile.ui.components.fields.PhoneField
 import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
@@ -72,7 +73,9 @@ object MainScreen : BaseScreen("main_screen") {
                     enabledNavigation = false,
                     actions = {
                         IconButton(
-                            onClick = { /* TODO */ }
+                            onClick = {
+                                navigator.push(ProfileScreen)
+                            }
                         ) {
                             Icon(
                                 imageVector = Icons.Rounded.Person,
