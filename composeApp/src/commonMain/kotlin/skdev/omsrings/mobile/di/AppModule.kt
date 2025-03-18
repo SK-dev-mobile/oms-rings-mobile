@@ -16,6 +16,7 @@ import skdev.omsrings.mobile.domain.repository.AuthRepository
 import skdev.omsrings.mobile.domain.repository.InventoryRepository
 import skdev.omsrings.mobile.domain.repository.OrderRepository
 import skdev.omsrings.mobile.domain.repository.UserSettingsRepository
+import skdev.omsrings.mobile.domain.usecase.feature_auth.IsAuthorizedUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SendResetPasswordEmailUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignInUserUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignUpUserUseCase
@@ -172,6 +173,12 @@ private val useCases = module {
         GetDaysInfoUseCase(
             repository = get(),
             notificationManager = get()
+        )
+    }
+
+    factory<IsAuthorizedUseCase> {
+        IsAuthorizedUseCase(
+            authRepository = get()
         )
     }
 
