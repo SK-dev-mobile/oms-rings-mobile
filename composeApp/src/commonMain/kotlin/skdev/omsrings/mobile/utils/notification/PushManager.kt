@@ -16,7 +16,7 @@ data class PushBody(
 )
 
 object PushManager {
-    private const val URL = "https://b986-77-91-84-94.ngrok-free.app/push"
+    private const val URL = "http://southstartrade.com/push"
     private val client = HttpClient {
         install(ContentNegotiation) {
             json()

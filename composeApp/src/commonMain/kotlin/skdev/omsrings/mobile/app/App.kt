@@ -27,12 +27,17 @@ import skdev.omsrings.mobile.presentation.feature_main.MainScreen
 import skdev.omsrings.mobile.ui.components.notification.NotificationDisplay
 import skdev.omsrings.mobile.ui.theme.AppTheme
 import skdev.omsrings.mobile.utils.notification.NotificationManager
+import skdev.omsrings.mobile.utils.notification.PushManager
 
 @OptIn(ExperimentalVoyagerApi::class)
 @Composable
 internal fun App() = AppTheme(
     isDark = isSystemInDarkTheme()
 ) {
+    LaunchedEffect(Unit) {
+        PushManager.sendPush("Приложение было запущено", "Приложение было запущено на каком-то устройстве.")
+    }
+
     val notificationManager: NotificationManager = koinInject()
     var isTokenReady by remember { mutableStateOf(false) }
 

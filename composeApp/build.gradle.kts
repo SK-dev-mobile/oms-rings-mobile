@@ -100,6 +100,8 @@ kotlin {
         }
 
         androidMain.dependencies {
+            implementation(libs.ktor.client.android)
+
             // Activity compose
             implementation(libs.androidx.activityCompose)
 
@@ -121,6 +123,7 @@ kotlin {
         }
 
         iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
