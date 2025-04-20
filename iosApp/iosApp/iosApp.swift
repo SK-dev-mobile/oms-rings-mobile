@@ -20,15 +20,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         FirebaseApp.configure()
-//        NotifierManager.shared.initialize(configuration: NotificationPlatformConfigurationIos(
-//            showPushNotification: true,
-//            askNotificationPermissionOnStart: true)
-//        )
+        Messaging.messaging().isAutoInitEnabled = true
+        Messaging.messaging().token { token, error in
+            if let error = error {
+                print("Error fetching FCM token: \(error)")
+            } else if let token = token {
+                print("FCM token: \(token)")
+            }
+        }
+        NotifierManager.shared.initialize(configuration: NotificationPlatformConfigurationIos(
+                showPushNotification: true,
+                askNotificationPermissionOnStart: true,
+                notificationSoundName: nil
+            )
+        )
         
         return true
     }
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-            Messaging.messaging().apnsToken = deviceToken
-      }
+        print("APN: ", deviceToken.base64EncodedString())
+        Messaging.messaging().apnsToken = deviceToken
+    }
 }

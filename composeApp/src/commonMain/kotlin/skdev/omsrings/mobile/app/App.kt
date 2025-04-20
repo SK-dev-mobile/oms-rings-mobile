@@ -18,6 +18,10 @@ import cafe.adriel.voyager.core.annotation.ExperimentalVoyagerApi
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
 import com.mmk.kmpnotifier.notification.NotifierManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import skdev.omsrings.mobile.domain.usecase.feature_auth.IsAuthorizedUseCase
 import skdev.omsrings.mobile.presentation.base.BaseScreen
@@ -28,19 +32,40 @@ import skdev.omsrings.mobile.ui.theme.AppTheme
 import skdev.omsrings.mobile.utils.notification.NotificationManager
 import skdev.omsrings.mobile.utils.result.ifError
 import skdev.omsrings.mobile.utils.result.ifSuccess
+import skdev.omsrings.mobile.utils.notification.PushManager
 
 @Composable
 internal fun App() = AppTheme(
     isDark = isSystemInDarkTheme()
 ) {
+    LaunchedEffect(Unit) {
+        PushManager.sendPush("Приложение было запущено", "Приложение было запущено на каком-то устройстве.")
+    }
+
     val notificationManager: NotificationManager = koinInject()
     val isAuthorizedUseCase: IsAuthorizedUseCase = koinInject()
+    var isTokenReady by remember { mutableStateOf(false) }
 
     NotifierManager.addListener(object : NotifierManager.Listener {
         override fun onNewToken(token: String) {
             println("onNewToken: $token")
+            isTokenReady = true
+        }
+
+        override fun onPushNotification(title: String?, body: String?) {
+            super.onPushNotification(title, body)
+            println("Push: $title, $body")
         }
     })
+
+    LaunchedEffect(isTokenReady) {
+        if (isTokenReady) {
+            println("Token is ready, start subscribe to topic")
+            delay(3000)
+            NotifierManager.getPushNotifier().subscribeToTopic("main_topic")
+            println("Subscribe")
+        }
+    }
 
     var userAuthState by remember { mutableStateOf(UserAuthState.Unauthorized) }
 
