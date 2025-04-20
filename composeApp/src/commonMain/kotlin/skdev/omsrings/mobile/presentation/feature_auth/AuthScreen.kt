@@ -22,6 +22,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
 import cafe.adriel.voyager.koin.koinScreenModel
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.internal.BackHandler
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.password_reset
@@ -32,8 +34,10 @@ import skdev.omsrings.mobile.presentation.base.BaseScreen
 import skdev.omsrings.mobile.presentation.feature_auth.content.PasswordResetContent
 import skdev.omsrings.mobile.presentation.feature_auth.content.SignInContent
 import skdev.omsrings.mobile.presentation.feature_auth.content.SignUpContent
+import skdev.omsrings.mobile.presentation.feature_main.MainScreen
 import skdev.omsrings.mobile.ui.components.helpers.RingsTopAppBar
 import skdev.omsrings.mobile.ui.theme.values.Dimens
+import skdev.omsrings.mobile.utils.flow.observeAsEffects
 
 internal typealias OnAction = (AuthScreenContract.Event) -> Unit
 
@@ -45,6 +49,19 @@ object AuthScreen : BaseScreen("auth_screen") {
         val screenModel = koinScreenModel<AuthScreenModel>()
         val uiState by screenModel.uiState.collectAsState()
         val updating by screenModel.updating.collectAsState()
+        val localNavigator = LocalNavigator.currentOrThrow
+
+
+        screenModel.effects.observeAsEffects {
+            when (it) {
+                AuthScreenContract.Effect.NavigateToMainScreen -> {
+                    localNavigator.push(MainScreen)
+                }
+                AuthScreenContract.Effect.NaivgateBack -> {
+                    localNavigator.pop()
+                }
+            }
+        }
 
         Scaffold(
             topBar = {
@@ -65,8 +82,8 @@ object AuthScreen : BaseScreen("auth_screen") {
             AnimatedContent(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(paddingValues),
+                    .padding(paddingValues)
+                    .verticalScroll(rememberScrollState()),
                 transitionSpec = {
                     when {
                         AuthScreenContract.State.SignIn isTransitioningTo AuthScreenContract.State.SignUp -> {

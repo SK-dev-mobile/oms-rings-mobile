@@ -36,13 +36,31 @@ kotlin {
         iosSimulatorArm64()
     ).forEach {
         it.binaries.framework {
+            export(libs.kmpnotifier)
+            export(libs.koin.core)
             baseName = "ComposeApp"
             isStatic = true
+            binaryOptions["bundleId"] = "skdev.omsrings.mobile.ios"
+        }
+    }
+
+    sourceSets.all {
+        languageSettings {
+            optIn("kotlin.ExperimentalUuidApi") // Добавьте эту строку
         }
     }
 
     sourceSets {
         commonMain.dependencies {
+            // Ktor
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.kotlinx.serialization.json.v160)
+
+            // Notifier
+            api(libs.kmpnotifier)
+
             // Compose
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -78,10 +96,12 @@ kotlin {
             // Firebase KMP
             api(libs.gitlive.firebase.auth)
             api(libs.gitlive.firebase.firestore)
-            api(libs.gitlive.firebase.messaging)
+//          api(libs.gitlive.firebase.messaging)
         }
 
         androidMain.dependencies {
+            implementation(libs.ktor.client.android)
+
             // Activity compose
             implementation(libs.androidx.activityCompose)
 
@@ -99,6 +119,7 @@ kotlin {
             implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.firebase.auth.android)
             implementation(libs.firebase.firestore.android)
+//          implementation(libs.firebase.messaging.android)
             implementation(libs.firebase.messaging.android)
 
             // Preview
@@ -106,7 +127,10 @@ kotlin {
         }
 
         iosMain.dependencies {
-
+            implementation(libs.ktor.client.darwin)
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
         }
     }
 }
@@ -115,36 +139,36 @@ android {
     namespace = "skdev.omsrings.mobile"
     compileSdk = 34
 
-    val keystorePropertiesFile = rootProject.file("signing/keystore.properties")
-    val keystoreProperties = Properties()
-    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+//    val keystorePropertiesFile = rootProject.file("signing/keystore.properties")
+//    val keystoreProperties = Properties()
+//    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
     signingConfigs {
-        create("release") {
-            keyAlias = keystoreProperties["keyAliasRelease"] as String
-            keyPassword = keystoreProperties["keyPasswordRelease"] as String
-            storeFile = rootProject.file("signing/keystore.jks")
-            storePassword = keystoreProperties["storePassword"] as String
-        }
+//        create("release") {
+////            keyAlias = keystoreProperties["keyAliasRelease"] as String
+////            keyPassword = keystoreProperties["keyPasswordRelease"] as String
+////            storeFile = rootProject.file("signing/keystore.jks")
+////            storePassword = keystoreProperties["storePassword"] as String
+//        }
 
         getByName("debug") {
-            keyAlias = keystoreProperties["keyAliasDebug"] as String
-            keyPassword = keystoreProperties["keyPasswordDebug"] as String
-            storeFile = rootProject.file("signing/keystore.jks")
-            storePassword = keystoreProperties["storePassword"] as String
+//            keyAlias = keystoreProperties["keyAliasDebug"] as String
+//            keyPassword = keystoreProperties["keyPasswordDebug"] as String
+//            storeFile = rootProject.file("signing/keystore.jks")
+//            storePassword = keystoreProperties["storePassword"] as String
         }
     }
 
     buildTypes {
-        release {
-            isMinifyEnabled = false
-            isDebuggable = false
-            signingConfig = signingConfigs.getByName("release")
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
+//        release {
+//            isMinifyEnabled = false
+//            isDebuggable = false
+//            signingConfig = signingConfigs.getByName("release")
+//            proguardFiles(
+//                getDefaultProguardFile("proguard-android-optimize.txt"),
+//                "proguard-rules.pro"
+//            )
+//        }
 
         debug {
             isDebuggable = true
@@ -179,6 +203,9 @@ android {
         //enables a Compose tooling support in the AndroidStudio
         compose = true
     }
+}
+dependencies {
+    implementation(libs.firebase.messaging.ktx)
 }
 
 buildConfig {

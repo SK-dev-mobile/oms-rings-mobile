@@ -16,6 +16,7 @@ import skdev.omsrings.mobile.domain.repository.AuthRepository
 import skdev.omsrings.mobile.domain.repository.InventoryRepository
 import skdev.omsrings.mobile.domain.repository.OrderRepository
 import skdev.omsrings.mobile.domain.repository.UserSettingsRepository
+import skdev.omsrings.mobile.domain.usecase.feature_auth.IsAuthorizedUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SendResetPasswordEmailUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignInUserUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignUpUserUseCase
@@ -56,7 +57,7 @@ private val data = module {
     // TODO: Replace userId with real user id
     single<UserSettingsRepository> {
         FirebaseUserSettingsRepository(
-            userId = "1",
+            firebaseAuth = Firebase.auth,
             firestore = get()
         )
     }
@@ -192,6 +193,12 @@ private val useCases = module {
         )
     }
 
+    factory<IsAuthorizedUseCase> {
+        IsAuthorizedUseCase(
+            authRepository = get()
+        )
+    }
+
     // Feature Day Orders
     factory<GetDayOrdersUseCase> {
         GetDayOrdersUseCase(
@@ -225,10 +232,11 @@ private val useCases = module {
 private fun commonModule() = listOf(data, utils, viewModels, useCases)
 
 fun initKoin(
-    appDeclaration: KoinAppDeclaration = {},
+//    appDeclaration: KoinAppDeclaration = {},
 ) {
+    println("Koin initialization started")
     startKoin {
-        appDeclaration()
+//        appDeclaration()
         modules(
             commonModule() + platformModule()
         )

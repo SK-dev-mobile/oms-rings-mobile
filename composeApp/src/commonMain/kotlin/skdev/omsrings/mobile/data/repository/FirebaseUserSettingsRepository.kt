@@ -1,5 +1,6 @@
 package skdev.omsrings.mobile.data.repository
 
+import dev.gitlive.firebase.auth.FirebaseAuth
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 import skdev.omsrings.mobile.domain.model.UserSettings
 import skdev.omsrings.mobile.domain.repository.UserSettingsRepository
@@ -7,13 +8,16 @@ import skdev.omsrings.mobile.utils.error.DataError
 import skdev.omsrings.mobile.utils.result.DataResult
 
 class FirebaseUserSettingsRepository(
-    userId: String,
-    firestore: FirebaseFirestore
+    private val firebaseAuth: FirebaseAuth,
+    private val firestore: FirebaseFirestore
 ) : UserSettingsRepository {
 
     // User Settings
     private val userSettingsCollection = firestore.collection("user_settings")
-    private val userSettingsDocument = userSettingsCollection.document(userId)
+    private suspend fun getUserId(): String? = firebaseAuth.currentUser?.uid
+    private suspend fun getUserSettingsDocument() = getUserId()?.let {
+        userSettingsCollection.document(it)
+    }
 
 
     private val ordersCollection = firestore.collection("orders")
@@ -21,7 +25,9 @@ class FirebaseUserSettingsRepository(
 
     override suspend fun getUserSettings(): DataResult<UserSettings, DataError> {
         return try {
-            val snapshot = userSettingsDocument.get()
+            val document = getUserSettingsDocument() ?: return DataResult.error(DataError.Local.USER_NOT_LOGGED_IN)
+
+            val snapshot = document.get()
             val settings = if (snapshot.exists) {
                 snapshot.data(UserSettings.serializer())
             } else {
@@ -33,7 +39,6 @@ class FirebaseUserSettingsRepository(
         }
     }
 
-
     override suspend fun updateNotificationSettings(enabled: Boolean): DataResult<Unit, DataError> =
         updateSettings { it.copy(receiveNotifications = enabled) }
 
@@ -41,10 +46,8 @@ class FirebaseUserSettingsRepository(
         updateSettings { it.copy(showClearedOrders = show) }
 
     override suspend fun clearOldOrders(): DataResult<Int, DataError> {
-        // Implement the logic to clear old orders
-        // This is a placeholder implementation
-        // TODO: Implement the logic to clear old orders
-        return DataResult.success(0)
+        // Implementation remains a TODO, but we'll add a proper error
+        return DataResult.error(DataError.Feature.NOT_IMPLEMENTED)
     }
 
     override suspend fun resetToDefault(): DataResult<Unit, DataError> =
@@ -52,14 +55,11 @@ class FirebaseUserSettingsRepository(
 
     private suspend fun updateSettings(update: (UserSettings) -> UserSettings): DataResult<Unit, DataError> {
         return try {
-            when (val currentSettingsResult = getUserSettings()) {
-                is DataResult.Success -> {
-                    val updatedSettings = update(currentSettingsResult.data)
-                    setUserSettings(updatedSettings)
-                }
+            val document = getUserSettingsDocument() ?: return DataResult.error(DataError.Local.USER_NOT_LOGGED_IN)
 
-                is DataResult.Error -> DataResult.error(currentSettingsResult.error)
-            }
+            val currentSettings = document.get().data(UserSettings.serializer())
+            val updatedSettings = update(currentSettings)
+            setUserSettings(updatedSettings)
         } catch (e: Exception) {
             DataResult.error(mapExceptionToDataError(e))
         }
@@ -67,7 +67,9 @@ class FirebaseUserSettingsRepository(
 
     private suspend fun setUserSettings(settings: UserSettings): DataResult<Unit, DataError> {
         return try {
-            userSettingsDocument.set(settings)
+            val document = getUserSettingsDocument() ?: return DataResult.error(DataError.Local.USER_NOT_LOGGED_IN)
+
+            document.set(settings)
             DataResult.success(Unit)
         } catch (e: Exception) {
             DataResult.error(mapExceptionToDataError(e))
@@ -75,13 +77,8 @@ class FirebaseUserSettingsRepository(
     }
 
     private fun mapExceptionToDataError(e: Exception): DataError {
-        // TODO: Дополнить функцию mapExceptionToDataError для обработки различных типов исключений
-
         return when (e) {
-//            is java.net.SocketTimeoutException -> DataError.Network.REQUEST_TIMEOUT
-//            is java.io.IOException -> DataError.Network.NO_INTERNET
             else -> DataError.Network.UNKNOWN
         }
     }
-
 }

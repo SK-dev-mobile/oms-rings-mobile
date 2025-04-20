@@ -52,7 +52,6 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import kotlinx.datetime.LocalDate
 import omsringsmobile.composeapp.generated.resources.Res
-import omsringsmobile.composeapp.generated.resources.create
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 import skdev.omsrings.mobile.presentation.base.BaseScreen

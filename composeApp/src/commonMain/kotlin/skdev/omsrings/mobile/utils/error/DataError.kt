@@ -37,5 +37,9 @@ sealed interface DataError : Error {
         UPDATE_FAILED
     }
 
+    enum class Feature : DataError {
+        NOT_IMPLEMENTED
+    }
+
 
 }

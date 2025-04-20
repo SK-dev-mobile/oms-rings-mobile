@@ -73,6 +73,14 @@ class FirebaseAuthRepository(
         }
     }
 
+    override suspend fun isAuthorized(): DataResult<Boolean, DataError> {
+        return if (firebaseAuth.currentUser != null) {
+            DataResult.Success(true)
+        } else {
+            DataResult.Success(false)
+        }
+    }
+
     private suspend fun setUserInfo(
         userInfoDocument: DocumentReference,
         userInfo: UserInfo

@@ -11,4 +11,5 @@ interface AuthRepository {
     suspend fun resetPassword(email: String): DataResult<Unit, DataError>
     suspend fun gerUserInfo(): DataResult<UserInfo, DataError>
     suspend fun addUserInfo(phoneNumber: String = "", fullName: String = "", isEmployer: Boolean): DataResult<Unit, DataError>
+    suspend fun isAuthorized(): DataResult<Boolean, DataError>
 }

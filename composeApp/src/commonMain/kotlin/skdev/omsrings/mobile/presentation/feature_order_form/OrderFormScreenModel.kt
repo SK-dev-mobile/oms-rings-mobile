@@ -113,7 +113,7 @@ class OrderFormScreenModel(
         when (event) {
             is OrderFormContract.Event.OnDeliveryMethodChanged -> updateDeliveryMethod(event.method)
             is OrderFormContract.Event.OnProductSelectionEvent -> handleProductSelectionEvent(event.event)
-            OrderFormContract.Event.OnSubmitClicked -> submitOrder()
+            is OrderFormContract.Event.OnSubmitClicked -> submitOrder()
             is OrderFormContract.Event.OnBackClicked -> navigateBack()
             is OrderFormContract.Event.LoadExistingOrder -> loadExistingOrder(event.orderId)
 
@@ -261,6 +261,7 @@ class OrderFormScreenModel(
                     updateOrderUseCase(order)
                 }
                 result.ifSuccess {
+                    launchEffect(OrderFormContract.Effect.NavigateBack)
                     showSuccessNotification(isUpdate = existingOrder != null)
                 }
             }
