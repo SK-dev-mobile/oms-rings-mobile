@@ -15,7 +15,11 @@ import skdev.omsrings.mobile.domain.usecase.feature_day_orders.SetDayLockedStatu
 import skdev.omsrings.mobile.domain.usecase.feature_day_orders.UpdateOrderStatusUseCase
 import skdev.omsrings.mobile.presentation.base.BaseScreenModel
 import skdev.omsrings.mobile.presentation.feature_day_orders.enitity.OrderInfoModel
+import skdev.omsrings.mobile.utils.datetime.DateTimePattern
+import skdev.omsrings.mobile.utils.datetime.format
+import skdev.omsrings.mobile.utils.datetime.toLocalDate
 import skdev.omsrings.mobile.utils.notification.NotificationManager
+import skdev.omsrings.mobile.utils.notification.PushManager
 import skdev.omsrings.mobile.utils.result.ifSuccess
 
 class DayOrdersScreenModel(
@@ -108,6 +112,10 @@ class DayOrdersScreenModel(
         screenModelScope.launch {
             setDayLockedStatusUseCase.invoke(selectedDate, !isLocked.value).ifSuccess {
                 fetchData()
+                PushManager.sendPush(
+                    title = if (it.data.isLocked) "День ${it.data.date.toLocalDate().format(DateTimePattern.SIMPLE_DATE)} закрыт для заказов" else "День ${it.data.date.toLocalDate().format(DateTimePattern.SIMPLE_DATE)} отркыт для заказов",
+                    content = "Зайдите в приложение, чтобы увидеть больше информации!"
+                )
             }
         }
     }

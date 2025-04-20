@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,7 +32,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
@@ -44,7 +43,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.koin.koinScreenModel
@@ -52,6 +50,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import kotlinx.datetime.LocalDate
 import omsringsmobile.composeapp.generated.resources.Res
+import omsringsmobile.composeapp.generated.resources.create
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 import skdev.omsrings.mobile.presentation.base.BaseScreen
@@ -100,13 +99,6 @@ class DayOrdersScreen(
 
         val refreshState = rememberPullToRefreshState()
         val uriHandler = LocalUriHandler.current
-
-        LaunchedEffect(refreshState.isRefreshing) {
-            if (refreshState.isRefreshing) {
-                screenModel.onEvent(DayOrdersScreenContract.Event.OnStart)
-                refreshState.endRefresh()
-            }
-        }
 
         LaunchedEffect(Unit) {
             screenModel.onEvent(DayOrdersScreenContract.Event.OnStart)
@@ -242,6 +234,9 @@ class DayOrdersScreen(
                 updating = updating,
                 orders = dayOrders,
                 lazyState = lazyState,
+                onRefresh = {
+                    screenModel.onEvent(DayOrdersScreenContract.Event.OnStart)
+                },
                 refreshState = refreshState,
                 onAction = screenModel::onEvent
             )
@@ -256,11 +251,15 @@ fun DayOrdersScreenContent(
     updating: Boolean,
     lazyState: LazyListState,
     refreshState: PullToRefreshState,
+    onRefresh: () -> Unit,
     orders: List<OrderInfoModel>,
     onAction: OnAction,
 ) {
-    Box(
-        modifier = modifier.nestedScroll(refreshState.nestedScrollConnection)
+    PullToRefreshBox(
+        modifier = modifier,
+        state = refreshState,
+        isRefreshing = updating,
+        onRefresh = onRefresh,
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
@@ -287,10 +286,6 @@ fun DayOrdersScreenContent(
                 trackColor = MaterialTheme.colorScheme.surfaceVariant
             )
         }
-
-        PullToRefreshContainer(
-            modifier = Modifier.align(Alignment.TopCenter),
-            state = refreshState
-        )
     }
+
 }

@@ -17,6 +17,7 @@ import skdev.omsrings.mobile.domain.repository.InventoryRepository
 import skdev.omsrings.mobile.domain.repository.OrderRepository
 import skdev.omsrings.mobile.domain.repository.UserSettingsRepository
 import skdev.omsrings.mobile.domain.usecase.feature_auth.IsAuthorizedUseCase
+import skdev.omsrings.mobile.domain.usecase.feature_auth.LogOutUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SendResetPasswordEmailUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignInUserUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignUpUserUseCase
@@ -54,7 +55,6 @@ private val data = module {
     }
 
 
-    // TODO: Replace userId with real user id
     single<UserSettingsRepository> {
         FirebaseUserSettingsRepository(
             firebaseAuth = Firebase.auth,
@@ -225,6 +225,12 @@ private val useCases = module {
     factory<GetDayInfoUseCase> {
         GetDayInfoUseCase(
             orderRepository = get()
+        )
+    }
+
+    factory<LogOutUseCase> {
+        LogOutUseCase(
+            authRepository = get(),
         )
     }
 }

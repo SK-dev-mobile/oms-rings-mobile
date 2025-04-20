@@ -5,6 +5,8 @@ import dev.gitlive.firebase.auth.FirebaseAuthInvalidCredentialsException
 import dev.gitlive.firebase.auth.FirebaseAuthUserCollisionException
 import dev.gitlive.firebase.firestore.DocumentReference
 import dev.gitlive.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import skdev.omsrings.mobile.data.base.BaseRepository
 import skdev.omsrings.mobile.domain.model.UserInfo
 import skdev.omsrings.mobile.utils.result.DataResult
@@ -16,6 +18,10 @@ class FirebaseAuthRepository(
     private val firebaseAuth: FirebaseAuth,
     private val firestore: FirebaseFirestore,
 ) : BaseRepository, AuthRepository {
+
+    override val authorizedFlow: Flow<Boolean> = firebaseAuth.authStateChanged.map { user ->
+        user != null
+    }
 
     // User info
     private val userInfoCollection = firestore.collection("user_info")
@@ -78,6 +84,13 @@ class FirebaseAuthRepository(
             DataResult.Success(true)
         } else {
             DataResult.Success(false)
+        }
+    }
+
+    override suspend fun logOut(): DataResult<Unit, DataError> {
+        return withCathing {
+            firebaseAuth.signOut()
+            DataResult.Success(Unit)
         }
     }
 

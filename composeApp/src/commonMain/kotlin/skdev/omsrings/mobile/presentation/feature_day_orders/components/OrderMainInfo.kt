@@ -69,7 +69,7 @@ fun OrderMainInfo(
             InlineIconButton(
                 modifier = Modifier,
                 text = stringResource(Res.string.order_composition),
-                tint = MaterialTheme.colorScheme.surfaceVariant,
+                tint = MaterialTheme.colorScheme.outline,
                 imageVector = Icons.Rounded.ChevronRight,
                 onClick = onOrderItemsClicked
             )

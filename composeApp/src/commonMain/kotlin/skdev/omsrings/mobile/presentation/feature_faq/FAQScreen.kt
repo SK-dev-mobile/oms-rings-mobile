@@ -133,6 +133,10 @@ private fun ExpandableFAQCard(faqItem: FAQItem) {
                     stiffness = Spring.StiffnessLow
                 )
             ),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.onBackground
+        ),
         shape = MaterialTheme.shapes.large,
         onClick = { expanded = !expanded }
     ) {

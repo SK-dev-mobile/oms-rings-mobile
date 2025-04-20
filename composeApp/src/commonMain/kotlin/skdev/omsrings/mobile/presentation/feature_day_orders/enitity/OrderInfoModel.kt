@@ -1,6 +1,7 @@
 package skdev.omsrings.mobile.presentation.feature_day_orders.enitity
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import kotlinx.serialization.Serializable
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.event_type_archived
@@ -17,6 +18,7 @@ import skdev.omsrings.mobile.domain.model.UUID
 
 
 
+@Immutable
 @Serializable
 data class OrderInfoModel(
     val id: UUID,
@@ -32,12 +34,14 @@ data class OrderInfoModel(
     val items: List<OrderItem>
 )
 
+@Immutable
 @Serializable
 data class OrderItem(
     val inventoryName: String,
     val quantity: Int
 )
 
+@Immutable
 @Serializable
 data class OrderHistoryEvent(
     val time: String,

@@ -55,7 +55,7 @@ object AuthScreen : BaseScreen("auth_screen") {
         screenModel.effects.observeAsEffects {
             when (it) {
                 AuthScreenContract.Effect.NavigateToMainScreen -> {
-                    localNavigator.push(MainScreen)
+//                    localNavigator.push(MainScreen)
                 }
                 AuthScreenContract.Effect.NaivgateBack -> {
                     localNavigator.pop()

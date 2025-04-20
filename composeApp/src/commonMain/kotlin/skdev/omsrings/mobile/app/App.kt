@@ -19,6 +19,7 @@ import cafe.adriel.voyager.transitions.SlideTransition
 import com.mmk.kmpnotifier.notification.NotifierManager
 import kotlinx.coroutines.delay
 import org.koin.compose.koinInject
+import skdev.omsrings.mobile.domain.repository.AuthRepository
 import skdev.omsrings.mobile.domain.usecase.feature_auth.IsAuthorizedUseCase
 import skdev.omsrings.mobile.presentation.base.BaseScreen
 import skdev.omsrings.mobile.presentation.feature_auth.AuthScreen
@@ -43,6 +44,7 @@ internal fun App() = AppTheme(
 
     val notificationManager: NotificationManager = koinInject()
     val isAuthorizedUseCase: IsAuthorizedUseCase = koinInject()
+    val authRepository = koinInject<AuthRepository>()
     var isTokenReady by remember { mutableStateOf(false) }
 
     NotifierManager.addListener(object : NotifierManager.Listener {
@@ -69,30 +71,42 @@ internal fun App() = AppTheme(
     var userAuthState by remember { mutableStateOf(UserAuthState.Unauthorized) }
 
     LaunchedEffect(Unit) {
-        isAuthorizedUseCase.invoke().ifSuccess {
-            userAuthState = if (it.data) {
+        authRepository.authorizedFlow.collect() { isAuthorized ->
+            userAuthState = if (isAuthorized) {
                 UserAuthState.Authorized
             } else {
                 UserAuthState.Unauthorized
             }
-        }.ifError {
-            userAuthState = UserAuthState.Unauthorized
         }
     }
 
+
     Box {
-        Navigator(
-            when (userAuthState) {
-                UserAuthState.Authorized -> MainScreen
-                UserAuthState.Unauthorized -> AuthScreen
-                UserAuthState.None -> BankScreen
+        when (userAuthState) {
+            UserAuthState.Authorized -> {
+                Navigator(
+                    MainScreen
+                ) { navigator ->
+                    SlideTransition(
+                        navigator = navigator,
+                        animationSpec = tween(250)
+                    )
+                }
             }
-        ) { navigator ->
-            SlideTransition(
-                navigator = navigator,
-                animationSpec = tween(250)
-            )
+            UserAuthState.Unauthorized -> {
+                Navigator(
+                    AuthScreen
+                ) { navigator ->
+                    SlideTransition(
+                        navigator = navigator,
+                        animationSpec = tween(250)
+                    )
+                }
+            }
+            UserAuthState.None -> BankScreen
         }
+
+
         NotificationDisplay(
             notificationManager = notificationManager,
             modifier = Modifier

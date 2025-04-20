@@ -58,7 +58,7 @@ fun OrderHeader(
             Text(
                 text = stringResource(Res.string.order_number, orderId),
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.surfaceVariant,
+                color = MaterialTheme.colorScheme.outline,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )

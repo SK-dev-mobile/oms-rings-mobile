@@ -96,7 +96,6 @@ kotlin {
             // Firebase KMP
             api(libs.gitlive.firebase.auth)
             api(libs.gitlive.firebase.firestore)
-//          api(libs.gitlive.firebase.messaging)
         }
 
         androidMain.dependencies {
@@ -137,7 +136,7 @@ kotlin {
 
 android {
     namespace = "skdev.omsrings.mobile"
-    compileSdk = 34
+    compileSdk = 35
 
 //    val keystorePropertiesFile = rootProject.file("signing/keystore.properties")
 //    val keystoreProperties = Properties()

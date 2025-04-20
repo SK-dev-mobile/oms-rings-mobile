@@ -42,7 +42,7 @@ fun DeliveryAddressField(
         modifier = modifier,
         singleLine = true,
         keyboardOptions = KeyboardOptions.Default.copy(
-            autoCorrect = true,
+            autoCorrectEnabled = true,
             capitalization = KeyboardCapitalization.Sentences,
             imeAction = androidx.compose.ui.text.input.ImeAction.Go,
             keyboardType = androidx.compose.ui.text.input.KeyboardType.Text

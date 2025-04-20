@@ -2,11 +2,12 @@ package skdev.omsrings.mobile.presentation.feature_order_form.components
 
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Comment
+import androidx.compose.material.icons.automirrored.rounded.Comment
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import omsringsmobile.composeapp.generated.resources.Res
@@ -31,7 +32,7 @@ fun CommentField(
         value = commentValue,
         leadingIcon = {
             Icon(
-                imageVector = Icons.Rounded.Comment,
+                imageVector = Icons.AutoMirrored.Rounded.Comment,
                 contentDescription = stringResource(Res.string.comment)
             )
         },
@@ -41,7 +42,7 @@ fun CommentField(
         supportingText = SupportingText(commentError),
         modifier = modifier,
         keyboardOptions = KeyboardOptions.Default.copy(
-            autoCorrect = true,
+            autoCorrectEnabled = true,
             capitalization = KeyboardCapitalization.Sentences,
             imeAction = androidx.compose.ui.text.input.ImeAction.Done,
             keyboardType = androidx.compose.ui.text.input.KeyboardType.Text
