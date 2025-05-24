@@ -7,6 +7,7 @@ import skdev.omsrings.mobile.utils.datetime.DateTimePattern
 import skdev.omsrings.mobile.utils.datetime.format
 import skdev.omsrings.mobile.utils.datetime.toLocalDate
 import skdev.omsrings.mobile.utils.error.DataError
+import skdev.omsrings.mobile.utils.format.OrderIdFormatter
 import skdev.omsrings.mobile.utils.notification.NotificationManager
 import skdev.omsrings.mobile.utils.notification.PushManager
 import skdev.omsrings.mobile.utils.result.DataResult
@@ -21,8 +22,8 @@ class CreateOrderUseCase(
             notificationManager
         ).ifSuccess {
             PushManager.sendPush(
-                title = "Новый заказ на ${it.data.date.toLocalDate().format(DateTimePattern.SIMPLE_DATE)}",
-                content = "Пользователь разместил новый заказ ${it.data.id}"
+                title = "Поступил заказ на ${it.data.date.toLocalDate().format(DateTimePattern.SIMPLE_DATE)}",
+                content = "Пользователь ${it.data.createdBy} разместил(а) новый заказ: ${OrderIdFormatter.getFirstPart(it.data.id)}..."
             )
         }
     }

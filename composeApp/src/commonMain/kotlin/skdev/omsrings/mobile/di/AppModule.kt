@@ -202,7 +202,7 @@ private val useCases = module {
     }
     factory<GetFoldersAndItemsInventory> { GetFoldersAndItemsInventory(repository = get()) }
     factory<GetOrderByIdUseCase> { GetOrderByIdUseCase(repository = get()) }
-    factory<UpdateOrderUseCase> { UpdateOrderUseCase(repository = get()) }
+    factory<UpdateOrderUseCase> { UpdateOrderUseCase(repository = get(), notificationManager = get()) }
     factory<GetInventoryItemsByIdsUseCase> { GetInventoryItemsByIdsUseCase(repository = get()) }
 
     // Feature Main

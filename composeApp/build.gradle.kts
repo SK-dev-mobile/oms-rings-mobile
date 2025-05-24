@@ -202,6 +202,7 @@ android {
     buildFeatures {
         //enables a Compose tooling support in the AndroidStudio
         compose = true
+        buildConfig = true
     }
 }
 dependencies {
@@ -209,6 +210,7 @@ dependencies {
 }
 
 buildConfig {
+    buildConfigField("String", "FIREBASE_MESSAGING_SERVER_URL", "\"http://217.198.6.127:8080\"")
 }
 
 

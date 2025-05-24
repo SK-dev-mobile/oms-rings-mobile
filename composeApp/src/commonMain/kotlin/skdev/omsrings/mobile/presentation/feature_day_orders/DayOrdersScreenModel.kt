@@ -130,10 +130,6 @@ class DayOrdersScreenModel(
         screenModelScope.launch {
             setDayLockedStatusUseCase.invoke(selectedDate, !isLocked.value).ifSuccess {
                 fetchData()
-                PushManager.sendPush(
-                    title = if (it.data.isLocked) "День ${it.data.date.toLocalDate().format(DateTimePattern.SIMPLE_DATE)} закрыт для заказов" else "День ${it.data.date.toLocalDate().format(DateTimePattern.SIMPLE_DATE)} отркыт для заказов",
-                    content = "Зайдите в приложение, чтобы увидеть больше информации!"
-                )
             }
         }
     }

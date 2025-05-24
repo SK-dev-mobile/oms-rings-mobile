@@ -35,13 +35,6 @@ import skdev.omsrings.mobile.utils.result.ifSuccess
 internal fun App() = AppTheme(
     isDark = isSystemInDarkTheme()
 ) {
-    LaunchedEffect(Unit) {
-        PushManager.sendPush(
-            "Приложение было запущено",
-            "Приложение было запущено на каком-то устройстве."
-        )
-    }
-
     val notificationManager: NotificationManager = koinInject()
     val isAuthorizedUseCase: IsAuthorizedUseCase = koinInject()
     val authRepository = koinInject<AuthRepository>()
