@@ -17,5 +17,6 @@ object MainScreenContract {
 
     data class State(
         val calendarDays: Map<LocalDate, DayInfoModel> = emptyMap(),
+        val isEmployer: Boolean = false,
     )
 }

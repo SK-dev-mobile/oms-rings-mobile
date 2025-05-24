@@ -90,7 +90,8 @@ private val viewModels = module {
     factory<MainScreenModel> {
         MainScreenModel(
             notificationManager = get(),
-            getDaysInfoUseCase = get()
+            getDaysInfoUseCase = get(),
+            getUserInfoUseCase = get(),
         )
     }
 

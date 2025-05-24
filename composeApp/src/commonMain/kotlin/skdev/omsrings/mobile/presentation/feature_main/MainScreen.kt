@@ -83,15 +83,17 @@ object MainScreen : BaseScreen("main_screen") {
                                 contentDescription = stringResource(Res.string.user_settings_title)
                             )
                         }
-                        IconButton(
-                            onClick = {
-                                navigator.push(InventoryManagementScreen)
+                        if (uiState.isEmployer) {
+                            IconButton(
+                                onClick = {
+                                    navigator.push(InventoryManagementScreen)
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.Apps,
+                                    contentDescription = stringResource(Res.string.nomenclature)
+                                )
                             }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.Apps,
-                                contentDescription = stringResource(Res.string.nomenclature)
-                            )
                         }
                     },
                 )

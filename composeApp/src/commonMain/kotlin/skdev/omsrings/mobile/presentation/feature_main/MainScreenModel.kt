@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import skdev.omsrings.mobile.domain.usecase.feature_auth.GetUserInfoUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_main.GetDaysInfoUseCase
 import skdev.omsrings.mobile.presentation.base.BaseScreenModel
 import skdev.omsrings.mobile.presentation.feature_main.components.YearMonth
@@ -16,7 +17,8 @@ import kotlin.time.Duration.Companion.seconds
 
 class MainScreenModel(
     notificationManager: NotificationManager,
-    private val getDaysInfoUseCase: GetDaysInfoUseCase
+    private val getDaysInfoUseCase: GetDaysInfoUseCase,
+    private val getUserInfoUseCase: GetUserInfoUseCase,
 ) : BaseScreenModel<MainScreenContract.Event, MainScreenContract.Effect>(notificationManager) {
 
     private val _uiState = MutableStateFlow(MainScreenContract.State())
@@ -36,6 +38,14 @@ class MainScreenModel(
         screenModelScope.launch {
             startUpdating()
             Napier.d(tag = TAG) { "Load days info from ${month.firstDayOfMonth} to ${month.lastDayOfMonth}" }
+
+            getUserInfoUseCase().ifSuccess { result ->
+                Napier.d(tag = TAG) { "User info loaded: ${result.data}" }
+                _uiState.update {
+                    it.copy(isEmployer = result.data.isEmployer)
+                }
+            }
+
             getDaysInfoUseCase(
                 start = month.firstDayOfMonth,
                 end = month.lastDayOfMonth,
@@ -43,7 +53,7 @@ class MainScreenModel(
                 Napier.d(tag = TAG) { "Days info loaded: ${result.data}" }
                 _uiState.update {
                     it.copy(
-                        calendarDays = result.data
+                        calendarDays = result.data,
                     )
                 }
             }
