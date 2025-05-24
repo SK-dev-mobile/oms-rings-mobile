@@ -68,6 +68,7 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(compose.materialIconsExtended)
+            implementation("org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose:2.9.0")
 
             // Navigation
             implementation(libs.voyager.navigator)

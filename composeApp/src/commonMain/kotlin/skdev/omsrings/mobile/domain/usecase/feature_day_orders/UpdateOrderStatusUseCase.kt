@@ -2,13 +2,11 @@ package skdev.omsrings.mobile.domain.usecase.feature_day_orders
 
 import dev.gitlive.firebase.firestore.Timestamp
 import io.github.aakira.napier.Napier
-import kotlinx.coroutines.flow.first
 import skdev.omsrings.mobile.domain.model.OrderHistoryEvent
 import skdev.omsrings.mobile.domain.model.OrderHistoryEventType
 import skdev.omsrings.mobile.domain.model.OrderStatus
 import skdev.omsrings.mobile.domain.repository.AuthRepository
 import skdev.omsrings.mobile.domain.repository.OrderRepository
-import skdev.omsrings.mobile.domain.repository.UserSettingsRepository
 import skdev.omsrings.mobile.domain.utils.notifyError
 import skdev.omsrings.mobile.utils.error.DataError
 import skdev.omsrings.mobile.utils.notification.NotificationManager
@@ -22,7 +20,7 @@ class UpdateOrderStatusUseCase(
     private val notificationManager: NotificationManager,
 ) {
     suspend fun invoke(orderId: String, newStatus: OrderStatus): DataResult<Unit, DataError> {
-        val userInfoResult = authRepository.gerUserInfo().notifyError(
+        val userInfoResult = authRepository.getUserInfo().notifyError(
             notificationManager
         ).ifError {
             return DataResult.error(it.error)

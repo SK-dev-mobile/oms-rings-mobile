@@ -5,13 +5,14 @@ import dev.gitlive.firebase.auth.FirebaseAuthInvalidCredentialsException
 import dev.gitlive.firebase.auth.FirebaseAuthUserCollisionException
 import dev.gitlive.firebase.firestore.DocumentReference
 import dev.gitlive.firebase.firestore.FirebaseFirestore
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import skdev.omsrings.mobile.data.base.BaseRepository
 import skdev.omsrings.mobile.domain.model.UserInfo
-import skdev.omsrings.mobile.utils.result.DataResult
 import skdev.omsrings.mobile.domain.repository.AuthRepository
 import skdev.omsrings.mobile.utils.error.DataError
+import skdev.omsrings.mobile.utils.result.DataResult
 
 
 class FirebaseAuthRepository(
@@ -25,8 +26,6 @@ class FirebaseAuthRepository(
 
     // User info
     private val userInfoCollection = firestore.collection("user_info")
-    private val userInfoDocument: DocumentReference?
-        get() = firebaseAuth.currentUser?.uid?.let { userInfoCollection.document(it) }
 
 
     override suspend fun signIn(email: String, password: String): DataResult<Unit, DataError> =
@@ -53,8 +52,10 @@ class FirebaseAuthRepository(
         fullName: String,
         isEmployer: Boolean
     ): DataResult<Unit, DataError> = withCathing {
-        val user = firebaseAuth.currentUser ?: return@withCathing DataResult.Error(DataError.Network.UNAUTHORIZED)
-        val document = userInfoDocument ?: userInfoCollection.add(user.uid)
+        val user = firebaseAuth.currentUser
+            ?: return@withCathing DataResult.Error(DataError.Network.UNAUTHORIZED)
+        val document = firebaseAuth.currentUser?.uid?.let { userInfoCollection.document(it) }
+            ?: userInfoCollection.add(user.uid)
         val snapshot = document.get()
         val oldInfo = if (snapshot.exists) {
             snapshot.data<UserInfo>()
@@ -64,16 +65,18 @@ class FirebaseAuthRepository(
         setUserInfo(
             document,
             UserInfo(
-                fullName = if (fullName.isNotBlank()) fullName else oldInfo.fullName,
-                phoneNumber = if (phoneNumber.isNotBlank()) phoneNumber else oldInfo.phoneNumber,
+                fullName = fullName.ifBlank { oldInfo.fullName },
+                phoneNumber = phoneNumber.ifBlank { oldInfo.phoneNumber },
                 isEmployer = isEmployer
             )
         )
     }
 
-    override suspend fun gerUserInfo(): DataResult<UserInfo, DataError> {
+    override suspend fun getUserInfo(): DataResult<UserInfo, DataError> {
         return withCathing {
-            val document = userInfoDocument ?: return@withCathing DataResult.Error(DataError.Network.UNAUTHORIZED)
+            val uid =  getUserId()
+            val document = uid?.let { userInfoCollection.document(it) } ?: return@withCathing DataResult.Error(DataError.Network.UNAUTHORIZED)
+            Napier.d(tag = TAG) { "Getting user info for userID -> $uid " }
             val userInfo = document.get().data<UserInfo>()
             DataResult.Success(userInfo)
         }
@@ -85,6 +88,10 @@ class FirebaseAuthRepository(
         } else {
             DataResult.Success(false)
         }
+    }
+
+    private fun getUserId(): String? {
+        return firebaseAuth.currentUser?.uid
     }
 
     override suspend fun logOut(): DataResult<Unit, DataError> {

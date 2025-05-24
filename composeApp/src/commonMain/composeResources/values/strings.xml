@@ -210,4 +210,11 @@
     <string name="order_composition">Состав заказа</string>
     <string name="order_general_information">Общая информация</string>
     <string name="create">Создать</string>
+    <string name="order_status_archived">Заказ архивирован</string>
+    <string name="order_status_archived_desc">Данный заказ уже архивирован и его нельзя изменить</string>
+
+    <!-- DailyCartScreen -->
+    <string name="total_order">Общий заказ</string>
+    <string name="total_amount_for_date">Общая сумма по всем новым заказам за %1$s</string>
+
 </resources>

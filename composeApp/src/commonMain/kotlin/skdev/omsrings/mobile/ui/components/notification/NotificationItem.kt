@@ -99,6 +99,9 @@ fun NotificationItem(
                     .fillMaxWidth()
                     .padding(Dimens.spaceSmall),
                 shape = MaterialTheme.shapes.large,
+                elevation = CardDefaults.elevatedCardElevation(
+                    defaultElevation = Elevation.defaultElevation,
+                ),
                 colors = CardDefaults.elevatedCardColors(
                     containerColor = when (notification) {
                         is NotificationModel.Error -> CustomTheme.colors.errorContainer

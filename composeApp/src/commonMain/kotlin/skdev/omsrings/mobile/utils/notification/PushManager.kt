@@ -16,7 +16,7 @@ data class PushBody(
 )
 
 object PushManager {
-    private const val URL = "http://southstartrade.com/push"
+    private const val URL = ""
     private val client = HttpClient {
         install(ContentNegotiation) {
             json()
@@ -24,6 +24,7 @@ object PushManager {
     }
 
     suspend fun sendPush(title: String, content: String) {
+        URL.ifBlank { return } // Ensure URL is not empty
         client.post(URL) {
             contentType(ContentType.Application.Json)
             setBody(PushBody(title, content))

@@ -28,7 +28,7 @@ class GetDayOrdersUseCase(
     private val inventoryRepository: InventoryRepository,
     private val notificationManager: NotificationManager,
 ) {
-    suspend fun invoke(date: LocalDate): DataResult<List<OrderInfoModel>, DataError> {
+    suspend operator fun invoke(date: LocalDate): DataResult<List<OrderInfoModel>, DataError> {
         val orders = orderRepository.getOrdersByDay(date.toTimestamp()).notifyError(
             notificationManager
         )
@@ -38,12 +38,16 @@ class GetDayOrdersUseCase(
         // Collect all items
         val allItemsFromOrders = mutableSetOf<OrderItem>()
         orders.data.map { allItemsFromOrders.addAll(it.items) }
+        Napier.d(tag = "ABC") {"Collecting items from orders: $allItemsFromOrders" }
+
         val inventoryItems = inventoryRepository.getInventoryItemsByIds(allItemsFromOrders.map { it.inventoryId }).notifyError(
             notificationManager
         )
 
         if (inventoryItems is DataResult.Error) return DataResult.error(inventoryItems.error)
         check(inventoryItems is DataResult.Success)
+
+        Napier.d(tag = "ABC") {"inventoryItems -> $inventoryItems" }
 
         val ordersInfoModels = orders.data.map { order ->
             OrderInfoModel(

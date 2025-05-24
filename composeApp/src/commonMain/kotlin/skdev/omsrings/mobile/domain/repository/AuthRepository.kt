@@ -10,7 +10,7 @@ interface AuthRepository {
     suspend fun signIn(email: String, password: String): DataResult<Unit, DataError>
     suspend fun signUp(email: String, password: String): DataResult<Unit, DataError>
     suspend fun resetPassword(email: String): DataResult<Unit, DataError>
-    suspend fun gerUserInfo(): DataResult<UserInfo, DataError>
+    suspend fun getUserInfo(): DataResult<UserInfo, DataError>
     suspend fun addUserInfo(phoneNumber: String = "", fullName: String = "", isEmployer: Boolean): DataResult<Unit, DataError>
     suspend fun isAuthorized(): DataResult<Boolean, DataError>
     suspend fun logOut(): DataResult<Unit, DataError>

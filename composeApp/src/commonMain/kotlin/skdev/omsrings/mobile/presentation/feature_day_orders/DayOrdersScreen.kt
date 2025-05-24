@@ -51,9 +51,11 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import kotlinx.datetime.LocalDate
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.create
+import omsringsmobile.composeapp.generated.resources.nomenclature
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 import skdev.omsrings.mobile.presentation.base.BaseScreen
+import skdev.omsrings.mobile.presentation.feature_daily_cart.DailyCartScreen
 import skdev.omsrings.mobile.presentation.feature_day_orders.components.OrderView
 import skdev.omsrings.mobile.presentation.feature_day_orders.enitity.OrderInfoModel
 import skdev.omsrings.mobile.presentation.feature_faq.FAQScreen
@@ -176,12 +178,14 @@ class DayOrdersScreen(
                         IconButton(
                             enabled = !updating,
                             onClick = {
-                                // TODO: Add action
+                                navigator.push(
+                                    DailyCartScreen(selectedDate = selectedDate)
+                                )
                             }
                         ) {
                             Icon(
                                 imageVector = Icons.Rounded.ShoppingCart,
-                                contentDescription = "All"
+                                contentDescription = stringResource(Res.string.nomenclature)
                             )
                         }
                         IconButton(
@@ -273,6 +277,9 @@ fun DayOrdersScreenContent(
                     orderInfoModel = it,
                     onAction = onAction,
                 )
+            }
+            item {
+                Spacer(space = Dimens.spaceLarge)
             }
         }
 

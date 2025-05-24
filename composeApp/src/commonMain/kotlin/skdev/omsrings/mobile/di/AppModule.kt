@@ -6,7 +6,6 @@ import dev.gitlive.firebase.firestore.FirebaseFirestore
 import dev.gitlive.firebase.firestore.firestore
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
-import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 import skdev.omsrings.mobile.data.repository.FirebaseAuthRepository
 import skdev.omsrings.mobile.data.repository.FirebaseInventoryRepository
@@ -16,11 +15,13 @@ import skdev.omsrings.mobile.domain.repository.AuthRepository
 import skdev.omsrings.mobile.domain.repository.InventoryRepository
 import skdev.omsrings.mobile.domain.repository.OrderRepository
 import skdev.omsrings.mobile.domain.repository.UserSettingsRepository
+import skdev.omsrings.mobile.domain.usecase.feature_auth.GetUserInfoUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.IsAuthorizedUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.LogOutUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SendResetPasswordEmailUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignInUserUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_auth.SignUpUserUseCase
+import skdev.omsrings.mobile.domain.usecase.feature_daily_cart.GetDailyCartItemsUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_day_orders.GetDayInfoUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_day_orders.GetDayOrdersUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_day_orders.SetDayLockedStatusUseCase
@@ -36,6 +37,7 @@ import skdev.omsrings.mobile.domain.usecase.feature_user_settings.GetUserSetting
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.UpdateNotificationSettingsUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.UpdateShowClearedOrdersSettingsUseCase
 import skdev.omsrings.mobile.presentation.feature_auth.AuthScreenModel
+import skdev.omsrings.mobile.presentation.feature_daily_cart.DailyCartScreenModel
 import skdev.omsrings.mobile.presentation.feature_day_orders.DayOrdersScreenModel
 import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenModel
 import skdev.omsrings.mobile.presentation.feature_main.MainScreenModel
@@ -129,6 +131,7 @@ private val viewModels = module {
             getFoldersAndItemsInventory = get(),
             getOrderByIdUseCase = get(),
             getInventoryItemsByIdsUseCase = get(),
+            getUserInfoUseCase = get(),
             selectedDate = parameters.get(),
             orderId = parameters.getOrNull()
         )
@@ -146,6 +149,14 @@ private val viewModels = module {
         )
     }
 
+
+    factory<DailyCartScreenModel> { parameters ->
+        DailyCartScreenModel(
+            notificationManager = get(),
+            getDailyCartItemsUseCase = get(),
+            selectedDate = parameters.get()
+        )
+    }
 }
 
 private val useCases = module {
@@ -175,11 +186,20 @@ private val useCases = module {
     // Feature User Settings
     factory<GetUserSettingsUseCase> { GetUserSettingsUseCase(repository = get()) }
     factory<UpdateNotificationSettingsUseCase> { UpdateNotificationSettingsUseCase(repository = get()) }
-    factory<UpdateShowClearedOrdersSettingsUseCase> { UpdateShowClearedOrdersSettingsUseCase(repository = get()) }
+    factory<UpdateShowClearedOrdersSettingsUseCase> {
+        UpdateShowClearedOrdersSettingsUseCase(
+            repository = get()
+        )
+    }
     factory<ClearOldOrdersUseCase> { ClearOldOrdersUseCase(repository = get()) }
 
     // Feature Create Order
-    factory<CreateOrderUseCase> { CreateOrderUseCase(repository = get(), notificationManager = get()) }
+    factory<CreateOrderUseCase> {
+        CreateOrderUseCase(
+            repository = get(),
+            notificationManager = get()
+        )
+    }
     factory<GetFoldersAndItemsInventory> { GetFoldersAndItemsInventory(repository = get()) }
     factory<GetOrderByIdUseCase> { GetOrderByIdUseCase(repository = get()) }
     factory<UpdateOrderUseCase> { UpdateOrderUseCase(repository = get()) }
@@ -231,6 +251,16 @@ private val useCases = module {
     factory<LogOutUseCase> {
         LogOutUseCase(
             authRepository = get(),
+        )
+    }
+
+    factory { GetUserInfoUseCase(authRepository = get()) }
+
+    factory {
+        GetDailyCartItemsUseCase(
+            orderRepository = get(),
+            inventoryRepository = get(),
+            notificationManager = get()
         )
     }
 }

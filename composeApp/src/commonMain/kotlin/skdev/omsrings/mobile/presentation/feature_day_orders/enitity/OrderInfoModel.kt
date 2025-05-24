@@ -38,7 +38,8 @@ data class OrderInfoModel(
 @Serializable
 data class OrderItem(
     val inventoryName: String,
-    val quantity: Int
+    val quantity: Int,
+    val inventoryId: UUID? = null // Optional, can be used to link to actual inventory item
 )
 
 @Immutable

@@ -60,10 +60,12 @@ class FirebaseOrderRepository(
 
     override suspend fun getOrdersByDay(date: Timestamp): DataResult<List<Order>, DataError> =
         withCathing {
+            Napier.d(tag = TAG) { "getOrdersByDay: $date" }
             val querySnapshot = ordersCollection.where {
                 ("date" greaterThanOrEqualTo date.asStartOfDay()) and ("date" lessThanOrEqualTo date.asEndOfDay())
             }.get()
             val orders = querySnapshot.documents.mapNotNull { it.data<Order>() }
+            Napier.d(tag = TAG) { "getOrdersByDay success: $orders" }
             DataResult.success(orders)
         }
 

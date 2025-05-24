@@ -9,9 +9,11 @@ import androidx.compose.material.icons.rounded.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import cafe.adriel.voyager.navigator.internal.BackHandler
 import dev.gitlive.firebase.firestore.Timestamp
 import io.github.aakira.napier.Napier
 import kotlinx.datetime.LocalDate
@@ -39,6 +41,7 @@ class OrderFormScreen(
     private val selectedDate: LocalDate,
     private val orderId: String? = null
 ) : BaseScreen("order_form_screen") {
+    @OptIn(InternalVoyagerApi::class)
     @Composable
     override fun MainContent() {
         val screenModel = koinScreenModel<OrderFormScreenModel> { parametersOf(selectedDate, orderId) }
@@ -53,8 +56,34 @@ class OrderFormScreen(
             }
         }
 
+        BackHandler(enabled = state.isEditMode) {
+            screenModel.onEvent(Event.OnBackClicked)
+        }
+
         LaunchedEffect(orderId) {
             orderId?.let { screenModel.onEvent(Event.LoadExistingOrder(it)) }
+        }
+
+        if (state.hasUnsavedChanges) {
+            AlertDialog(
+                onDismissRequest = { screenModel.onEvent(Event.OnDiscardChanges) },
+                title = { Text("Изменения могли не сохранить") },
+                text = { Text("Если вы внесли изменения в заказ, то нажмите кнопку «Сохранить»") },
+                confirmButton = {
+                    TextButton(
+                        onClick = { screenModel.onEvent(Event.OnSaveChanges) }
+                    ) {
+                        Text("Сохранить")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = { screenModel.onEvent(Event.OnDiscardChanges) }
+                    ) {
+                        Text("Отменить")
+                    }
+                }
+            )
         }
 
         OrderFormContent(
@@ -102,7 +131,7 @@ private fun OrderFormContent(
 private fun OrderFormTopBar(
     isEditMode: Boolean,
     deliveryDate: String,
-    onEvent: (OrderFormContract.Event) -> Unit
+    onEvent: (Event) -> Unit
 ) {
     val title = if (isEditMode) {
         stringResource(Res.string.edit_order, deliveryDate)
@@ -112,7 +141,7 @@ private fun OrderFormTopBar(
 
     RingsTopAppBar(
         title = title,
-        onNavigationClicked = { onEvent(OrderFormContract.Event.OnBackClicked) }
+        onNavigationClicked = { onEvent(Event.OnBackClicked) }
     )
 }
 

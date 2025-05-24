@@ -14,6 +14,7 @@ class OrderFormContract {
         // Common
         val isLoading: Boolean,
         val isEditMode: Boolean,
+        val hasUnsavedChanges: Boolean = false,
 
         // Form
         val orderId: String?,
@@ -31,6 +32,8 @@ class OrderFormContract {
 
     sealed interface Event {
         data object OnBackClicked : Event
+        data object OnDiscardChanges : Event
+        data object OnSaveChanges : Event
 
         // Form
         data class OnDeliveryMethodChanged(val method: DeliveryMethod) : Event
@@ -43,7 +46,6 @@ class OrderFormContract {
 
         // Edit
         data class LoadExistingOrder(val orderId: String) : Event
-
     }
 
     sealed interface Effect {

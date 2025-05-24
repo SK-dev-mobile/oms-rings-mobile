@@ -1,10 +1,7 @@
 package skdev.omsrings.mobile.presentation.feature_auth.content
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
@@ -26,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.continue_process
 import omsringsmobile.composeapp.generated.resources.email
@@ -125,7 +121,7 @@ fun SignUpContent(
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.None,
-                autoCorrect = false,
+                autoCorrectEnabled = false,
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next
             )
@@ -145,7 +141,7 @@ fun SignUpContent(
             enabled = !updating,
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.None,
-                autoCorrect = false,
+                autoCorrectEnabled = false,
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Next
             )
@@ -165,7 +161,7 @@ fun SignUpContent(
             enabled = !updating,
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.None,
-                autoCorrect = false,
+                autoCorrectEnabled = false,
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Next
             )
@@ -192,30 +188,25 @@ fun SignUpContent(
             )
         )
 
-        AnimatedVisibility(visible = userRole == UserRole.CONTRAGENT) {
-            Column {
-                Spacer(Dimens.spaceSmall)
+        Spacer(Dimens.spaceSmall)
 
-                PhoneField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = phoneValue,
-                    onValueChange = phoneSetter,
-                    supportingText = SupportingText(phoneError),
-                    isError = phoneError != null,
-                    enabled = !updating,
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.None,
-                        autoCorrect = false,
-                        keyboardType = KeyboardType.Phone,
-                        imeAction = ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions {
-                        onAction(AuthScreenContract.Event.OnSignUpClicked(userRole))
-                    }
-                )
+        PhoneField(
+            modifier = Modifier.fillMaxWidth(),
+            value = phoneValue,
+            onValueChange = phoneSetter,
+            supportingText = SupportingText(phoneError),
+            isError = phoneError != null,
+            enabled = !updating,
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.None,
+                autoCorrect = false,
+                keyboardType = KeyboardType.Phone,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions {
+                onAction(AuthScreenContract.Event.OnSignUpClicked(userRole))
             }
-        }
-
+        )
 
         Spacer(Dimens.spaceLarge)
 

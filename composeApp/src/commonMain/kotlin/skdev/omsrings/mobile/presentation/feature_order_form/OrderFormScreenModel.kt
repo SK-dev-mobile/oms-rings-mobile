@@ -29,6 +29,7 @@ import skdev.omsrings.mobile.domain.model.OrderHistoryEvent
 import skdev.omsrings.mobile.domain.model.OrderHistoryEventType
 import skdev.omsrings.mobile.domain.model.OrderItem
 import skdev.omsrings.mobile.domain.model.OrderStatus
+import skdev.omsrings.mobile.domain.usecase.feature_auth.GetUserInfoUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_order.CreateOrderUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_order.GetFoldersAndItemsInventory
 import skdev.omsrings.mobile.domain.usecase.feature_order.GetInventoryItemsByIdsUseCase
@@ -47,6 +48,7 @@ import skdev.omsrings.mobile.utils.fields.validators.notBlank
 import skdev.omsrings.mobile.utils.notification.NotificationManager
 import skdev.omsrings.mobile.utils.notification.NotificationModel
 import skdev.omsrings.mobile.utils.notification.ToastType
+import skdev.omsrings.mobile.utils.result.DataResult
 import skdev.omsrings.mobile.utils.result.ifSuccess
 import skdev.omsrings.mobile.utils.uuid.randomUUID
 
@@ -58,6 +60,7 @@ class OrderFormScreenModel(
     private val updateOrderUseCase: UpdateOrderUseCase,
     private val getFoldersAndItemsInventory: GetFoldersAndItemsInventory,
     private val getOrderByIdUseCase: GetOrderByIdUseCase,
+    private val getUserInfoUseCase: GetUserInfoUseCase,
     private val getInventoryItemsByIdsUseCase: GetInventoryItemsByIdsUseCase,
     private val selectedDate: LocalDate,
     private val orderId: String? = null
@@ -94,19 +97,20 @@ class OrderFormScreenModel(
         )
     )
 
-    private fun createFormField(errorMessage: StringResource? = null) = FormField<String, StringResource>(
-        scope = screenModelScope,
-        initialValue = "",
-        validation = flowBlock {
-            if (errorMessage != null) {
-                ValidationResult.of(it) {
-                    notBlank(errorMessage)
+    private fun createFormField(errorMessage: StringResource? = null) =
+        FormField<String, StringResource>(
+            scope = screenModelScope,
+            initialValue = "",
+            validation = flowBlock {
+                if (errorMessage != null) {
+                    ValidationResult.of(it) {
+                        notBlank(errorMessage)
+                    }
+                } else {
+                    null
                 }
-            } else {
-                null
             }
-        }
-    )
+        )
 
 
     override fun onEvent(event: OrderFormContract.Event) {
@@ -114,15 +118,24 @@ class OrderFormScreenModel(
             is OrderFormContract.Event.OnDeliveryMethodChanged -> updateDeliveryMethod(event.method)
             is OrderFormContract.Event.OnProductSelectionEvent -> handleProductSelectionEvent(event.event)
             is OrderFormContract.Event.OnSubmitClicked -> submitOrder()
-            is OrderFormContract.Event.OnBackClicked -> navigateBack()
+            is OrderFormContract.Event.OnBackClicked -> handleBackNavigation()
             is OrderFormContract.Event.LoadExistingOrder -> loadExistingOrder(event.orderId)
-
+            is OrderFormContract.Event.OnDiscardChanges -> navigateBack()
+            is OrderFormContract.Event.OnSaveChanges -> submitOrder()
         }
     }
 
     private fun navigateBack() {
         screenModelScope.launch {
             launchEffect(OrderFormContract.Effect.NavigateBack)
+        }
+    }
+
+    private fun handleBackNavigation() {
+        if (_uiState.value.isEditMode) {
+            _uiState.update { it.copy(hasUnsavedChanges = true) }
+        } else {
+            navigateBack()
         }
     }
 
@@ -133,16 +146,16 @@ class OrderFormScreenModel(
         }
     }
 
-    /**
-     * Updates the selected folder in the UI state
-     */
     private fun updateSelectedFolder(folderId: String?) {
-        _uiState.update { it.copy(productSelectionState = it.productSelectionState.copy(selectedFolderId = folderId)) }
+        _uiState.update {
+            it.copy(
+                productSelectionState = it.productSelectionState.copy(
+                    selectedFolderId = folderId
+                ),
+            )
+        }
     }
 
-    /**
-     * Updates the quantity of the selected inventory item in the UI state
-     */
     private fun updateSelectedItem(item: InventoryItem, quantity: Int) {
         _uiState.update {
             val updatedItems = _uiState.value.productSelectionState.selectedItems.toMutableMap()
@@ -151,19 +164,31 @@ class OrderFormScreenModel(
             } else {
                 updatedItems.remove(item)
             }
-            it.copy(productSelectionState = it.productSelectionState.copy(selectedItems = updatedItems))
+            it.copy(
+                productSelectionState = it.productSelectionState.copy(selectedItems = updatedItems),
+            )
         }
     }
 
     private fun updateDeliveryMethod(method: DeliveryMethod) {
-        _uiState.update { it.copy(deliveryMethod = method) }
+        _uiState.update { 
+            it.copy(
+                deliveryMethod = method,
+            )
+        }
     }
 
     private fun loadInventory() {
         screenModelScope.launch {
             getFoldersAndItemsInventory().ifSuccess { foldersAndItemsFlow ->
                 foldersAndItemsFlow.data.collect { folders ->
-                    _uiState.update { it.copy(productSelectionState = it.productSelectionState.copy(folders = folders)) }
+                    _uiState.update {
+                        it.copy(
+                            productSelectionState = it.productSelectionState.copy(
+                                folders = folders
+                            )
+                        )
+                    }
                 }
             }
         }
@@ -183,7 +208,7 @@ class OrderFormScreenModel(
     }
 
 
-    private fun createOrderFromState(existingOrder: Order?): Order {
+    private suspend fun createOrderFromState(existingOrder: Order?): Order {
         val currentTime = Timestamp.now()
         val newHistoryEvent = OrderHistoryEvent(
             time = currentTime,
@@ -209,9 +234,16 @@ class OrderFormScreenModel(
         )
     }
 
-    private fun getCurrentUserName(): String {
-        // TODO: #20 Implement actual user name retrieval
-        return "current_user_id"
+    private suspend fun getCurrentUserName(): String {
+        return when (val result = getUserInfoUseCase.invoke()) {
+            is DataResult.Success -> {
+                result.data.fullName
+            }
+
+            is DataResult.Error -> {
+                "Неизвестный пользователь"
+            }
+        }
     }
 
     private fun loadExistingOrder(orderId: String) {
@@ -231,7 +263,7 @@ class OrderFormScreenModel(
         _uiState.value.deliveryCommentField.setValue(order.comment ?: "")
         _uiState.update { currentState ->
             currentState.copy(
-                deliveryMethod = if (order.isDelivery) DeliveryMethod.DELIVERY else DeliveryMethod.PICKUP
+                deliveryMethod = if (order.isDelivery) DeliveryMethod.DELIVERY else DeliveryMethod.PICKUP,
             )
         }
     }
@@ -293,7 +325,9 @@ class OrderFormScreenModel(
     private fun formatFromTimestampToTime(timestamp: Timestamp): String {
         val instant = Instant.fromEpochMilliseconds(timestamp.seconds * MILLIS_IN_SECOND)
         val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-        return "${localDateTime.hour.toString().padStart(2, '0')}:${localDateTime.minute.toString().padStart(2, '0')}"
+        return "${localDateTime.hour.toString().padStart(2, '0')}:${
+            localDateTime.minute.toString().padStart(2, '0')
+        }"
     }
 
 

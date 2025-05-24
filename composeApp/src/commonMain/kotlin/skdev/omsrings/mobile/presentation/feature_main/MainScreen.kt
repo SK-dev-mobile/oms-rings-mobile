@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Settings
@@ -26,12 +27,14 @@ import kotlinx.datetime.LocalDate
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.app_name
 import omsringsmobile.composeapp.generated.resources.edit_content
+import omsringsmobile.composeapp.generated.resources.nomenclature
 import omsringsmobile.composeapp.generated.resources.user_profile_title
 import omsringsmobile.composeapp.generated.resources.user_settings_title
 import org.jetbrains.compose.resources.stringResource
 import skdev.omsrings.mobile.domain.model.DayInfoModel
 import skdev.omsrings.mobile.presentation.base.BaseScreen
 import skdev.omsrings.mobile.presentation.feature_day_orders.DayOrdersScreen
+import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreen
 import skdev.omsrings.mobile.presentation.feature_main.components.CalendarState
 import skdev.omsrings.mobile.presentation.feature_main.components.CalendarView
 import skdev.omsrings.mobile.presentation.feature_main.components.rememberCalendarState
@@ -78,6 +81,16 @@ object MainScreen : BaseScreen("main_screen") {
                             Icon(
                                 imageVector = Icons.Rounded.Settings,
                                 contentDescription = stringResource(Res.string.user_settings_title)
+                            )
+                        }
+                        IconButton(
+                            onClick = {
+                                navigator.push(InventoryManagementScreen)
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Apps,
+                                contentDescription = stringResource(Res.string.nomenclature)
                             )
                         }
                     },

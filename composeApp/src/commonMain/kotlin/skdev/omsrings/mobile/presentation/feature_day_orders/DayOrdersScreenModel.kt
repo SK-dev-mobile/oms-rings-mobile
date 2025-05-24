@@ -1,5 +1,7 @@
 package skdev.omsrings.mobile.presentation.feature_day_orders
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Archive
 import cafe.adriel.voyager.core.model.screenModelScope
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -7,6 +9,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+import omsringsmobile.composeapp.generated.resources.Res
+import omsringsmobile.composeapp.generated.resources.order_archived_status
+import omsringsmobile.composeapp.generated.resources.order_status_archived
+import omsringsmobile.composeapp.generated.resources.order_status_archived_desc
 import skdev.omsrings.mobile.domain.model.OrderStatus
 import skdev.omsrings.mobile.domain.model.UUID
 import skdev.omsrings.mobile.domain.usecase.feature_day_orders.GetDayInfoUseCase
@@ -19,6 +25,7 @@ import skdev.omsrings.mobile.utils.datetime.DateTimePattern
 import skdev.omsrings.mobile.utils.datetime.format
 import skdev.omsrings.mobile.utils.datetime.toLocalDate
 import skdev.omsrings.mobile.utils.notification.NotificationManager
+import skdev.omsrings.mobile.utils.notification.NotificationModel
 import skdev.omsrings.mobile.utils.notification.PushManager
 import skdev.omsrings.mobile.utils.result.ifSuccess
 
@@ -75,6 +82,17 @@ class DayOrdersScreenModel(
 
     private fun onOrderDetailsClicked(orderId: UUID) {
         screenModelScope.launch {
+            val order = _dayOrders.value.find { it.id == orderId }
+            if (order != null) {
+                if (order.status == OrderStatus.ARCHIVED) {
+                    showToast(
+                        Res.string.order_status_archived,
+                        Res.string.order_status_archived_desc,
+                        icon = Icons.Rounded.Archive
+                    )
+                    return@launch
+                }
+            }
             launchEffect(
                 DayOrdersScreenContract.Effect.NavigateToOrderDetails(
                     selectedDate,
