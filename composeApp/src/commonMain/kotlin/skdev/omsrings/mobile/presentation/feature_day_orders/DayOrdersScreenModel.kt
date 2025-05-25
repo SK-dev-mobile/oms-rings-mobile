@@ -128,9 +128,9 @@ class DayOrdersScreenModel(
 
     private fun toggleLockedStatus() {
         screenModelScope.launch {
-            setDayLockedStatusUseCase.invoke(selectedDate, !isLocked.value).ifSuccess {
-                fetchData()
-            }
+            setDayLockedStatusUseCase.invoke(selectedDate, !isLocked.value)
+            Napier.d(tag = TAG) { "Day locked status toggled: ${!isLocked.value}" }
+            fetchData()
         }
     }
 

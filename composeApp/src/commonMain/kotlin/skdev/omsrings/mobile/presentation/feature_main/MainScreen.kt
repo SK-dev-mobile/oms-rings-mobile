@@ -48,7 +48,6 @@ private typealias OnAction = (MainScreenContract.Event) -> Unit
 
 object MainScreen : BaseScreen("main_screen") {
 
-    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun MainContent() {
         val screenModel = koinScreenModel<MainScreenModel>()

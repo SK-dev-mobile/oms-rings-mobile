@@ -12,6 +12,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         AppModuleKt.doInitKoin()
+        NapierProxyKt.debugBuild()
         
         window = UIWindow(frame: UIScreen.main.bounds)
         if let window = window {

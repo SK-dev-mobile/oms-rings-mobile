@@ -10,7 +10,7 @@ data class UserSettings(
     companion object {
         val DEFAULT = UserSettings(
             receiveNotifications = true,
-            showClearedOrders = false
+            showClearedOrders = true
         )
     }
 }

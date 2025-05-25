@@ -57,7 +57,7 @@ class MainScreenModel(
                     )
                 }
             }
-            delay(1.seconds) // Ожидание, чтобы показывать progress bar дольше, чем реальная загрузка
+            delay(500L) // Ожидание, чтобы показывать progress bar дольше, чем реальная загрузка
             stopUpdating()
         }
     }

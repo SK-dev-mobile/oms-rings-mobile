@@ -7,6 +7,7 @@ import dev.gitlive.firebase.firestore.firestore
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.module
+import skdev.omsrings.mobile.app.NotificationServiceManager
 import skdev.omsrings.mobile.data.repository.FirebaseAuthRepository
 import skdev.omsrings.mobile.data.repository.FirebaseInventoryRepository
 import skdev.omsrings.mobile.data.repository.FirebaseOrderRepository
@@ -42,7 +43,7 @@ import skdev.omsrings.mobile.presentation.feature_day_orders.DayOrdersScreenMode
 import skdev.omsrings.mobile.presentation.feature_inventory_management.InventoryManagementScreenModel
 import skdev.omsrings.mobile.presentation.feature_main.MainScreenModel
 import skdev.omsrings.mobile.presentation.feature_order_form.OrderFormScreenModel
-import skdev.omsrings.mobile.presentation.feature_user_settings.UserSettingsModel
+import skdev.omsrings.mobile.presentation.feature_user_settings.UserSettingsScreenModel
 import skdev.omsrings.mobile.utils.notification.NotificationManager
 
 
@@ -72,6 +73,12 @@ private val data = module {
 
     single<OrderRepository> {
         FirebaseOrderRepository(firestore = get())
+    }
+
+    single<NotificationServiceManager> {
+        NotificationServiceManager(
+            getUserSettingsUseCase = get()
+        )
     }
 
 }
@@ -113,12 +120,13 @@ private val viewModels = module {
     }
 
     // Feature User Settings
-    factory<UserSettingsModel> {
-        UserSettingsModel(
+    factory<UserSettingsScreenModel> {
+        UserSettingsScreenModel(
             notificationManager = get(),
             getUserSettingsUseCase = get(),
             updateNotificationSettingsUseCase = get(),
             updateShowClearedOrdersSettingsUseCase = get(),
+            notificationServiceManager = get(),
             clearOldOrdersUseCase = get()
         )
     }
@@ -225,6 +233,7 @@ private val useCases = module {
         GetDayOrdersUseCase(
             orderRepository = get(),
             inventoryRepository = get(),
+            getUserSettingsUseCase = get(),
             notificationManager = get()
         )
     }

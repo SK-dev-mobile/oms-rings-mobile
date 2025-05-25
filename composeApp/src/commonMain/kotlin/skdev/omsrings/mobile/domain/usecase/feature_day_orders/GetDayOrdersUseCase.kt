@@ -4,8 +4,10 @@ import io.github.aakira.napier.Napier
 import kotlinx.datetime.LocalDate
 import skdev.omsrings.mobile.data.repository.FirebaseOrderRepository
 import skdev.omsrings.mobile.domain.model.OrderItem
+import skdev.omsrings.mobile.domain.model.OrderStatus
 import skdev.omsrings.mobile.domain.repository.InventoryRepository
 import skdev.omsrings.mobile.domain.repository.OrderRepository
+import skdev.omsrings.mobile.domain.usecase.feature_user_settings.GetUserSettingsUseCase
 import skdev.omsrings.mobile.domain.utils.notifyError
 import skdev.omsrings.mobile.presentation.feature_day_orders.enitity.OrderHistoryEvent
 import skdev.omsrings.mobile.presentation.feature_day_orders.enitity.OrderInfoModel
@@ -26,9 +28,19 @@ import skdev.omsrings.mobile.utils.result.map
 class GetDayOrdersUseCase(
     private val orderRepository: OrderRepository,
     private val inventoryRepository: InventoryRepository,
+    private val getUserSettingsUseCase: GetUserSettingsUseCase,
     private val notificationManager: NotificationManager,
 ) {
     suspend operator fun invoke(date: LocalDate): DataResult<List<OrderInfoModel>, DataError> {
+        var filterArchived = false
+
+        getUserSettingsUseCase().ifError {
+            Napier.e(tag = "GetDayOrdersUseCase") { "Failed to get user settings: ${it.error}" }
+            return DataResult.error(error = it.error)
+        }.ifSuccess {
+            filterArchived = !it.data.showClearedOrders
+        }
+
         val orders = orderRepository.getOrdersByDay(date.toTimestamp()).notifyError(
             notificationManager
         )
@@ -49,7 +61,7 @@ class GetDayOrdersUseCase(
 
         Napier.d(tag = "ABC") {"inventoryItems -> $inventoryItems" }
 
-        val ordersInfoModels = orders.data.map { order ->
+        var ordersInfoModels = orders.data.map { order ->
             OrderInfoModel(
                 id = order.id,
                 createdBy = order.createdBy,
@@ -74,6 +86,11 @@ class GetDayOrdersUseCase(
                     )
                 }
             )
+        }
+
+        // Filter out archived orders if it's not allowed in user settings
+        if (filterArchived) {
+            ordersInfoModels = ordersInfoModels.filter { it.status != OrderStatus.ARCHIVED  }
         }
 
         return DataResult.success(ordersInfoModels)

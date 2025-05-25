@@ -28,7 +28,7 @@ object UserSettingsScreen : BaseScreen("user_settings_screen") {
 
     @Composable
     override fun MainContent() {
-        val screenModel = koinScreenModel<UserSettingsModel>()
+        val screenModel = koinScreenModel<UserSettingsScreenModel>()
         val state by screenModel.state.collectAsState()
         val navigator = LocalNavigator.currentOrThrow
 
@@ -55,12 +55,12 @@ object UserSettingsScreen : BaseScreen("user_settings_screen") {
                     .padding(paddingValues)
                     .padding(Dimens.spaceMedium)
             ) {
-                SettingItem(
-                    title = stringResource(Res.string.user_settings_receive_notifications),
-                    checked = state.receiveNotifications,
-                    onCheckedChange = { screenModel.onEvent(Event.ToggleNotifications) },
-                    modifier = Modifier.fillMaxWidth().padding(vertical = Dimens.spaceSmall)
-                )
+//                SettingItem(
+//                    title = stringResource(Res.string.user_settings_receive_notifications),
+//                    checked = state.receiveNotifications,
+//                    onCheckedChange = { screenModel.onEvent(Event.ToggleNotifications) },
+//                    modifier = Modifier.fillMaxWidth().padding(vertical = Dimens.spaceSmall)
+//                )
 
                 SettingItem(
                     title = stringResource(Res.string.user_settings_show_cleared_orders),

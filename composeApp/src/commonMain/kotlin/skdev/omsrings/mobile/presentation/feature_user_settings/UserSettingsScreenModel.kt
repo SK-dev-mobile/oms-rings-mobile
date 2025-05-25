@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import omsringsmobile.composeapp.generated.resources.Res
 import omsringsmobile.composeapp.generated.resources.clear_cancelled_orders_message
 import omsringsmobile.composeapp.generated.resources.clear_cancelled_orders_title
+import skdev.omsrings.mobile.app.NotificationServiceManager
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.ClearOldOrdersUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.GetUserSettingsUseCase
 import skdev.omsrings.mobile.domain.usecase.feature_user_settings.UpdateNotificationSettingsUseCase
@@ -24,15 +25,16 @@ import skdev.omsrings.mobile.utils.notification.ToastType
 import skdev.omsrings.mobile.utils.result.DataResult
 
 
-class UserSettingsModel(
+class UserSettingsScreenModel(
     private val notificationManager: NotificationManager,
     private val getUserSettingsUseCase: GetUserSettingsUseCase,
     private val updateNotificationSettingsUseCase: UpdateNotificationSettingsUseCase,
     private val updateShowClearedOrdersSettingsUseCase: UpdateShowClearedOrdersSettingsUseCase,
+    private val notificationServiceManager: NotificationServiceManager,
     private val clearOldOrdersUseCase: ClearOldOrdersUseCase
 ) : BaseScreenModel<Event, Effect>(notificationManager) {
 
-    private val _state = MutableStateFlow<UserSettingsContract.State>(UserSettingsContract.State())
+    private val _state = MutableStateFlow(UserSettingsContract.State())
     val state = _state.asStateFlow()
 
     init {
@@ -54,6 +56,7 @@ class UserSettingsModel(
             when (val result = updateNotificationSettingsUseCase(newValue)) {
                 is DataResult.Success -> {
                     _state.update { it.copy(receiveNotifications = newValue) }
+                    notificationServiceManager.restart()
                 }
 
                 is DataResult.Error -> result.notifyError(notificationManager)

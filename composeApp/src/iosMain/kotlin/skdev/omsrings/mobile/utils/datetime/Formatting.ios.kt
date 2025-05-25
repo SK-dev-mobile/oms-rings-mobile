@@ -1,18 +1,25 @@
 package skdev.omsrings.mobile.utils.datetime
 
+import io.github.aakira.napier.Napier
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.toNSDateComponents
 import platform.Foundation.NSDateFormatter
+import platform.Foundation.NSCalendar
+import platform.Foundation.NSDate
+import platform.Foundation.NSTimeZone
 
 actual fun LocalDateTime.format(pattern: String, default: String): String {
     return try {
         val dateFormatter = NSDateFormatter()
         dateFormatter.dateFormat = pattern
-        val nsDate = this.toNSDateComponents().date
-        checkNotNull(nsDate)
-        dateFormatter.stringFromDate(nsDate)
+        val components = this.toNSDateComponents()
+        val calendar = NSCalendar.currentCalendar
+        val date = calendar.dateFromComponents(components)
+        checkNotNull(date)
+        dateFormatter.stringFromDate(date)
     } catch (e: Exception) {
+        Napier.e(tag = "Formatting") { "can't format ${this}, cause error -> $e" }
         default
     }
 }
@@ -30,10 +37,13 @@ actual fun LocalDate.format(
     return try {
         val dateFormatter = NSDateFormatter()
         dateFormatter.dateFormat = pattern
-        val nsDate = this.toNSDateComponents().date
-        checkNotNull(nsDate)
-        dateFormatter.stringFromDate(nsDate)
+        val components = this.toNSDateComponents()
+        val calendar = NSCalendar.currentCalendar
+        val date = calendar.dateFromComponents(components)
+        checkNotNull(date)
+        dateFormatter.stringFromDate(date)
     } catch (e: Exception) {
+        Napier.e(tag = "Formatting") { "can't format ${this}, cause error -> $e" }
         default
     }
 }
